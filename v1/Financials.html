@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Financial Intelligence</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="financials" data-persona="cfo" data-crumb="Financials / Intelligence" data-decisions="true"
+      data-entitytype="portfolio" data-entityid="" data-entityname="Portfolio Financials">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Financial Intelligence">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Pillar 4 · Financial — CFO view</div>
+            <h1 class="page-title">Financial Intelligence</h1>
+            <div class="page-sub">Portfolio-wide · every figure one click from its source ledger entry</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">Q1 FY27 ▾</button>
+            <button class="btn sm">₹ Crore ▾</button>
+            <button class="btn sm primary" style="margin-left:auto" onclick="AKActions.compose({type:'REFORECAST',entityType:'portfolio',entityId:'',entityName:'Portfolio'})">Re-forecast</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative-block">
+        <b>Revenue is growing but margin is compressing.</b> Break-even utilization is healthy at 58%, but working capital is trapped. The ₹3.4 Cr revenue leakage is primarily driven by missing milestones on fixed-price projects. Resolving the Northwind DSO spike and Meridian delivery delay will unlock ₹2.8 Cr in immediate cash. <span class="nar-systems">Tally + SAP + Salesforce</span>
+      </div>
+
+      <!-- REVENUE WATERFALL: Booked > Billed > Collected > Recognized -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon">₹</div>
+          <div><div class="panel-title">Revenue Realisation</div><div class="panel-sub">Booked → Billed → Collected → Recognised · and the gaps between each</div></div>
+          <span class="panel-tag crit-text">⚑ ₹3.4 Cr leakage</span>
+            <a class="btn sm" href="PracticePL.html" style="margin-left:4px">Practice P&amp;L drill ›</a>
+        </div>
+        <div class="panel-body">
+          <div class="realise" id="realise"></div>
+          <div class="realise-gaps" id="gaps"></div>
+        </div>
+      </div>
+
+      <!-- ROW: margin waterfall + DSO -->
+      <div class="fin-two mb-20">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+            <div><div class="panel-title">Margin Waterfall</div><div class="panel-sub">Gross → Net operating margin bridge</div></div>
+            <div class="seg-toggle" style="margin-left:auto"><button class="seg active">By practice</button><button class="seg">By client</button></div>
+          </div>
+          <div class="panel-body">
+            <div class="mwf" id="mwf"></div>
+            <div class="flex justify-between mono faint fs-11 mt-8" id="mwf-x"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg></div>
+            <div><div class="panel-title">Cash &amp; DSO</div><div class="panel-sub">Receivables aging · collection risk</div></div>
+            <span class="panel-tag">DSO <b class="crit-text">58d</b> · target ≤52</span>
+          </div>
+          <div class="panel-body">
+            <div class="aging-bar mb-12" id="aging"></div>
+            <div class="section-label">Collection risk by client</div>
+            <div class="col gap-2" id="collect"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCIAL TRANSACTION EXPLORER -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+          <div>
+            <div class="panel-title">Financial Transaction Explorer</div>
+            <div class="panel-sub">Inspect individual ledger milestones through their Cash Conversion Lifecycle (Booked → Accrued → Billed → Collected)</div>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <div class="fte-workspace">
+            <div class="fte-list-col" id="fte-list"></div>
+            <div class="fte-detail-col" id="fte-detail"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVENUE LEAKAGE -->
+      <div class="panel mb-20" style="border-color:var(--critical-line)">
+        <div class="panel-head" style="background:var(--critical-soft)">
+          <div class="ph-icon" style="background:#fff;color:var(--critical)">⚑</div>
+          <div><div class="panel-title">Revenue Leakage Tracker</div><div class="panel-sub">Effort delivered but not converted to revenue</div></div>
+          <span class="panel-tag crit-text" style="font-size:13px">Total leakage: <b>₹3.4 Cr</b> · 2.4% of revenue</span>
+        </div>
+        <div class="scroll-x">
+          <table class="tbl" id="leak"><thead><tr><th>Leakage type</th><th>Client / Project</th><th class="r">Amount</th><th>Detected</th><th>Confidence</th><th>Action</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <!-- ROW: revenue model mix trend + forecast vs actual -->
+      <div class="fin-two mb-20">
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">%</div><div><div class="panel-title">Revenue Model Mix</div><div class="panel-sub">T&amp;M · Fixed-Price · Managed · 6-month trend</div></div></div>
+          <div class="panel-body">
+            <div class="mix-trend" id="mixtrend"></div>
+            <div class="flex justify-between mono faint fs-11 mt-8"><span>Jan</span><span>Mar</span><span>Jun</span></div>
+            <div class="legend mt-12">
+              <span class="li"><span class="sw" style="background:var(--accent)"></span>T&amp;M</span>
+              <span class="li"><span class="sw" style="background:var(--composite)"></span>Fixed-Price</span>
+              <span class="li"><span class="sw" style="background:var(--good)"></span>Managed Svcs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">F</div><div><div class="panel-title">Forecast vs Actual</div><div class="panel-sub">Run-rate · re-forecast writes back to model</div></div>
+            <button class="btn xs primary" style="margin-left:auto" onclick="AK.toast('Re-forecast applied · audit logged')">Adjust forecast</button>
+          </div>
+          <div class="panel-body">
+            <div class="fva" id="fva"></div>
+            <div class="flex justify-between mono faint fs-11 mt-8"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4 (proj.)</span></div>
+            <div class="legend mt-12">
+              <span class="li"><span class="sw" style="background:var(--ink-3)"></span>Actual</span>
+              <span class="li"><span class="sw" style="background:var(--accent);opacity:.4"></span>Forecast</span>
+              <span class="li"><span class="sw" style="background:var(--warn)"></span>Re-forecast</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW: SG&A + budget variance -->
+      <div class="fin-two mb-8">
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">S</div><div><div class="panel-title">SG&amp;A as % of Revenue</div><div class="panel-sub">Overhead efficiency trend</div></div>
+            <span class="panel-tag">14.8% <span class="good-text">▾ on track</span></span>
+          </div>
+          <div class="panel-body">
+            <div class="flex items-center gap-20">
+              <div class="donut" style="--p:14.8;--c:var(--composite)"><div class="donut-hole"><div class="donut-v">14.8%</div><div class="donut-l">of revenue</div></div></div>
+              <div class="col gap-8" style="flex:1">
+                <div class="sga-row"><span>Sales &amp; Marketing</span><b>6.2%</b></div>
+                <div class="sga-row"><span>G&amp;A</span><b>5.1%</b></div>
+                <div class="sga-row"><span>Facilities &amp; IT</span><b>3.5%</b></div>
+                <div class="divider" style="margin:4px 0"></div>
+                <div class="sga-row"><span class="strong">Target FY27</span><b class="good-text">≤ 15.0%</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">V</div><div><div class="panel-title">Budget Variance by Department</div><div class="panel-sub">Actual vs plan · YTD</div></div></div>
+          <div class="panel-body col gap-2" id="variance"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+/* Revenue realisation */
+const realise=[['Booked','₹68.4',100,'var(--accent)'],['Billed','₹58.9',86,'var(--composite)'],['Collected','₹52.1',76,'var(--good)'],['Recognised','₹49.8',73,'var(--ink-3)']];
+$('#realise').innerHTML=realise.map(r=>`<div class="rz-col"><div class="rz-v">${r[1]}<small> Cr</small></div><div class="rz-bar" style="height:${r[2]*1.4}px;background:${r[3]}"></div><div class="rz-l">${r[0]}</div></div>`).join('');
+const gaps=[['Booked→Billed','₹9.5 Cr','unbilled effort','warn'],['Billed→Collected','₹6.8 Cr','outstanding','warn'],['Collected→Recognised','₹2.3 Cr','deferred','good']];
+$('#gaps').innerHTML=gaps.map(g=>`<div class="gap-chip ${g[3]}"><span class="gc-l">${g[0]}</span><span class="gc-v">${g[1]}</span><span class="gc-s">${g[2]}</span></div>`).join('');
+
+/* margin waterfall */
+const mwf=[['Gross',42,'var(--good)','+'],['Delivery cost',-12,'var(--critical)','−'],['Bench drag',-3.6,'var(--critical)','−'],['SG&A',-14.8,'var(--critical)','−'],['Leakage',-2.4,'var(--warn)','−'],['Net margin',22.4,'var(--accent)','=']];
+let run=0;const scale=2.2;
+$('#mwf').innerHTML=mwf.map((m,i)=>{
+  const isTot=m[3]==='='||m[3]==='+';
+  const h=Math.abs(m[1])*scale;
+  let bottom;
+  if(m[3]==='+'){bottom=0;run=m[1];}
+  else if(m[3]==='='){bottom=0;}
+  else{run+=m[1];bottom=run*scale;}
+  const b=isTot?0:bottom;
+  return `<div class="mwf-col"><div class="mwf-v ${m[1]<0?'crit-text':'good-text'}">${m[1]>0?(m[3]==='='?'':'+'):''}${m[1]}</div>
+    <div class="mwf-track"><div class="mwf-bar" style="height:${h}px;bottom:${b}px;background:${m[2]};${isTot?'opacity:1':'opacity:.85'}"></div></div></div>`;
+}).join('');
+$('#mwf-x').innerHTML=mwf.map(m=>`<span style="flex:1;text-align:center">${m[0]}</span>`).join('');
+
+/* DSO aging */
+const aging=[['0–30d',46,'var(--good)'],['31–60d',28,'var(--warn)'],['61–90d',14,'#d98a3a'],['90d+',12,'var(--critical)']];
+$('#aging').innerHTML='<div class="stackbar" style="height:30px">'+aging.map(a=>`<span style="width:${a[1]}%;background:${a[2]}">${a[1]}%</span>`).join('')+'</div>'+
+  '<div class="legend mt-8">'+aging.map(a=>`<span class="li"><span class="sw" style="background:${a[2]}"></span>${a[0]}</span>`).join('')+'</div>';
+const collect=[['Northwind Insurance','₹2.4 Cr','crit','90+ days · high risk'],['Meridian Retail','₹1.2 Cr','warn','SOW-04 M7 · 45d'],['Brightwater Utilities','₹0.9 Cr','warn','dispute on scope'],['Hanseatic Bank','₹0.7 Cr','good','within terms']];
+$('#collect').innerHTML=collect.map(c=>`<div class="collect-row"><span class="hdot ${c[2]}"></span><div style="flex:1;min-width:0"><div class="fs-13 strong">${c[0]}</div><div class="exp-role">${c[3]}</div></div><b class="mono ${c[2]==='crit'?'crit-text':''}">${c[1]}</b></div>`).join('');
+
+/* FTE Workspace Logic */
+function renderFTE() {
+  if (!window.AKData) return;
+  const txns = AKData.transactions;
+  
+  $('#fte-list').innerHTML = txns.map(t => {
+    const stageBadge = t.stage === 'collected' ? 'b-active' : t.stage === 'billed' ? 'b-renewal' : t.stage === 'accrued' ? 'b-composite' : 'b-prospect';
+    return `
+      <div class="fte-row" id="fte-row-${t.id}" onclick="selectFTE('${t.id}')">
+        <div class="flex items-center justify-between">
+          <span class="mono fs-11 strong">${t.id}</span>
+          <span class="badge ${stageBadge}" style="font-size:10px;padding:1px 6px"><span class="bd"></span>${t.stage}</span>
+        </div>
+        <div class="fs-13 strong mt-4">${t.amount} · ${AKData.clientById(t.clientId).name}</div>
+        <div class="fs-11 muted mt-4">${t.detail}</div>
+      </div>
+    `;
+  }).join('');
+  
+  selectFTE(txns[0].id);
+}
+
+window.selectFTE = function(id) {
+  document.querySelectorAll('.fte-row').forEach(r => r.classList.remove('active'));
+  const row = document.getElementById('fte-row-' + id);
+  if (row) row.classList.add('active');
+  
+  const t = AKData.transactions.find(x => x.id === id);
+  const clientName = AKData.clientById(t.clientId).name;
+  
+  // Build timeline steps
+  const steps = ['booked', 'accrued', 'billed', 'collected'];
+  const stepLabels = { booked: '1. Booked', accrued: '2. Accrued', billed: '3. Billed', collected: '4. Collected' };
+  const stepSystem = { booked: 'Salesforce CRM', accrued: 'Zoho PSA Timesheets', billed: 'NetSuite Billing', collected: 'NetSuite Treasury' };
+  
+  const activeIdx = steps.indexOf(t.stage);
+  
+  const timelineHtml = steps.map((s, i) => {
+    const statusClass = i < activeIdx ? 'done' : i === activeIdx ? 'active' : 'upcoming';
+    const hist = t.history.find(h => h.step === s);
+    const dateText = hist ? hist.date : '—';
+    const descText = hist ? hist.desc : 'Pending step';
+    return `
+      <div class="fte-step-node ${statusClass}">
+        <div style="flex:0 0 100px" class="mono fs-12">${stepLabels[s]}</div>
+        <div class="fte-step-dot"></div>
+        <div style="flex:1">
+          <div class="fs-13 strong">${descText}</div>
+          <div class="fs-11 muted">Integration: ${stepSystem[s]}</div>
+        </div>
+        <div class="mono fs-12 faint text-right" style="flex:0 0 80px">${dateText}</div>
+      </div>
+    `;
+  }).join('');
+  
+  // Choose actions based on current stage
+  let actionButtonsHtml = '';
+  if (t.stage === 'booked') {
+    actionButtonsHtml = `<button class="btn sm primary" onclick="AKActions.compose({type:'RAISE_INVOICE',entityType:'client',entityId:'${t.clientId}',entityName:'${clientName}',prefill:{amount:'${t.amount}',milestone:'Project Kickoff'}})">Raise Retainer Invoice</button>`;
+  } else if (t.stage === 'accrued') {
+    actionButtonsHtml = `<button class="btn sm primary" onclick="AKActions.compose({type:'RAISE_INVOICE',entityType:'client',entityId:'${t.clientId}',entityName:'${clientName}',prefill:{amount:'${t.amount}',milestone:'Milestone Delivered'}})">Raise NetSuite Invoice</button>`;
+  } else if (t.stage === 'billed') {
+    actionButtonsHtml = `
+      <button class="btn sm primary" onclick="AKActions.compose({type:'APPROVE_PAYMENT',entityType:'client',entityId:'${t.clientId}',entityName:'${clientName}',prefill:{invoice:'${t.id}',amount:'${t.amount}'}})">Record Payment Receipt</button>
+      <button class="btn sm danger" onclick="AKActions.compose({type:'COLLECTION_ACTION',entityType:'client',entityId:'${t.clientId}',entityName:'${clientName}',prefill:{invoice:'${t.id}',amount:'${t.amount}'}})">Escalate Collection</button>
+    `;
+  } else {
+    actionButtonsHtml = `<span class="badge b-active" style="font-size:12px">✓ Partnership Cycle Fully Cleared &amp; Reconciled</span>`;
+  }
+  
+  $('#fte-detail').innerHTML = `
+    <div style="padding:16px" class="col gap-12">
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="dd-eyebrow">Milestone: ${t.id}</div>
+          <div class="dd-title" style="font-size:16px">${clientName}</div>
+        </div>
+        <b style="font-size:18px;color:var(--accent-2)" class="mono">${t.amount}</b>
+      </div>
+      <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:8px 12px;font-size:12.5px" class="muted">
+        ${t.detail} · <b class="mono" style="color:var(--ink)">${t.statusText}</b>
+      </div>
+      
+      <div class="section-label" style="margin-top:8px">Cash Conversion Cycle Timeline</div>
+      <div class="col gap-10">${timelineHtml}</div>
+      
+      <div class="divider" style="margin:8px 0"></div>
+      
+      <div class="flex gap-8 justify-between items-center wrap">
+        <span class="fs-12 muted">Last write-back update: ${t.lastUpdated}</span>
+        <div class="flex gap-6">${actionButtonsHtml}</div>
+      </div>
+    </div>
+  `;
+};
+
+/* leakage */
+const leak=[
+  ['Unbilled milestones','Meridian · Orion','₹48 L','3 milestones delivered','hi','92'],
+  ['Scope delivered uncharged','Brightwater · SCADA','₹1.1 Cr','change requests not raised','md','81'],
+  ['Missed milestone billing','Sundara · Atlas','₹62 L','M9 invoice not generated','hi','89'],
+  ['Effort over T&M cap','Vermillion · Helix','₹74 L','38 hrs over weekly cap','md','78'],
+  ['Expense pass-through','Hanseatic · Core','₹45 L','onsite travel not rebilled','lo','69'],
+];
+$('#leak tbody').innerHTML=leak.map(l=>`<tr>
+  <td class="cell-strong">${l[0]}</td><td class="cell-sub" style="color:var(--ink-2)">${l[1]}</td>
+  <td class="r cell-mono cell-strong crit-text">${l[2]}</td><td class="cell-sub">${l[3]}</td>
+  <td><span class="conf ${l[4]}"><span class="cbar"><i style="width:${l[5]}%"></i></span>0.${l[5]}</span></td>
+  <td><button class="btn xs primary" onclick="AKActions.compose({type:'RAISE_INVOICE',entityType:'portfolio',entityId:'',entityName:'Leakage Resolution',prefill:{milestone:'${l[0]}',amount:'${l[2]}'}})">Resolve Leakage</button></td>
+</tr>`).join('');
+
+renderFTE();
+
+/* mix trend (stacked area-ish via 3 lines) */
+function poly(arr,color,fill){const W=100,H=120;const pts=arr.map((v,i)=>`${(i/(arr.length-1)*W).toFixed(1)},${(H-v/100*H).toFixed(1)}`).join(' ');return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;}
+const tm=[52,51,50,48,47,46],fp=[31,32,32,33,33,33],ms=[17,17,18,19,20,21];
+$('#mixtrend').innerHTML=`<svg viewBox="0 0 100 120" preserveAspectRatio="none" style="width:100%;height:140px;border-bottom:1px solid var(--line-2);border-left:1px solid var(--line-2)">${poly(tm,'var(--accent)')}${poly(fp,'var(--composite)')}${poly(ms,'var(--good)')}</svg>`;
+
+/* forecast vs actual */
+const fva=[['Q1',34,'a'],['Q2',36,'a'],['Q3',35,'f'],['Q4',39,'r']];
+const maxF=42;
+$('#fva').innerHTML='<div style="display:flex;align-items:flex-end;gap:18px;height:150px;border-bottom:1px solid var(--line-2)">'+fva.map(f=>{
+  const col=f[2]==='a'?'var(--ink-3)':f[2]==='r'?'var(--warn)':'var(--accent)';
+  const op=f[2]==='f'?'opacity:.4':'';
+  return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%"><div class="mono fs-12 strong" style="margin-bottom:4px">₹${f[1]}Cr</div><div style="width:60%;background:${col};${op};border-radius:4px 4px 0 0;height:${f[1]/maxF*100}%"></div></div>`;
+}).join('')+'</div>';
+
+/* budget variance */
+const variance=[['Delivery','-2.1%','crit',-21],['Sales','+1.4%','good',14],['Engineering','-0.8%','warn',-8],['G&A','+0.6%','good',6],['Recruiting','-3.2%','crit',-32]];
+$('#variance').innerHTML=variance.map(v=>`<div class="var-row">
+  <span class="var-name">${v[0]}</span>
+  <div class="var-track"><div class="var-zero"></div><div class="var-fill ${v[2]}" style="${v[3]<0?'right:50%;width:'+Math.abs(v[3])/2+'%':'left:50%;width:'+v[3]/2+'%'}"></div></div>
+  <b class="mono ${v[1].startsWith('-')?'crit-text':'good-text'}" style="flex:0 0 56px;text-align:right">${v[1]}</b>
+</div>`).join('');
+</script>
+
+<style>
+.fin-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.realise{display:flex;align-items:flex-end;justify-content:space-around;gap:30px;height:170px;padding:0 10px;}
+.rz-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;flex:1;}
+.rz-v{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;}.rz-v small{font-size:11px;color:var(--ink-3);font-weight:600;}
+.rz-bar{width:70%;max-width:90px;border-radius:6px 6px 0 0;}
+.rz-l{font-size:12px;color:var(--ink-2);font-weight:600;}
+.realise-gaps{display:flex;gap:12px;justify-content:space-around;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-2);}
+.gap-chip{flex:1;text-align:center;padding:8px;border-radius:8px;background:var(--surface-2);}
+.gap-chip.warn{background:var(--warn-soft);}.gap-chip.good{background:var(--good-soft);}
+.gc-l{display:block;font-size:10.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.gc-v{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;margin:2px 0;}
+.gc-s{font-size:11px;color:var(--ink-3);}
+.seg-toggle{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:2px;}
+.seg{border:0;background:none;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--ink-3);border-radius:5px;}
+.seg.active{background:#fff;color:var(--accent-2);box-shadow:var(--shadow-sm);}
+.mwf{display:flex;align-items:flex-end;gap:8px;height:150px;position:relative;border-bottom:1px solid var(--line-2);}
+.mwf-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.mwf-v{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:auto;}
+.mwf-track{position:relative;width:100%;height:110px;}
+.mwf-bar{position:absolute;left:15%;right:15%;border-radius:3px;}
+.aging-bar .stackbar>span{font-size:10px;}
+.collect-row{display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line);}
+.collect-row:last-child{border-bottom:0;}
+.donut{width:120px;height:120px;border-radius:50%;flex:0 0 auto;background:conic-gradient(var(--c) calc(var(--p)*3.6deg),var(--surface-3) 0);display:grid;place-items:center;}
+.donut-hole{width:84px;height:84px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center;box-shadow:inset 0 0 0 1px var(--line);}
+.donut-v{font-size:20px;font-weight:800;}.donut-l{font-size:10px;color:var(--ink-3);}
+.sga-row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);}.sga-row b{font-variant-numeric:tabular-nums;}
+.var-row{display:flex;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);}
+.var-row:last-child{border-bottom:0;}
+.var-name{flex:0 0 96px;font-size:13px;font-weight:600;}
+.var-track{flex:1;height:18px;position:relative;background:var(--surface-2);border-radius:5px;}
+.var-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-strong);}
+.var-fill{position:absolute;top:3px;bottom:3px;border-radius:3px;}
+.var-fill.crit{background:var(--critical);}.var-fill.warn{background:var(--warn);}.var-fill.good{background:var(--good);}
+
+/* FTE Workspace Styles */
+.fte-workspace {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 380px;
+}
+.fte-list-col {
+  border-right: 1px solid var(--line);
+  background: var(--surface-2);
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 10px;
+}
+.fte-row {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fte-row:hover, .fte-row.active {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.fte-row.active {
+  background: var(--accent-soft);
+}
+.fte-detail-col {
+  padding: 16px;
+  overflow-y: auto;
+}
+.fte-step-node {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  padding: 8px 0;
+}
+.fte-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--line-strong);
+  z-index: 2;
+  position: relative;
+}
+.fte-step-node.done .fte-step-dot {
+  background: var(--good);
+  border-color: var(--good);
+}
+.fte-step-node.active .fte-step-dot {
+  background: var(--warn);
+  border-color: var(--warn);
+  box-shadow: 0 0 0 3px var(--warn-soft);
+}
+.fte-step-node::before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  background: var(--line-2);
+  left: 105px;
+  top: 50%;
+  bottom: -50%;
+  z-index: 1;
+}
+.fte-step-node:last-child::before {
+  display: none;
+}
+.fte-step-node.done::before {
+  background: var(--good-line);
+}
+.fte-step-node.active::before {
+  background: var(--warn-line);
+}
+
+@media (max-width:1100px){.fin-two{grid-template-columns:1fr;}.fte-workspace{grid-template-columns:1fr;}.fte-list-col{border-right:0;border-bottom:1px solid var(--line);}}
+</style>
+</body>
+</html>

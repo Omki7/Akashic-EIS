@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Document Intelligence</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="documents" data-persona="ceo" data-crumb="Documents / Validation Queue"
+      data-decisions="false">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Document Intelligence & Validation" style="max-width:100%">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Trust Layer · the foundation every number rests on</div>
+            <h1 class="page-title">Document Intelligence</h1>
+            <div class="page-sub">Validate extracted fields before they propagate to entity profiles · lowest-confidence first</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">Upload documents</button>
+            <button class="btn sm primary" onclick="AK.toast('14 high-confidence fields auto-approved · audit logged')">Batch-approve high confidence (14)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="tiles-4 mb-20">
+        <div class="card card-pad"><div class="t4-l">Awaiting validation</div><div class="t4-v warn-text">37</div><div class="t4-f muted">across 14 documents</div></div>
+        <div class="card card-pad"><div class="t4-l">Avg confidence</div><div class="t4-v">0.82</div><div class="t4-f muted">9 below 0.75 threshold</div></div>
+        <div class="card card-pad"><div class="t4-l">Validated today</div><div class="t4-v good-text">23</div><div class="t4-f muted">by 3 reviewers</div></div>
+        <div class="card card-pad"><div class="t4-l">Propagated to profiles</div><div class="t4-v">21</div><div class="t4-f muted">2 pending downstream</div></div>
+      </div>
+
+      <div class="vq-layout">
+        <!-- QUEUE LIST -->
+        <div class="panel" style="overflow:visible">
+          <div class="panel-head"><div class="ph-icon">Q</div><div><div class="panel-title">Validation Queue</div><div class="panel-sub">Lowest confidence first</div></div></div>
+          <div class="vq-filters">
+            <button class="fpill active">All <span class="cnt">37</span></button>
+            <button class="fpill">Low conf <span class="cnt">9</span></button>
+            <button class="fpill">Mine <span class="cnt">12</span></button>
+          </div>
+          <div class="vq-list" id="queue"></div>
+        </div>
+
+        <!-- SIDE-BY-SIDE VALIDATION -->
+        <div class="panel" style="overflow:visible">
+          <div class="panel-head">
+            <div class="ph-icon">V</div>
+            <div><div class="panel-title" id="vw-title">Validate field</div><div class="panel-sub" id="vw-sub">Source document · highlighted clause</div></div>
+            <div class="flex items-center gap-8" style="margin-left:auto">
+              <button class="btn xs"><span>Prev</span></button>
+              <span class="fs-12 mono faint" id="vw-pos">1 / 9</span>
+              <button class="btn xs">Next</button>
+            </div>
+          </div>
+          <div class="vq-work">
+            <!-- PDF SIDE -->
+            <div class="pdf-side">
+              <div class="pdf-toolbar"><span class="mono fs-11" id="pdf-name">Meridian_MSA_2019.pdf</span><span class="mono fs-11 faint" id="pdf-page">Page 11 of 18</span></div>
+              <div class="pdf-pane" id="pdfpane"></div>
+            </div>
+            <!-- FIELD SIDE -->
+            <div class="field-side" id="fieldside"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const queue=[
+  {id:0,doc:'Meridian_MSA_2019.pdf',client:'Meridian Retail',field:'Contract expiry date',val:'22 Jun 2026',conf:71,page:11,clause:'§2.1 Term',
+   pdf:[['The initial term of this Master Services Agreement shall commence on the Effective Date and continue for a period of '],['<span class="clause-hl target">eighty-four (84) months</span>, expiring on '],['<span class="clause-hl target">22 June 2026</span> unless terminated earlier in accordance with §11.'],['Renewal shall be subject to mutual written agreement; <span class="clause-hl">automatic renewal does not apply</span> to this Agreement.']],
+   propagate:'Client 360 → Lifecycle, Renewal countdown, Intelligence Feed'},
+  {id:1,doc:'Addendum_A2.pdf',client:'Meridian Retail',field:'Auto-renewal flag',val:'No',conf:68,page:2,clause:'§1.4',
+   pdf:[['This Addendum modifies the data residency obligations under the MSA.'],['For the avoidance of doubt, <span class="clause-hl target">no automatic renewal provision</span> is introduced by this Addendum.'],['All other terms of the MSA remain in full force.']],
+   propagate:'Client 360 → Contract Intelligence'},
+  {id:2,doc:'SOW-03_Support.pdf',client:'Meridian Retail',field:'Annual contract value',val:'₹4.1 Cr',conf:84,page:5,clause:'§4 Fees',
+   pdf:[['The Services shall be provided on a managed-services basis at an annual fee of '],['<span class="clause-hl target">INR 4,10,00,000 (Rupees Four Crore Ten Lakh only)</span> payable quarterly in advance.'],['Fees are subject to an annual escalation of 5%.']],
+   propagate:'Client 360 → Financial, ARR rollup'},
+  {id:3,doc:'Hanseatic_MSA.pdf',client:'Hanseatic Bank',field:'Governing law',val:'Germany',conf:79,page:14,clause:'§17',
+   pdf:[['This Agreement shall be governed by and construed in accordance with the laws of '],['<span class="clause-hl target">the Federal Republic of Germany</span>, and the courts of Frankfurt shall have exclusive jurisdiction.']],
+   propagate:'Client 360 → Geography'},
+  {id:4,doc:'Brightwater_SOW2.pdf',client:'Brightwater Utilities',field:'SLA uptime target',val:'99.5%',conf:73,page:8,clause:'§6.2',
+   pdf:[['The Supplier shall maintain platform availability of no less than '],['<span class="clause-hl target">99.5% measured monthly</span>, excluding scheduled maintenance windows.'],['Failure to meet this threshold triggers service credits per Schedule C.']],
+   propagate:'Project → SLA monitor, Intelligence Feed'},
+];
+let active=0;
+function badge(c){return c<75?'lo':c<88?'md':'hi';}
+$('#queue').innerHTML=queue.map(q=>`<div class="vq-item ${q.id===active?'active':''}" onclick="selectItem(${q.id})">
+  <div class="flex items-center justify-between"><span class="mono fs-11 strong">${q.field}</span><span class="conf ${badge(q.conf)}"><span class="cbar"><i style="width:${q.conf}%"></i></span>0.${q.conf}</span></div>
+  <div class="vq-doc mono">${q.doc}</div>
+  <div class="flex items-center gap-6 mt-4"><span class="hdot ${badge(q.conf)==='lo'?'crit':badge(q.conf)==='md'?'warn':'good'}" style="width:7px;height:7px;box-shadow:none"></span><span class="fs-11 muted">${q.client} · ${q.clause}</span></div>
+</div>`).join('')+`
+  <div class="vq-item done"><div class="flex items-center justify-between"><span class="mono fs-11 strong">Payment terms</span><span class="conf verified">✓ validated</span></div><div class="vq-doc mono">Cobalt_MSA.pdf</div><div class="flex items-center gap-6 mt-4"><span class="fs-11 good-text">✓ K. Iyer · propagated</span></div></div>
+  <div class="vq-item done"><div class="flex items-center justify-between"><span class="mono fs-11 strong">Contract value</span><span class="conf verified">✓ validated</span></div><div class="vq-doc mono">Indus_SOW1.pdf</div><div class="flex items-center gap-6 mt-4"><span class="fs-11 good-text">✓ A. Kapoor · propagated</span></div></div>`;
+
+function selectItem(id){
+  active=id;
+  document.querySelectorAll('.vq-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.vq-item')[id].classList.add('active');
+  const q=queue[id];
+  $('#vw-title').textContent='Validate: '+q.field;
+  $('#vw-sub').textContent=q.client+' · '+q.doc;
+  $('#vw-pos').textContent=(id+1)+' / 9';
+  $('#pdf-name').textContent=q.doc;
+  $('#pdf-page').textContent='Page '+q.page+' of 18';
+  $('#pdfpane').innerHTML=q.pdf.map(p=>`<div class="pdf-line">${p[0]}</div>`).join('');
+  const lvl=badge(q.conf);
+  $('#fieldside').innerHTML=`
+    <div class="fs-exp">extracted field</div>
+    <div class="field-name">${q.field}</div>
+    <div class="field-suggest">
+      <label class="fs-11 faint mono">SUGGESTED VALUE</label>
+      <div class="field-input"><input value="${q.val}" /><span class="conf ${lvl}"><span class="cbar"><i style="width:${q.conf}%"></i></span>0.${q.conf}</span></div>
+    </div>
+    <div class="src-link mono fs-11">${AK.icon('link')} Source: ${q.doc} · p.${q.page} · ${q.clause}</div>
+    <div class="confirm-row">
+      <button class="btn primary" style="flex:1" onclick="validate(${id})">${AK.icon('check')} Confirm value</button>
+      <button class="btn" onclick="AK.toast('Override mode — edit the value then confirm')">Override</button>
+      <button class="btn danger" onclick="AK.toast('Field rejected · flagged to ingestion')">Reject</button>
+    </div>
+    <div class="propagate-box">
+      <div class="fs-11 faint mono mb-8">ON CONFIRM · PROPAGATES TO</div>
+      <div class="prop-chip">${AK.icon('workflow')} ${q.propagate}</div>
+      <div class="fs-11 muted mt-8">Validated fields are written back with your name and timestamp. Every change is audited and reversible.</div>
+    </div>`;
+}
+function validate(id){
+  AK.toast('Confirmed by Arjun Mehta · propagating to '+queue[id].client+' profile');
+  const el=document.querySelectorAll('.vq-item')[id];
+  el.querySelector('.conf').outerHTML='<span class="conf verified">✓ validated</span>';
+}
+selectItem(0);
+</script>
+
+<style>
+.tiles-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.t4-l{font-size:11.5px;color:var(--ink-3);font-weight:600;}
+.t4-v{font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-top:5px;font-variant-numeric:tabular-nums;}
+.t4-f{font-size:11.5px;margin-top:5px;}
+.vq-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;}
+.vq-filters{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);}
+.vq-list{max-height:620px;overflow-y:auto;}
+.vq-item{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;border-left:3px solid transparent;}
+.vq-item:hover{background:var(--surface-2);}
+.vq-item.active{background:var(--accent-soft);border-left-color:var(--accent);}
+.vq-item.done{opacity:.62;cursor:default;}
+.vq-item.done:hover{background:none;}
+.vq-doc{font-size:11px;color:var(--ink-3);margin-top:4px;}
+.vq-work{display:grid;grid-template-columns:1fr 380px;gap:0;}
+.pdf-side{border-right:1px solid var(--line);padding:16px 18px;}
+.pdf-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.field-side{padding:18px 20px;}
+.fs-exp{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);font-weight:700;}
+.field-name{font-size:18px;font-weight:800;margin:4px 0 16px;letter-spacing:-0.01em;}
+.field-suggest{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:13px 14px;}
+.field-input{display:flex;align-items:center;gap:10px;margin-top:6px;}
+.field-input input{flex:1;border:1px solid var(--line-2);border-radius:7px;padding:9px 11px;font-size:15px;font-weight:600;font-family:var(--mono);background:#fff;color:var(--ink);outline:none;}
+.field-input input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.src-link{display:flex;align-items:center;gap:6px;color:var(--accent-2);margin:12px 0;}
+.confirm-row{display:flex;gap:8px;margin-bottom:18px;}
+.propagate-box{background:var(--composite-soft);border:1px solid var(--composite-line);border-radius:10px;padding:13px 14px;}
+.prop-chip{display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:600;color:var(--composite-2);line-height:1.45;}
+.prop-chip svg{flex:0 0 auto;margin-top:1px;}
+@media (max-width:1100px){.vq-layout{grid-template-columns:1fr;}.vq-work{grid-template-columns:1fr;}.pdf-side{border-right:0;border-bottom:1px solid var(--line);}}
+</style>
+</body>
+</html>

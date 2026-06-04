@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Home / Intelligence Feed</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="home" data-persona="ceo" data-crumb="Home / Intelligence Feed"
+      data-decisions="false">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content" data-screen-label="Home — Intelligence Feed">
+
+      <!-- Greeting + AI briefing -->
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Monday · 04 June 2026 · Q1 FY27 in progress</div>
+            <h1 class="page-title">Good morning, Arjun.</h1>
+            <div class="ai-brief">
+              <span class="ai-brief-dot"></span>
+              <span><b>Your portfolio is in a growth-to-efficiency transition.</b> Revenue per employee is improving but 3 accounts need attention. Meridian Retail is the single largest exposure — renewal, delivery and a key-person risk are converging.</span>
+              <a href="Assistant.html" class="ai-brief-link">Ask Akashic ›</a>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">Customise pulse</button>
+            <button class="btn sm primary" onclick="AK.toast('Briefing exported to your inbox')">Send me the brief</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PULSE STRIP -->
+      <div class="section-label" style="display:flex;align-items:center;gap:8px">Business Pulse
+        <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— vs Q1 plan · every tile one click from source</span>
+      </div>
+      <div class="pulse-strip mb-24" id="pulse"></div>
+
+      <!-- LIFECYCLE FUNNELS -->
+      <div class="two-col mb-24" id="home-funnels">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">⎔</div>
+            <div><div class="panel-title">Portfolio Delivery Funnel</div><div class="panel-sub">Operational lifecycle distribution of active SOWs</div></div>
+          </div>
+          <div class="panel-body">
+            <div class="funnel-wrap" id="portfolio-funnel"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">⊙</div>
+            <div><div class="panel-title">Talent Allocation Funnel</div><div class="panel-sub">Headcount lifecycle allocation overview</div></div>
+          </div>
+          <div class="panel-body">
+            <div class="funnel-wrap" id="talent-funnel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two column body -->
+      <div class="home-grid">
+        <!-- LEFT: feed -->
+        <div>
+          <!-- Revenue model mix -->
+          <div class="panel mb-20">
+            <div class="panel-head">
+              <div class="ph-icon">A</div>
+              <div>
+                <div class="panel-title">Revenue Model Mix</div>
+                <div class="panel-sub">Share of run-rate revenue · trajectory vs 6 months ago</div>
+              </div>
+              <div class="panel-tag">₹142 Cr run-rate</div>
+            </div>
+            <div class="panel-body">
+              <div class="stackbar mb-12">
+                <span style="width:46%;background:var(--accent)">T&amp;M 46%</span>
+                <span style="width:33%;background:var(--composite)">Fixed-Price 33%</span>
+                <span style="width:21%;background:var(--good)">Managed Svcs 21%</span>
+              </div>
+              <div class="flex justify-between items-center wrap gap-12">
+                <div class="legend">
+                  <div class="li"><span class="sw" style="background:var(--accent)"></span>Time &amp; Material <span class="trend down" style="margin-left:4px">▾ 3pt</span></div>
+                  <div class="li"><span class="sw" style="background:var(--composite)"></span>Fixed-Price <span class="trend flat" style="margin-left:4px">▪ flat</span></div>
+                  <div class="li"><span class="sw" style="background:var(--good)"></span>Managed Services <span class="trend up" style="margin-left:4px">▴ 3pt</span></div>
+                </div>
+                <div class="fs-12 muted">Shift toward annuity revenue is <span class="good-text strong">on-strategy</span> — Managed Services up 3pt QoQ.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENTERPRISE SPINE -->
+          <div class="panel mb-24" style="background:linear-gradient(180deg,#fff,var(--surface-2))">
+            <div class="panel-head">
+              <div class="ph-icon">⎔</div>
+              <div>
+                <div class="panel-title">The Enterprise Spine</div>
+                <div class="panel-sub">The connected graph model that fuses lifecycles and breaks data silos</div>
+              </div>
+            </div>
+            <div class="panel-body" style="padding:24px 20px">
+              <div class="spine-visual">
+                <div class="spine-node"><div class="sn-icon">🏛️</div><div class="sn-lbl">Account</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">📄</div><div class="sn-lbl">Contract</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">🎯</div><div class="sn-lbl">Pursuit</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">🏗️</div><div class="sn-lbl">Project</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">👤</div><div class="sn-lbl">Employee</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">₹</div><div class="sn-lbl">Financial</div></div>
+                <div class="spine-edge">→</div>
+                <div class="spine-node"><div class="sn-icon">⚡</div><div class="sn-lbl">Skill</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feed header -->
+          <div class="narrative-block" style="max-width:100%;margin-bottom:20px">
+            These are <b>cross-pillar pressure points</b> — signals that span multiple systems and entity types. Each card connects data from Salesforce CRM, Zoho PSA, Darwinbox, and Tally to surface risks that no single tool sees alone.
+          </div>
+          <div class="flex items-center justify-between mb-12">
+            <div class="section-label" style="margin:0">Intelligence Feed <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— 11 pressure points, prioritised</span></div>
+            <div class="filters">
+              <button class="fpill active">All <span class="cnt">11</span></button>
+              <button class="fpill">Critical <span class="cnt">4</span></button>
+              <button class="fpill">Financial <span class="cnt">5</span></button>
+              <button class="fpill">Delivery <span class="cnt">3</span></button>
+              <button class="fpill">People <span class="cnt">3</span></button>
+            </div>
+          </div>
+
+          <!-- SIGNATURE COMPOSITE CARD -->
+          <div class="composite-card mb-16">
+            <div style="padding:18px 20px 18px 22px">
+              <div class="flex items-center gap-10 mb-12 wrap">
+                <span class="badge b-composite"><span class="bd"></span>Cross-Pillar Composite</span>
+                <span class="signal crit" style="display:inline-flex;align-items:center;gap:5px">3 risks converging</span>
+                <span class="countdown urgent">⏱ 18 days to renewal</span>
+                <span class="composite-text mono" style="margin-left:auto;font-size:11px;font-weight:600">SIGNAL · MERIDIAN-7741</span>
+              </div>
+
+              <div class="flex items-center gap-12 mb-12 wrap">
+                <div class="entity">
+                  <div class="logo" style="background:linear-gradient(135deg,#2563a8,#3a2f7a)">MR</div>
+                  <div>
+                    <div class="fc-entity" style="font-size:18px">Meridian Retail Group</div>
+                    <div class="e-sub">Retail · USA · Active → Renewal · Account: Priya Nair</div>
+                  </div>
+                </div>
+                <div style="margin-left:auto;text-align:right">
+                  <div class="stake"><span class="sk-l">Total revenue at stake</span><span class="sk-v crit" style="font-size:22px">₹14.2 Cr</span></div>
+                </div>
+              </div>
+
+              <p class="fc-summary mb-16" style="font-size:13.5px;max-width:680px">
+                Akashic has linked three independent signals on this account. Individually amber — <b>together they read critical.</b>
+                Renewal probability has dropped to <b class="crit-text">54%</b> on a cohort basis as the flagship programme slips and its lead architect shows a high exit signal.
+              </p>
+
+              <div class="composite-legs">
+                <div class="leg">
+                  <div class="leg-pill" style="background:var(--accent-soft);color:var(--accent-2)">Pillar 1 · Client</div>
+                  <div class="leg-title">Contract renewal at risk</div>
+                  <div class="leg-sub">MSA expires <b>22 Jun</b>. No renewal SOW in pipeline. Auto-renew not enabled.</div>
+                </div>
+                <div class="leg-arrow">→</div>
+                <div class="leg">
+                  <div class="leg-pill" style="background:oklch(0.96 0.04 80);color:var(--warn)">Pillar 2 · Project</div>
+                  <div class="leg-title">Delivery slippage</div>
+                  <div class="leg-sub"><b>Orion Rollout</b> 11 days behind, budget 86% used at 64% scope. Margin 14%.</div>
+                </div>
+                <div class="leg-arrow">→</div>
+                <div class="leg">
+                  <div class="leg-pill" style="background:var(--critical-soft);color:var(--critical)">Pillar 3 · Employee</div>
+                  <div class="leg-title">Key-person attrition</div>
+                  <div class="leg-sub"><b>Vikram Rao</b> (Lead Architect) — 88% exit signal, single point of failure on 64% of delivery.</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-10 mt-16 wrap">
+                <a href="ClientProfile.html" class="btn composite">Open Meridian 360 ›</a>
+                <button class="btn" onclick="AK.toast('Assigned to Priya Nair — due in 3 days')">Assign to account owner</button>
+                <button class="btn" onclick="AK.toast('Re-forecast started — revenue model updated')">Re-forecast renewal</button>
+                <a href="Assistant.html" class="btn ghost">Simulate “if we lose this client” ›</a>
+                <span class="audit" style="margin-left:auto"><span class="pop-info">i</span> Composite confidence 0.91 · 3 sources</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- FEED LIST -->
+          <div class="col gap-12" id="feed"></div>
+
+          <button class="btn ghost" style="margin:16px auto 0;display:flex">Show 4 resolved &amp; lower-priority signals</button>
+        </div>
+
+        <!-- RIGHT RAIL -->
+        <aside class="home-rail">
+          <div class="rail-card mb-16">
+            <div class="rail-head"><span class="rail-title">Top 5 Clients by Revenue</span><a class="rail-more" href="Clients.html">All ›</a></div>
+            <div id="rail-clients"></div>
+          </div>
+
+          <div class="rail-card mb-16">
+            <div class="rail-head"><span class="rail-title">Top 3 Projects by Margin Risk</span><a class="rail-more" href="Projects.html">All ›</a></div>
+            <div id="rail-projects"></div>
+          </div>
+
+          <div class="rail-card mb-16">
+            <div class="rail-head"><span class="rail-title">Top 3 by Attrition Risk</span><a class="rail-more" href="Employees.html">All ›</a></div>
+            <div id="rail-people"></div>
+          </div>
+
+          <div class="rail-card">
+            <div class="rail-head"><span class="rail-title">This Week</span></div>
+            <div style="padding:13px 15px" class="col gap-10">
+              <div class="wk-item"><span class="hdot crit"></span><div><b>₹8.6 Cr</b> Hanseatic renewal decision<div class="rail-sub">Due Thu · awaiting your sign-off</div></div></div>
+              <div class="wk-item"><span class="hdot warn"></span><div><b>₹2.4 Cr</b> Northwind receivable 90+ days<div class="rail-sub">Collection call scheduled Wed</div></div></div>
+              <div class="wk-item"><span class="hdot good"></span><div><b>₹5.1 Cr</b> Cobalt Energy expansion SOW<div class="rail-sub">Verbal yes · paperwork in flight</div></div></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+/* ---------- helpers ---------- */
+function spark(points, color, w=84, h=26){
+  const max=Math.max(...points), min=Math.min(...points), rng=(max-min)||1;
+  const step=w/(points.length-1);
+  const pts=points.map((p,i)=>`${(i*step).toFixed(1)},${(h-2-((p-min)/rng)*(h-4)).toFixed(1)}`).join(' ');
+  const last=pts.split(' ').slice(-1)[0].split(',');
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none">
+    <polyline points="${pts}" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${last[0]}" cy="${last[1]}" r="2" fill="${color}"/></svg>`;
+}
+const arrowUp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V7M6 12l6-6 6 6"/></svg>';
+const arrowDn='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v12M6 12l6 6 6-6"/></svg>';
+
+/* ---------- 2026-native pulse tiles ---------- */
+const pulse=[
+  {l:'Revenue Run-Rate',v:'₹142<small> Cr</small>',t:'up',d:'+4.2%',vs:'over',vst:'+₹3.1Cr vs plan',sp:[128,131,130,134,138,142],c:'var(--good)'},
+  {l:'Operating Margin',v:'22.4<small>%</small>',t:'down',d:'−1.1pt',vs:'under',vst:'1.6pt below plan',sp:[25,24.5,24,23.6,23,22.4],c:'var(--critical)'},
+  {l:'Billable Utilization',v:'78.6<small>%</small>',t:'up',d:'+0.8pt',vs:'near',vst:'target 80%',sp:[76,77,76.5,77.5,78,78.6],c:'var(--good)'},
+  {l:'Pipeline Coverage',v:'2.4<small>×</small>',t:'up',d:'+0.2×',vs:'over',vst:'target 2.0×',sp:[2.0,2.1,2.0,2.2,2.3,2.4],c:'var(--good)'},
+  {l:'Cash · DSO',v:'58<small>days</small>',t:'down',d:'+3 days',vs:'under',vst:'target ≤52d',sp:[52,53,54,55,56,58],c:'var(--critical)'},
+  {l:'Bench Cost',v:'₹1.9<small> Cr</small>',t:'down',d:'+12%',vs:'under',vst:'8.1% of cost base',sp:[1.5,1.6,1.6,1.7,1.8,1.9],c:'var(--critical)'},
+  {l:'Rev / Employee',v:'₹7.7<small> L/mo</small>',t:'up',d:'+6.2%',vs:'over',vst:'↑ AI augmentation',sp:[6.8,7.0,7.1,7.3,7.5,7.7],c:'var(--good)'},
+  {l:'Break-even Util.',v:'58<small>%</small>',t:'flat',d:'flat',vs:'over',vst:'healthy < 60%',sp:[57,58,57,58,58,58],c:'var(--good)'},
+];
+document.getElementById('pulse').innerHTML=pulse.map(p=>{
+  const tcls=p.t==='up'?'up':p.t==='down'?'down':'flat';
+  const tico=p.t==='up'?arrowUp:arrowDn;
+  return `<div class="pulse-tile">
+    <div class="pt-label">${p.l} <span class="pop-info" title="Click to open source">i</span></div>
+    <div class="pt-val">${p.v}</div>
+    <div class="pt-foot">
+      <span class="trend ${tcls}">${tico}${p.d}</span>
+      ${spark(p.sp,p.c)}
+    </div>
+    <div style="margin-top:8px"><span class="vs-target ${p.vs}">${p.vst}</span></div>
+  </div>`;
+}).join('');
+
+/* ---------- lifecycle funnels ---------- */
+const portfolioFunnel = [
+  { label: 'Pipeline', count: 12, pct: 15, color: 'var(--accent)' },
+  { label: 'Kickoff', count: 4, pct: 10, color: 'var(--composite)' },
+  { label: 'Active', count: 28, pct: 55, color: 'var(--good)' },
+  { label: 'Closure', count: 8, pct: 20, color: 'var(--ink-faint)' }
+];
+const talentFunnel = [
+  { label: 'Sourcing', count: 18, pct: 10, color: 'var(--accent)' },
+  { label: 'Onboard', count: 24, pct: 15, color: 'var(--composite)' },
+  { label: 'Staffed', count: 210, pct: 65, color: 'var(--good)' },
+  { label: 'Bench', count: 15, pct: 10, color: 'var(--critical)' }
+];
+document.getElementById('portfolio-funnel').innerHTML = `
+  <div class="funnel-bar">${portfolioFunnel.map(f=>`<span style="width:${f.pct}%;background:${f.color}" title="${f.label}: ${f.count} active SOWs"></span>`).join('')}</div>
+  <div class="funnel-legend" style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px">
+    ${portfolioFunnel.map(f=>`<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${f.color};margin-right:4px"></span>${f.label}: <b>${f.count}</b></span>`).join('')}
+  </div>
+`;
+document.getElementById('talent-funnel').innerHTML = `
+  <div class="funnel-bar">${talentFunnel.map(f=>`<span style="width:${f.pct}%;background:${f.color}" title="${f.label}: ${f.count} resources"></span>`).join('')}</div>
+  <div class="funnel-legend" style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px">
+    ${talentFunnel.map(f=>`<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${f.color};margin-right:4px"></span>${f.label}: <b>${f.count}</b></span>`).join('')}
+  </div>
+`;
+
+/* ---------- feed cards ---------- */
+const ICO={open:'open',assign:'assign',flag:'flag',dismiss:'dismiss'};
+const feed=[
+  {u:'crit',sig:'Contract renewal at risk',ent:'Hanseatic Bank',logo:'HB',lc:'#2f6f9e',
+   sub:'Financial · BFSI · Germany · Renewal',days:'21 days',urgent:true,stakeL:'Renewal value',stake:'₹8.6 Cr',
+   txt:'Three-year MSA expires 25 Jun. Sponsor changed in Apr; sentiment on last 2 MoMs trending down. Cohort renewal rate for this profile: 67%.'},
+  {u:'crit',sig:'Receivables aging',ent:'Northwind Insurance',logo:'NW',lc:'#9e5a2f',
+   sub:'Financial · Receivables · UK · Active',days:'90+ days',urgent:true,stakeL:'Overdue',stake:'₹2.4 Cr',
+   txt:'₹2.4 Cr crossed 90 days across 3 invoices. Collection risk scored medium-high. Suggested: escalate to CFO + dunning notice.'},
+  {u:'warn',sig:'Project cost overrun',ent:'Sundara Logistics · Atlas Migration',logo:'SL',lc:'#3a7a55',
+   sub:'Delivery · Project · Lead: A. Krishnan',days:'forecast',urgent:false,stakeL:'Predicted overrun',stake:'₹62 L',
+   txt:'Burn trajectory implies ₹62 L overrun before P&L hit. Budget 78% used at 61% milestones. Confidence 0.84.'},
+  {u:'warn',sig:'Key-person attrition risk',ent:'Brightwater Utilities',logo:'BW',lc:'#2f7a8e',
+   sub:'People · Utilities · UK · Active',days:'watch',urgent:false,stakeL:'Delivery exposure',stake:'₹4.1 Cr',
+   txt:'Lead data engineer flagged 76% exit signal; covers 2 critical workstreams with no shadow. Single point of failure.'},
+  {u:'warn',sig:'Concentration risk alert',ent:'Portfolio · Top-3 clients',logo:'∑',lc:'#5a4f9e',
+   sub:'Financial · Strategic · CEO view',days:'monitor',urgent:false,stakeL:'Share of ARR',stake:'31%',
+   txt:'Top-3 clients now 31% of ARR (Meridian 11%, Hanseatic 9%, Cobalt 7%). Above 30% board threshold — diversification advised.'},
+  {u:'good',sig:'Bench aging',ent:'Data Engineering pod',logo:'DE',lc:'#666',
+   sub:'People · Resource · 6 people',days:'34 days avg',urgent:false,stakeL:'Idle cost',stake:'₹38 L',
+   txt:'6 engineers un-billable 34 days avg. Skills match 2 pipeline pursuits (Cobalt expansion, Indus data platform). Redeploy suggested.'},
+  {u:'good',sig:'SLA breach signal',ent:'Vermillion Health · Helix',logo:'VH',lc:'#a23f6a',
+   sub:'Delivery · Project · Managed Services',days:'this month',urgent:false,stakeL:'Penalty exposure',stake:'₹12 L',
+   txt:'Uptime 99.2% vs 99.5% SLA this month. One more incident triggers penalty clause. Ops notified, RCA in progress.'},
+];
+function fcard(c){
+  return `<div class="feed-card u-${c.u}">
+    <div>
+      <div class="fc-top">
+        <span class="signal ${c.u}">${c.sig}</span>
+        <span class="countdown ${c.urgent?'urgent':''}">⏱ ${c.days}</span>
+      </div>
+      <div class="flex items-center gap-10 mb-8 wrap">
+        <div class="entity">
+          <div class="logo" style="background:${c.lc};width:26px;height:26px;font-size:11px">${c.logo}</div>
+          <div><div class="fc-entity" style="font-size:15px">${c.ent}</div><div class="e-sub">${c.sub}</div></div>
+        </div>
+      </div>
+      <div class="fc-summary">${c.txt}</div>
+      <div class="fc-meta">
+        <div class="stake"><span class="sk-l">${c.stakeL}</span><span class="sk-v ${c.u==='crit'?'crit':''}">${c.stake}</span></div>
+        <span class="conf hi"><span class="cbar"><i style="width:84%"></i></span>0.84</span>
+      </div>
+    </div>
+    <div class="fc-actions">
+      <div class="fc-quick">
+        <button class="qbtn" title="Assign to person" onclick="AK.toast('Assign — pick a person')">${AK.icon('assign')}</button>
+        <button class="qbtn" title="Flag for follow-up" onclick="AK.toast('Flagged for follow-up')">${AK.icon('flag')}</button>
+        <button class="qbtn" title="Dismiss" onclick="AK.toast('Signal dismissed')">${AK.icon('dismiss')}</button>
+      </div>
+      <a class="btn sm" href="${c.sub.includes('People')?'Employees.html':c.sub.includes('Project')?'Projects.html':'ClientProfile.html'}">Open ${AK.icon('open')}</a>
+    </div>
+  </div>`;
+}
+
+window.filterFeed = function(cat) {
+  document.querySelectorAll('.filters .fpill').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim().startsWith(cat));
+  });
+  
+  let filtered = feed;
+  if (cat === 'Critical') {
+    filtered = feed.filter(f => f.u === 'crit');
+  } else if (cat === 'Financial') {
+    filtered = feed.filter(f => f.sub.includes('Financial') || f.sub.includes('Receivables') || f.sig.includes('receivable') || f.sig.includes('overrun'));
+  } else if (cat === 'Delivery') {
+    filtered = feed.filter(f => f.sub.includes('Delivery') || f.sub.includes('Project') || f.sig.includes('overrun') || f.sig.includes('SLA'));
+  } else if (cat === 'People') {
+    filtered = feed.filter(f => f.sub.includes('People') || f.sub.includes('Resource') || f.sig.includes('attrition') || f.sig.includes('Bench'));
+  }
+  
+  document.getElementById('feed').innerHTML = filtered.map(fcard).join('');
+};
+
+// Persona setup
+function setupPersona() {
+  const p = AK.getPersona();
+  const title = document.querySelector('.page-title');
+  if (title) {
+    if (p === 'cfo') title.innerHTML = 'Good morning, Devika.';
+    else if (p === 'dh') title.innerHTML = 'Good morning, Karthik.';
+    else title.innerHTML = 'Good morning, Arjun.';
+  }
+  
+  const briefText = document.querySelector('.ai-brief span:nth-child(2)');
+  if (briefText) {
+    if (p === 'cfo') {
+      briefText.innerHTML = '<b>Revenue is growing but margin pressure is real.</b> DSO spiked to 58 days. ₹3.4 Cr in unbilled milestones detected. Your break-even utilization is healthy at 58%, but receivables at Northwind need attention.';
+    } else if (p === 'dh') {
+      briefText.innerHTML = '<b>The delivery portfolio is in transition.</b> Orion Rollout is 11 days behind and Vikram Rao shows a critical exit signal (88%). AI-augmented teams are delivering 18% more margin — staffing changes advised.';
+    } else {
+      briefText.innerHTML = '<b>Your portfolio is in a growth-to-efficiency transition.</b> Revenue per employee is improving, but the business model mix is shifting toward managed services to counter renewal risks. 3 accounts need immediate attention.';
+    }
+  }
+  
+  // Connect feed filtering to active persona
+  if (p === 'cfo') filterFeed('Financial');
+  else if (p === 'dh') filterFeed('Delivery');
+  else filterFeed('All');
+}
+
+// Wire up filters UI buttons
+document.querySelectorAll('.filters .fpill').forEach(btn => {
+  const txt = btn.textContent.trim().split(' ')[0];
+  btn.onclick = () => filterFeed(txt);
+});
+
+setupPersona();
+
+/* ---------- rails ---------- */
+const railClients=[
+  ['Meridian Retail','Retail · USA','₹14.2 Cr','crit',[12,12.5,13,13.4,14,14.2]],
+  ['Hanseatic Bank','BFSI · DE','₹11.8 Cr','warn',[11.2,11.4,11.5,11.6,11.7,11.8]],
+  ['Cobalt Energy','Energy · IN','₹9.3 Cr','good',[7.8,8.1,8.5,8.8,9.0,9.3]],
+  ['Indus Pharma','Pharma · IN','₹7.1 Cr','good',[6.6,6.7,6.8,6.9,7.0,7.1]],
+  ['Northwind Insurance','Insurance · UK','₹6.4 Cr','warn',[6.6,6.5,6.5,6.4,6.4,6.4]],
+];
+document.getElementById('rail-clients').innerHTML=railClients.map((c,i)=>`
+  <a class="rail-item" href="ClientProfile.html">
+    <span class="rail-rank">${i+1}</span><span class="hdot ${c[3]}"></span>
+    <div><div class="rail-name">${c[0]}</div><div class="rail-sub">${c[1]}</div></div>
+    <div class="rail-val"><div class="v">${c[2]}</div>${spark(c[4],'var(--ink-faint)',54,18)}</div>
+  </a>`).join('');
+
+const railProjects=[
+  ['Atlas Migration','Sundara Logistics','9%','crit'],
+  ['Helix Platform','Vermillion Health','12%','warn'],
+  ['Orion Rollout','Meridian Retail','14%','warn'],
+];
+document.getElementById('rail-projects').innerHTML=railProjects.map((p,i)=>`
+  <a class="rail-item" href="Projects.html">
+    <span class="rail-rank">${i+1}</span><span class="hdot ${p[3]}"></span>
+    <div><div class="rail-name">${p[0]}</div><div class="rail-sub">${p[1]}</div></div>
+    <div class="rail-val"><div class="v ${p[3]==='crit'?'crit-text':'warn-text'}">${p[2]}</div><div class="s">margin</div></div>
+  </a>`).join('');
+
+const railPeople=[
+  ['Vikram Rao','Lead Architect · Meridian','88%','crit'],
+  ['Ananya Krishnan','Delivery Lead · Sundara','76%','warn'],
+  ['Rahul Sethi','Data Engineer · Brightwater','71%','warn'],
+];
+document.getElementById('rail-people').innerHTML=railPeople.map((p,i)=>`
+  <a class="rail-item" href="Employees.html">
+    <span class="rail-rank">${i+1}</span><span class="avatar sm gray">${p[0].split(' ').map(x=>x[0]).join('')}</span>
+    <div><div class="rail-name">${p[0]}</div><div class="rail-sub">${p[1]}</div></div>
+    <div class="rail-val"><div class="v ${p[3]==='crit'?'crit-text':'warn-text'}">${p[2]}</div><div class="s">exit risk</div></div>
+  </a>`).join('');
+</script>
+
+<style>
+/* page-local */
+.ai-brief{display:flex;align-items:flex-start;gap:10px;max-width:760px;margin-top:12px;font-size:14px;color:var(--ink-2);line-height:1.6;}
+.ai-brief b{color:var(--ink);font-weight:700;}
+.ai-brief-dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:0 0 auto;background:linear-gradient(135deg,var(--accent),var(--composite));box-shadow:0 0 0 4px var(--accent-soft);}
+.ai-brief-link{flex:0 0 auto;font-weight:600;white-space:nowrap;}
+.home-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+.home-rail{position:sticky;top:80px;}
+.composite-legs{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:12px;}
+.leg{background:var(--surface);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;}
+.leg-pill{display:inline-block;font-size:10px;font-weight:700;font-family:var(--mono);letter-spacing:0.03em;padding:2px 7px;border-radius:5px;margin-bottom:7px;}
+.spine-visual{display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
+.spine-node{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;}
+.sn-icon{width:46px;height:46px;border-radius:12px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.sn-lbl{font-size:11.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:0.06em;}
+.spine-edge{color:var(--line-strong);font-weight:800;font-size:18px;}
+.leg-title{font-weight:700;font-size:13px;margin-bottom:3px;}
+.leg-sub{font-size:11.5px;color:var(--ink-3);line-height:1.45;}
+.leg-arrow{align-self:center;color:var(--composite);font-weight:700;font-size:16px;}
+.rail-more{margin-left:auto;font-size:11.5px;font-weight:600;}
+.wk-item{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;}
+.wk-item b{font-variant-numeric:tabular-nums;}
+
+/* Funnels */
+.funnel-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 2px oklch(0 0 0 / 0.05);
+}
+.funnel-bar > span {
+  display: block;
+  height: 100%;
+  transition: all 0.3s;
+}
+
+@media (max-width:1180px){.composite-legs{grid-template-columns:1fr;}.leg-arrow{display:none;}.home-grid{grid-template-columns:1fr;}}
+</style>
+</body>
+</html>

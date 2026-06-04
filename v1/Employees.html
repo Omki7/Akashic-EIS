@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Employee Lifecycle</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="employees" data-persona="ceo" data-crumb="Employees / Lifecycle" data-decisions="true"
+      data-entitytype="employee" data-entityid="" data-entityname="People Portfolio">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Employee Lifecycle">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Pillar 3 · Employee — the cross-pillar people lens</div>
+            <h1 class="page-title">Employee Lifecycle</h1>
+            <div class="page-sub">People as a business asset — not an HRMS. Value, risk and deployment across the client–project spine.</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">All practices ▾</button>
+            <button class="btn sm">Headcount 1,840 ▾</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative-block">
+        The linear "more people = more revenue" model is breaking. Your best margin now comes from <b>AI-augmented teams</b>, not headcount growth. Revenue per employee is up 6.2% YoY while headcount grew only 2%. Below is the people portfolio through that lens. <span class="nar-systems">Darwinbox + Zoho PSA + SAP ERP</span>
+      </div>
+
+      <!-- TOP TILES -->
+      <div class="tiles-4 mb-24">
+        <div class="card card-pad"><div class="t4-l">Headcount</div><div class="t4-v">1,840</div><div class="t4-f muted">+42 net QoQ</div></div>
+        <div class="card card-pad"><div class="t4-l">Billable Utilization</div><div class="t4-v good-text">78.6%</div><div class="t4-f muted">1,446 billable · target 80%</div></div>
+        <div class="card card-pad"><div class="t4-l">Rev / Employee</div><div class="t4-v" style="color:var(--accent)">₹7.7<small style="font-size:14px;color:var(--ink-3)"> L/mo</small></div><div class="t4-f"><span class="trend up">▴ 6.2%</span> <span class="faint">AI leverage ↑</span></div></div>
+        <div class="card card-pad"><div class="t4-l">Attrition (TTM)</div><div class="t4-v crit-text">16.8%</div><div class="t4-f"><span class="trend up" style="color:var(--critical)">▴ 2.1pt</span> <span class="faint">· 11 key-person risks</span></div></div>
+      </div>
+
+      <!-- ATTRITION HEATMAP (practice x seniority) -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon">A</div>
+          <div><div class="panel-title">Attrition Risk Heatmap</div><div class="panel-sub">Practice × seniority · darker = higher modelled exit probability</div></div>
+          <div class="seg-toggle" style="margin-left:auto"><button class="seg active">By seniority</button><button class="seg">By account exposure</button></div>
+        </div>
+        <div class="panel-body">
+          <div class="attr-heat-wrap"><div class="attr-heat" id="attrheat"></div></div>
+          <div class="flex items-center gap-10 mt-12 fs-11 faint"><span>Lower risk</span><div class="heat-scale"></div><span>Higher risk</span><span style="margin-left:auto">Cells show % at elevated exit risk</span></div>
+        </div>
+      </div>
+
+      <!-- ROW: key-person dependency + utilization distribution -->
+      <div class="emp-two mb-20">
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">K</div><div><div class="panel-title">Key-Person Dependency</div><div class="panel-sub">People whose exit creates delivery or client risk</div></div>
+            <span class="badge b-composite" style="margin-left:auto"><span class="bd"></span>cross-pillar</span>
+          </div>
+          <div class="panel-body col gap-2" id="keyperson"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">U</div><div><div class="panel-title">Utilization Distribution</div><div class="panel-sub">Billable · bench · non-billable overhead</div></div></div>
+          <div class="panel-body">
+            <div class="util-bar mb-16" id="utilbar"></div>
+            <div class="util-hist" id="utilhist"></div>
+            <div class="flex justify-between mono faint fs-11 mt-6"><span>0%</span><span>50%</span><span>100%</span></div>
+            <div class="fs-12 muted mt-8">Distribution of individual utilization. <b class="warn-text">312 people</b> below 60% target.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VALUE PER PERSON -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon">₹</div>
+          <div><div class="panel-title">Value-per-Person</div><div class="panel-sub">Revenue &amp; margin attributable per employee — not just billable hours</div></div>
+          <button class="btn sm" style="margin-left:auto">Sort: Margin contribution ▾</button>
+        </div>
+        <div class="scroll-x">
+          <table class="tbl" id="vpp"><thead><tr>
+            <th>Employee</th><th>Practice</th><th class="r">Revenue / yr</th><th class="r">Margin contrib.</th><th class="r">Cost</th><th>Util</th><th>Attrition</th><th>Accounts</th>
+          </tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <!-- AI LEVERAGE INDEX -->
+      <div class="panel mb-24">
+        <div class="panel-head">
+          <div class="ph-icon">⚡</div>
+          <div><div class="panel-title">AI Leverage Index</div><div class="panel-sub">The headcount-revenue link is breaking. Output and margin per person by AI augmentation level.</div></div>
+          <span class="badge b-active" style="margin-left:auto"><span class="bd"></span>2026 Forward Metric</span>
+        </div>
+        <div class="panel-body">
+          <div class="narrative-block" style="margin-bottom:16px;border-left-color:var(--good)">
+            Output per person <b>↑ 18% YoY</b> while headcount grew only 2%. AI-augmented roles deliver <b>34% more margin contribution</b> than traditional roles at the same seniority. The firms that win on revenue-per-employee in 2026 aren't hiring slower — they're leveraging automation.
+          </div>
+          <div class="ai-leverage-grid" id="ai-leverage"></div>
+        </div>
+      </div>
+
+      <!-- ROW: skill inventory vs demand + hire-to-deploy -->
+      <div class="emp-two mb-8">
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">S</div><div><div class="panel-title">Skill Inventory vs Pipeline Demand</div><div class="panel-sub">Supply on bench vs upcoming pursuit needs</div></div></div>
+          <div class="panel-body col gap-12" id="skillinv"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div class="ph-icon">H</div><div><div class="panel-title">Hire-to-Deploy Health</div><div class="panel-sub">Pipeline velocity from offer to billable</div></div>
+            <span class="panel-tag">avg <b>38 days</b></span>
+          </div>
+          <div class="panel-body">
+            <div class="funnel" id="funnel"></div>
+            <div class="divider"></div>
+            <div class="kv-mini">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)"><span class="muted">Offer → join</span><b class="mono">21 days</b></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)"><span class="muted">Join → deploy</span><b class="mono warn-text">17 days <span class="faint">(target 10)</span></b></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0"><span class="muted">Offer-decline rate</span><b class="mono">12%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+/* attrition heatmap practice x seniority */
+const practices=['Data &amp; AI','Cloud &amp; Infra','Enterprise Apps','Digital / UX','QA &amp; Testing','Cybersecurity'];
+const sen=['Junior','Mid','Senior','Lead','Principal'];
+const matrix=[ // % at elevated risk
+ [28,34,22,12,8],[24,30,18,10,6],[18,26,20,14,9],[32,38,26,16,7],[36,30,15,9,5],[14,22,28,18,11]
+];
+function heatColor(v){const t=Math.min(v/40,1);return `oklch(${0.96-t*0.36} ${0.03+t*0.13} 25)`;}
+let h='<div class="ah-corner"></div>'+sen.map(s=>`<div class="ah-col-head">${s}</div>`).join('');
+practices.forEach((p,i)=>{h+=`<div class="ah-row-head">${p}</div>`;matrix[i].forEach(v=>{const dark=v>26;h+=`<div class="ah-cell" style="background:${heatColor(v)};color:${dark?'#fff':'var(--ink-2)'}" title="${v}% at elevated risk">${v}</div>`;});});
+$('#attrheat').innerHTML=h;
+
+/* key person */
+const keyp=[
+  ['Vikram Rao','Lead Architect · Data &amp; AI',88,'crit','SPOF on 64% of Meridian delivery · ₹14.2 Cr account',true],
+  ['Ananya Krishnan','Delivery Lead · Cloud',76,'warn','Sole owner of Sundara + 2 pursuits',false],
+  ['Rahul Sethi','Sr Data Engineer',71,'warn','Covers Brightwater SCADA, no shadow',true],
+  ['Meera Nair','SAP Principal',64,'warn','Only S/4 HANA lead · blocks Indus pursuit',false],
+  ['Lena Fischer','Onsite Coord · Dallas',58,'warn','Single onsite presence at Meridian',false],
+];
+$('#keyperson').innerHTML=keyp.map(k=>`<div class="kp-row">
+  ${AK.avatar(k[0],'sm')}
+  <div style="flex:1;min-width:0"><div class="flex items-center gap-6"><b class="fs-13">${k[0]}</b>${k[5]?'<span class="spof">⚑ SPOF</span>':''}</div><div class="exp-role">${k[1]}</div><div class="kp-risk">${k[4]}</div></div>
+  <div style="text-align:right;flex:0 0 auto"><div class="mono strong ${k[3]==='crit'?'crit-text':'warn-text'}" style="font-size:15px">${k[2]}%</div><div class="fs-11 faint">exit risk</div></div>
+</div>`).join('');
+
+/* utilization stacked + histogram */
+$('#utilbar').innerHTML='<div class="stackbar" style="height:34px"><span style="width:78.6%;background:var(--good)">Billable 78.6%</span><span style="width:11.2%;background:var(--warn)">Bench 11.2%</span><span style="width:10.2%;background:var(--ink-3)">Overhead 10.2%</span></div>';
+const hist=[4,9,16,26,38,52,68,82,74,46];
+const hmax=Math.max(...hist);
+$('#utilhist').innerHTML='<div style="display:flex;align-items:flex-end;gap:5px;height:90px">'+hist.map((v,i)=>{const below=i<6;return `<div style="flex:1;background:${below?'var(--warn-line)':'var(--accent)'};border-radius:3px 3px 0 0;height:${v/hmax*100}%" title="${v} people"></div>`;}).join('')+'</div>';
+
+/* value per person */
+const vpp=[
+  ['Vikram Rao','Data &amp; AI','₹1.84 Cr','₹62 L','₹38 L',96,'crit'],
+  ['Meera Nair','Enterprise Apps','₹1.62 Cr','₹58 L','₹34 L',91,'warn'],
+  ['Sneha Pillai','Cloud','₹1.41 Cr','₹54 L','₹29 L',88,'good'],
+  ['Imran Qureshi','Data &amp; AI','₹1.38 Cr','₹49 L','₹31 L',92,'warn'],
+  ['Lena Fischer','Digital','₹1.22 Cr','₹41 L','₹27 L',80,'good'],
+  ['Arjun Bhat','QA','₹0.94 Cr','₹33 L','₹19 L',74,'good'],
+];
+$('#vpp tbody').innerHTML=vpp.map(v=>`<tr class="row-click">
+  <td><div class="entity">${AK.avatar(v[0],'sm')}<a href="EmployeeProfile.html" class="e-name accent-text">${v[0]}</a></div></td>
+  <td class="cell-sub" style="color:var(--ink-2)">${v[1]}</td>
+  <td class="r cell-mono cell-strong">${v[2]}</td>
+  <td class="r cell-mono good-text strong">${v[3]}</td>
+  <td class="r cell-mono muted">${v[4]}</td>
+  <td style="min-width:90px"><div class="flex items-center gap-6"><span class="cell-mono fs-12">${v[5]}%</span><div class="meter ${v[5]>90?'warn':'good'}" style="width:44px"><i style="width:${v[5]}%"></i></div></div></td>
+  <td><span class="hdot ${v[6]}"></span></td>
+  <td class="cell-sub">${Math.ceil(Math.random()*2)+1}</td>
+</tr>`).join('');
+
+/* AI Leverage Index visualization */
+const aiLeverage = [
+  { role: 'AI-Augmented Engineers', count: 280, margin: '₹68 L', revPer: '₹9.4 L/mo', pct: 94, color: 'var(--good)' },
+  { role: 'Traditional Delivery', count: 890, margin: '₹51 L', revPer: '₹7.2 L/mo', pct: 72, color: 'var(--accent)' },
+  { role: 'Support & Managed Svcs', count: 420, margin: '₹42 L', revPer: '₹6.1 L/mo', pct: 61, color: 'var(--composite)' },
+  { role: 'Bench / Onboarding', count: 250, margin: '₹0', revPer: '₹0', pct: 0, color: 'var(--ink-faint)' },
+];
+const alEl = document.getElementById('ai-leverage');
+if (alEl) alEl.innerHTML = `<div class="col gap-12">${aiLeverage.map(a => `
+  <div class="flex items-center gap-14">
+    <div style="flex:0 0 200px"><b class="fs-13">${a.role}</b><div class="fs-12 muted">${a.count} people</div></div>
+    <div style="flex:1"><div class="meter" style="height:10px;border-radius:6px"><i style="width:${a.pct}%;background:${a.color};border-radius:6px"></i></div></div>
+    <div style="flex:0 0 80px;text-align:right" class="mono strong">${a.revPer}</div>
+    <div style="flex:0 0 60px;text-align:right" class="mono good-text strong">${a.margin}</div>
+  </div>
+`).join('')}
+  <div class="flex items-center gap-14 fs-11 faint mt-4">
+    <div style="flex:0 0 200px">Category</div>
+    <div style="flex:1">Relative margin contribution</div>
+    <div style="flex:0 0 80px;text-align:right">Rev / person</div>
+    <div style="flex:0 0 60px;text-align:right">Avg margin</div>
+  </div>
+</div>`;
+
+/* skill inventory */
+const skill=[['Data Engineering (Spark/Snowflake)',14,22],['GenAI / LLM Ops',6,18],['SAP S/4 HANA',3,9],['Cloud Security (OT)',5,12],['React / Front-end',58,40]];
+$('#skillinv').innerHTML=skill.map(s=>{const gap=s[1]-s[2];const surplus=gap>=0;return `<div class="skill-row">
+  <div class="flex items-center justify-between mb-4"><b class="fs-13">${s[0]}</b><span class="badge ${surplus?'b-active':'b-risk'}" style="padding:0 7px;font-size:10px"><span class="bd"></span>${surplus?'+'+gap+' surplus':gap+' gap'}</span></div>
+  <div class="flex items-center gap-8 mt-4"><span class="fs-11 faint" style="flex:0 0 96px">have ${s[1]} · need ${s[2]}</span><div class="dual-bar"><div class="db-have" style="width:${Math.min(s[1]/Math.max(s[1],s[2])*100,100)}%"></div><div class="db-need" style="width:${Math.min(s[2]/Math.max(s[1],s[2])*100,100)}%"></div></div></div>
+</div>`;}).join('');
+
+/* funnel */
+const funnel=[['Offers out',64,'var(--accent)'],['Accepted',56,'var(--composite)'],['Joined',49,'var(--good)'],['Deployed',41,'var(--ink-3)']];
+const fmax=64;
+$('#funnel').innerHTML=funnel.map(f=>`<div class="fn-row"><span class="fn-l">${f[0]}</span><div class="fn-track"><div class="fn-bar" style="width:${f[1]/fmax*100}%;background:${f[2]}">${f[1]}</div></div></div>`).join('');
+</script>
+
+<style>
+.tiles-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.t4-l{font-size:12px;color:var(--ink-3);font-weight:600;}
+.t4-v{font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-top:5px;font-variant-numeric:tabular-nums;}
+.t4-f{font-size:11.5px;margin-top:5px;}
+.emp-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.attr-heat-wrap{overflow-x:auto;}
+.attr-heat{display:grid;grid-template-columns:150px repeat(5,1fr);gap:5px;min-width:560px;}
+.ah-corner{}.ah-col-head{text-align:center;font-size:11px;font-weight:700;color:var(--ink-3);padding-bottom:3px;}
+.ah-row-head{font-size:12px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;}
+.ah-cell{border-radius:6px;height:40px;display:grid;place-items:center;font-size:13px;font-weight:700;font-family:var(--mono);}
+.heat-scale{width:120px;height:8px;border-radius:5px;background:linear-gradient(90deg,oklch(0.96 0.03 25),oklch(0.55 0.18 25));}
+.kp-row{display:flex;align-items:flex-start;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line);}
+.kp-row:last-child{border-bottom:0;}
+.kp-risk{font-size:11.5px;color:var(--ink-3);margin-top:3px;line-height:1.4;}
+.util-hist{}
+.dual-bar{flex:1;display:flex;flex-direction:column;gap:3px;}
+.db-have{height:7px;border-radius:4px;background:var(--good);}
+.db-need{height:7px;border-radius:4px;background:var(--accent-line);}
+.fn-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.fn-l{flex:0 0 84px;font-size:12.5px;font-weight:600;color:var(--ink-2);}
+.fn-track{flex:1;}
+.fn-bar{height:26px;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-weight:700;font-family:var(--mono);font-size:12px;min-width:30px;}
+.skill-row{padding-bottom:11px;border-bottom:1px solid var(--line);}.skill-row:last-child{border-bottom:0;padding-bottom:0;}
+.ai-leverage-grid{}
+@media (max-width:1100px){.emp-two{grid-template-columns:1fr;}.tiles-4{grid-template-columns:repeat(2,1fr);}}
+</style>
+</body>
+</html>
