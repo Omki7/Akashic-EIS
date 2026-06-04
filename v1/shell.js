@@ -82,7 +82,7 @@
   /* ---- Navigation ---- */
   const NAV_PRIMARY = [
     { id:'home',      label:'Home',         ico:'home',      href:'Home.html' },
-    { id:'assistant', label:'AI Assistant', ico:'ai',        href:'Assistant.html' },
+    { id:'assistant', label:'Ask Akashic',  ico:'ai',        href:'Assistant.html' },
     { id:'approvals', label:'Approvals',    ico:'approvals', href:'Approvals.html', badge:'5', alert:true },
   ];
   const NAV_PILLARS = [
@@ -126,7 +126,11 @@
     </div>
     <div class="nav-group">
       <div class="nav-label">Pillars</div>
-      ${NAV_PILLARS.map(n=>navItem(n,screen)).join('')}
+      ${NAV_PILLARS.filter(n => {
+        if (persona === 'cfo' && n.id === 'employees') return false;
+        if (persona === 'dh' && n.id === 'financials') return false;
+        return true;
+      }).map(n=>navItem(n,screen)).join('')}
     </div>
     <div class="nav-group">
       <div class="nav-label">Trust Layer</div>
@@ -143,7 +147,7 @@
       </div>
     </div>
     <div class="sidebar-foot">
-      <div class="user-chip">
+      <div class="user-chip" onclick="AK.toggleUserMenu(event)">
         <div class="avatar">${u.init}</div>
         <div style="min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.2">${u.name}</div>
           <div style="font-size:11px;color:var(--ink-3)">${u.role}</div></div>
@@ -153,9 +157,6 @@
   }
 
   function buildTopbar(screen, persona, crumb) {
-    const personaBtns = PERSONAS.map(p=>
-      `<button class="persona-opt ${persona===p.id?'active':''}" onclick="AK.setPersona('${p.id}')">
-        <span class="persona-dot" style="color:${p.color}"></span>${p.label}</button>`).join('');
     const crumbHtml = (crumb||'').split('/').map((c,i,a)=>{
       const last=i===a.length-1;
       return `${i>0?'<span class="sep">›</span>':''}${last?`<b>${c.trim()}</b>`:`<span>${c.trim()}</span>`}`;
@@ -166,10 +167,8 @@
       ${icon('search','')} <span class="tsq-text">Search anything…</span><span class="kbd">⌘K</span>
     </button>
     <div class="topbar-spacer"></div>
-    <div class="persona-switch" title="Persona-aware RBAC views">${personaBtns}</div>
-    <button class="icon-btn" title="AI briefing" onclick="location.href='Assistant.html'">${icon('bolt')}</button>
     <button class="icon-btn" id="notif-btn" title="Notifications" onclick="AK.toggleNotifs()">
-      <span class="dot"></span>${icon('bell')}</button>`;
+      <span class="dot"></span>${icon('bell')} <span>Notifications</span></button>`;
   }
 
   /* ---- Decisions bar — context-aware, wired to composer ---- */
@@ -208,7 +207,7 @@
     { type:'nav',    label:'Projects',               hint:'Health dashboard',    href:'Projects.html' },
     { type:'nav',    label:'Financials',             hint:'CFO view',            href:'Financials.html' },
     { type:'nav',    label:'Employees',              hint:'People lens',         href:'Employees.html' },
-    { type:'nav',    label:'AI Assistant',           hint:'Ask Akashic',         href:'Assistant.html' },
+    { type:'nav',    label:'Ask Akashic',            hint:'AI Assistant',        href:'Assistant.html' },
     { type:'nav',    label:'Approvals',              hint:'Pending actions',     href:'Approvals.html' },
     { type:'nav',    label:'Documents',              hint:'Validation queue',    href:'Documents.html' },
     { type:'action', label:'Raise milestone invoice',hint:'Billing → Tally',     action:'RAISE_INVOICE' },
@@ -333,6 +332,78 @@
     closeNotifs(); toggleNotifs();
   }
 
+  /* ---- User / Persona menu popover ---- */
+  let _userMenuOpen = false;
+  function toggleUserMenu(e) {
+    if (e) e.stopPropagation();
+    if (_userMenuOpen) { closeUserMenu(); return; }
+    closeUserMenu();
+
+    const panel = document.createElement('div');
+    panel.id = 'ak-user-menu';
+    panel.style.cssText = 'position:fixed;bottom:70px;left:14px;width:224px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:450;overflow:hidden;padding:6px 0;display:flex;flex-direction:column;gap:2px';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'padding:6px 12px;font-size:10px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.05em';
+    title.innerText = 'Switch Role / Persona';
+    panel.appendChild(title);
+
+    const activePersona = window.AK.getPersona();
+
+    PERSONAS.forEach(p => {
+      const u = PERSONA_USER[p.id];
+      const btn = document.createElement('button');
+      btn.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:none;border:0;width:100%;text-align:left;cursor:pointer;font-family:var(--sans);transition:background .12s;box-sizing:border-box';
+      btn.className = 'user-menu-opt' + (activePersona === p.id ? ' active' : '');
+
+      if (activePersona === p.id) {
+        btn.style.background = 'var(--accent-soft)';
+      }
+
+      btn.innerHTML = `
+        <span class="avatar sm" style="background:${p.color};width:24px;height:24px;font-size:9.5px;color:#fff">${u.init}</span>
+        <div style="min-width:0;flex:1">
+          <div style="font-weight:600;font-size:12.5px;color:var(--ink);line-height:1.2">${u.name}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${u.role}</div>
+        </div>
+        ${activePersona === p.id ? icon('check', 'accent-text') : ''}
+      `;
+
+      btn.onclick = () => {
+        closeUserMenu();
+        window.AK.setPersona(p.id);
+      };
+
+      btn.onmouseenter = () => {
+        if (activePersona !== p.id) btn.style.background = 'var(--hover)';
+      };
+      btn.onmouseleave = () => {
+        if (activePersona !== p.id) btn.style.background = 'none';
+      };
+
+      panel.appendChild(btn);
+    });
+
+    document.body.appendChild(panel);
+    _userMenuOpen = true;
+    setTimeout(() => document.addEventListener('click', _closeUserMenuOutside), 10);
+  }
+
+  function _closeUserMenuOutside(e) {
+    const p = document.getElementById('ak-user-menu');
+    const chip = document.querySelector('.user-chip');
+    if (p && !p.contains(e.target) && (!chip || !chip.contains(e.target))) {
+      closeUserMenu();
+    }
+  }
+
+  function closeUserMenu() {
+    const el = document.getElementById('ak-user-menu');
+    if (el) el.remove();
+    _userMenuOpen = false;
+    document.removeEventListener('click', _closeUserMenuOutside);
+  }
+
   /* ---- Persona switching ---- */
   window.AK.setPersona = function(id) {
     try { localStorage.setItem('ak_persona', id); } catch {}
@@ -360,7 +431,65 @@
   function initShortcuts() {
     document.addEventListener('keydown', e => {
       if ((e.metaKey||e.ctrlKey) && e.key==='k') { e.preventDefault(); openPalette(); }
-      if (e.key==='Escape') { closePalette(); closeNotifs(); }
+      if (e.key==='Escape') { closePalette(); closeNotifs(); closeUserMenu(); }
+    });
+  }
+
+  /* ---- Custom premium tooltips with event delegation ---- */
+  function initTooltips() {
+    document.addEventListener('mouseover', function(e) {
+      const el = e.target.closest('[title], [data-tip], .pop-info');
+      if (!el) return;
+      if (el._customTip) return;
+
+      let text = el.getAttribute('data-tip') || el.getAttribute('title');
+      if (!text && el.classList.contains('pop-info')) {
+        text = el.getAttribute('title') || "Information Details";
+      }
+      if (!text) return;
+
+      if (el.hasAttribute('title')) {
+        el.setAttribute('data-original-title', el.getAttribute('title'));
+        el.removeAttribute('title');
+      }
+
+      const tip = document.createElement('div');
+      tip.className = 'ak-tip';
+      tip.textContent = text;
+      document.body.appendChild(tip);
+
+      const rect = el.getBoundingClientRect();
+      const tipWidth = tip.offsetWidth;
+      let left = rect.left + window.scrollX + (rect.width - tipWidth) / 2;
+      let top = rect.bottom + window.scrollY + 6;
+      
+      if (left < 6) left = 6;
+      if (left + tipWidth > window.innerWidth - 6) left = window.innerWidth - tipWidth - 6;
+      
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+
+      el._customTip = tip;
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      const el = e.target.closest('[data-original-title], [data-tip], .pop-info');
+      if (!el) return;
+      if (e.relatedTarget && el.contains(e.relatedTarget)) return;
+
+      if (el.hasAttribute('data-original-title')) {
+        el.setAttribute('title', el.getAttribute('data-original-title'));
+        el.removeAttribute('data-original-title');
+      }
+
+      if (el._customTip) {
+        el._customTip.remove();
+        el._customTip = null;
+      }
+    });
+
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.ak-tip').forEach(t => t.remove());
     });
   }
 
@@ -444,6 +573,7 @@
 
     injectShellStyles();
     initShortcuts();
+    initTooltips();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
@@ -460,4 +590,5 @@
   window.AK.selectPaletteItem = selectPaletteItem;
   window.AK.toggleNotifs = toggleNotifs;
   window.AK.markAllRead = markAllRead;
+  window.AK.toggleUserMenu = toggleUserMenu;
 })();

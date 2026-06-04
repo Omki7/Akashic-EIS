@@ -188,7 +188,7 @@
                 <button class="btn" onclick="AK.toast('Assigned to Priya Nair — due in 3 days')">Assign to account owner</button>
                 <button class="btn" onclick="AK.toast('Re-forecast started — revenue model updated')">Re-forecast renewal</button>
                 <a href="Assistant.html" class="btn ghost">Simulate “if we lose this client” ›</a>
-                <span class="audit" style="margin-left:auto"><span class="pop-info">i</span> Composite confidence 0.91 · 3 sources</span>
+                <span class="audit" style="margin-left:auto"><span class="pop-info" title="Composite confidence score calculated from client sentiment, delivery progress, and employee attrition risk.">i</span> Composite confidence 0.91 · 3 sources</span>
               </div>
             </div>
           </div>
@@ -252,20 +252,20 @@ const arrowDn='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 
 /* ---------- 2026-native pulse tiles ---------- */
 const pulse=[
-  {l:'Revenue Run-Rate',v:'₹142<small> Cr</small>',t:'up',d:'+4.2%',vs:'over',vst:'+₹3.1Cr vs plan',sp:[128,131,130,134,138,142],c:'var(--good)'},
-  {l:'Operating Margin',v:'22.4<small>%</small>',t:'down',d:'−1.1pt',vs:'under',vst:'1.6pt below plan',sp:[25,24.5,24,23.6,23,22.4],c:'var(--critical)'},
-  {l:'Billable Utilization',v:'78.6<small>%</small>',t:'up',d:'+0.8pt',vs:'near',vst:'target 80%',sp:[76,77,76.5,77.5,78,78.6],c:'var(--good)'},
-  {l:'Pipeline Coverage',v:'2.4<small>×</small>',t:'up',d:'+0.2×',vs:'over',vst:'target 2.0×',sp:[2.0,2.1,2.0,2.2,2.3,2.4],c:'var(--good)'},
-  {l:'Cash · DSO',v:'58<small>days</small>',t:'down',d:'+3 days',vs:'under',vst:'target ≤52d',sp:[52,53,54,55,56,58],c:'var(--critical)'},
-  {l:'Bench Cost',v:'₹1.9<small> Cr</small>',t:'down',d:'+12%',vs:'under',vst:'8.1% of cost base',sp:[1.5,1.6,1.6,1.7,1.8,1.9],c:'var(--critical)'},
-  {l:'Rev / Employee',v:'₹7.7<small> L/mo</small>',t:'up',d:'+6.2%',vs:'over',vst:'↑ AI augmentation',sp:[6.8,7.0,7.1,7.3,7.5,7.7],c:'var(--good)'},
-  {l:'Break-even Util.',v:'58<small>%</small>',t:'flat',d:'flat',vs:'over',vst:'healthy < 60%',sp:[57,58,57,58,58,58],c:'var(--good)'},
+  {l:'Revenue Run-Rate',v:'₹142<small> Cr</small>',t:'up',d:'+4.2%',vs:'over',vst:'+₹3.1Cr vs plan',sp:[128,131,130,134,138,142],c:'var(--good)',desc:'Annualized run-rate revenue based on current active contracts.'},
+  {l:'Operating Margin',v:'22.4<small>%</small>',t:'down',d:'−1.1pt',vs:'under',vst:'1.6pt below plan',sp:[25,24.5,24,23.6,23,22.4],c:'var(--critical)',desc:'Operating profitability margin before tax and corporate allocations.'},
+  {l:'Billable Utilization',v:'78.6<small>%</small>',t:'up',d:'+0.8pt',vs:'near',vst:'target 80%',sp:[76,77,76.5,77.5,78,78.6],c:'var(--good)',desc:'Percentage of billable resource hours logged against active client delivery.'},
+  {l:'Pipeline Coverage',v:'2.4<small>×</small>',t:'up',d:'+0.2×',vs:'over',vst:'target 2.0×',sp:[2.0,2.1,2.0,2.2,2.3,2.4],c:'var(--good)',desc:'Ratio of sales pipeline value to quarterly revenue target.'},
+  {l:'Cash · DSO',v:'58<small>days</small>',t:'down',d:'+3 days',vs:'under',vst:'target ≤52d',sp:[52,53,54,55,56,58],c:'var(--critical)',desc:'Days Sales Outstanding: average days taken to collect customer receivables.'},
+  {l:'Bench Cost',v:'₹1.9<small> Cr</small>',t:'down',d:'+12%',vs:'under',vst:'8.1% of cost base',sp:[1.5,1.6,1.6,1.7,1.8,1.9],c:'var(--critical)',desc:'Monthly cost of unallocated and unbilled delivery resources.'},
+  {l:'Rev / Employee',v:'₹7.7<small> L/mo</small>',t:'up',d:'+6.2%',vs:'over',vst:'↑ AI augmentation',sp:[6.8,7.0,7.1,7.3,7.5,7.7],c:'var(--good)',desc:'Average monthly revenue generated per full-time equivalent employee.'},
+  {l:'Break-even Util.',v:'58<small>%</small>',t:'flat',d:'flat',vs:'over',vst:'healthy < 60%',sp:[57,58,57,58,58,58],c:'var(--good)',desc:'Minimum billable utilization required to cover overall operational costs.'},
 ];
 document.getElementById('pulse').innerHTML=pulse.map(p=>{
   const tcls=p.t==='up'?'up':p.t==='down'?'down':'flat';
   const tico=p.t==='up'?arrowUp:arrowDn;
   return `<div class="pulse-tile">
-    <div class="pt-label">${p.l} <span class="pop-info" title="Click to open source">i</span></div>
+    <div class="pt-label">${p.l} <span class="pop-info" title="${p.desc}">i</span></div>
     <div class="pt-val">${p.v}</div>
     <div class="pt-foot">
       <span class="trend ${tcls}">${tico}${p.d}</span>
@@ -347,9 +347,9 @@ function fcard(c){
     </div>
     <div class="fc-actions">
       <div class="fc-quick">
-        <button class="qbtn" title="Assign to person" onclick="AK.toast('Assign — pick a person')">${AK.icon('assign')}</button>
-        <button class="qbtn" title="Flag for follow-up" onclick="AK.toast('Flagged for follow-up')">${AK.icon('flag')}</button>
-        <button class="qbtn" title="Dismiss" onclick="AK.toast('Signal dismissed')">${AK.icon('dismiss')}</button>
+        <button class="qbtn" title="Assign to person" onclick="AK.toast('Assign — pick a person')">${AK.icon('assign')} <span>Assign</span></button>
+        <button class="qbtn" title="Flag for follow-up" onclick="AK.toast('Flagged for follow-up')">${AK.icon('flag')} <span>Flag</span></button>
+        <button class="qbtn" title="Dismiss" onclick="AK.toast('Signal dismissed')">${AK.icon('dismiss')} <span>Dismiss</span></button>
       </div>
       <a class="btn sm" href="${c.sub.includes('People')?'Employees.html':c.sub.includes('Project')?'Projects.html':'ClientProfile.html'}">Open ${AK.icon('open')}</a>
     </div>
