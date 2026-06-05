@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Plan: Persona-Aware Experience</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  body { background: var(--paper); }
+  .doc {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 48px 100px;
+  }
+  .doc-eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700;
+  }
+  .doc-h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.035em; margin-top: 6px; }
+  .doc-lede { font-size: 16px; color: var(--ink-2); margin-top: 14px; line-height: 1.6; max-width: 760px; }
+  .doc h2 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.025em;
+    margin-top: 56px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .h-num {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-2);
+    border: 1px solid var(--accent-line);
+    padding: 4px 9px; border-radius: 6px;
+  }
+  .doc h3 {
+    font-size: 15px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .doc p, .doc li { font-size: 14px; color: var(--ink-2); line-height: 1.7; }
+  .doc ul { padding-left: 22px; margin: 8px 0; }
+  .doc li { margin-bottom: 4px; }
+  .doc b, .doc strong { color: var(--ink); font-weight: 700; }
+
+  /* Persona cards */
+  .persona-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+  .pcard {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column;
+  }
+  .pcard-head {
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  }
+  .pcard-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); font-weight: 700; }
+  .pcard-name { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; }
+  .pcard-role { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .pcard-bar { height: 3px; }
+  .pcard-bar.ceo { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .pcard-bar.cfo { background: linear-gradient(90deg, var(--composite), var(--composite-2)); }
+  .pcard-bar.dh  { background: linear-gradient(90deg, var(--good), #1f7a52); }
+  .pcard-body { padding: 14px 18px 18px; font-size: 13px; color: var(--ink-2); line-height: 1.55; flex: 1; }
+  .pcard-q { font-style: italic; color: var(--ink); border-left: 2px solid var(--line-2); padding-left: 10px; margin: 10px 0 14px; font-size: 13px; }
+  .pcard h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); margin: 14px 0 6px; }
+  .pcard ul { padding-left: 18px; margin: 0; }
+  .pcard ul li { font-size: 12.5px; margin-bottom: 3px; color: var(--ink-2); }
+
+  /* Dimensions matrix */
+  .matrix {
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--surface);
+    margin-top: 18px;
+  }
+  .matrix table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .matrix th {
+    background: var(--surface-2);
+    text-align: left; padding: 12px 16px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--ink-faint); font-weight: 700;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .matrix td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .matrix tr:last-child td { border-bottom: 0; }
+  .matrix td:first-child { font-weight: 700; color: var(--ink); width: 180px; background: var(--surface-2); }
+  .matrix td b { color: var(--ink); }
+  .matrix .ceo-cell { border-left: 3px solid var(--accent); }
+  .matrix .cfo-cell { border-left: 3px solid var(--composite); }
+  .matrix .dh-cell { border-left: 3px solid var(--good); }
+
+  /* Tag chip used in lists */
+  .ck { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: var(--surface-3); color: var(--ink-2); margin-right: 4px; }
+  .ck.ceo { background: var(--accent-soft); color: var(--accent-2); border: 1px solid var(--accent-line); }
+  .ck.cfo { background: var(--composite-soft); color: var(--composite-2); border: 1px solid var(--composite-line); }
+  .ck.dh  { background: var(--good-soft); color: #1f7a52; border: 1px solid var(--good-line); }
+
+  /* Scope cards */
+  .scope-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; }
+  .scope-card {
+    padding: 18px 20px; border-radius: var(--r-lg);
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .scope-card.in { border-left: 4px solid var(--good); }
+  .scope-card.out { border-left: 4px solid var(--ink-faint); background: var(--surface-2); }
+  .scope-card h3 { margin-top: 0; }
+  .scope-card ul { margin: 8px 0 0; }
+  .scope-card li { font-size: 13px; }
+
+  /* Impl plan */
+  .impl-list {
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--surface);
+    margin-top: 14px;
+  }
+  .impl-row {
+    display: grid; grid-template-columns: 56px 1fr 220px;
+    align-items: center; gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .impl-row:last-child { border-bottom: 0; }
+  .impl-step { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--accent-2); }
+  .impl-what b { color: var(--ink); }
+  .impl-files { font-family: var(--mono); font-size: 11px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+  .impl-files span { background: var(--surface-2); border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px; }
+
+  /* Question / decision callout */
+  .callout {
+    background: linear-gradient(135deg, var(--accent-soft), var(--composite-soft));
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-lg);
+    padding: 22px 24px;
+    margin-top: 40px;
+  }
+  .callout h3 { margin-top: 0; font-size: 16px; font-weight: 800; }
+  .callout-q { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+  .callout-q b { color: var(--ink); }
+  .qnum { flex: 0 0 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--accent-line); display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent-2); margin-top: 1px; }
+
+  .nav-shadow {
+    margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-2);
+  }
+  .nav-shadow b { color: var(--ink); }
+  .nav-row { display: grid; grid-template-columns: 80px 1fr; gap: 16px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .nav-row:last-child { border: 0; }
+
+  /* Mockup-ish row for pulse strip difference */
+  .pulse-shadow {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-top: 10px;
+  }
+  .ps-tile {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .ps-l { font-size: 10.5px; color: var(--ink-3); font-weight: 600; }
+  .ps-v { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+  /* Decision verbs grid */
+  .verb-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .verb { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-2); color: var(--ink-2); }
+  .verb.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-eyebrow">Design Proposal · v1 · 04 June 2026</div>
+  <h1 class="doc-h1">Persona-aware experience — making roles structural, not cosmetic.</h1>
+  <p class="doc-lede">
+    Today, the persona switcher only changes the landing page. A real Executive Intelligence System has to do
+    much more than that — what an executive <em>sees</em>, what gets <em>prioritized</em>, and what they can
+    <em>do</em> all need to shift based on who they are. Below is the plan to make that real.
+  </p>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">01</span> The problem we're solving</h2>
+  <p>
+    The three personas — <b>CEO Arjun Mehta</b>, <b>CFO Devika Rao</b>, <b>Delivery Head Karthik Menon</b> —
+    run very different operating loops. They face different questions in the morning, take different actions
+    during the day, and are accountable for different outcomes at quarter-end. Yet the current product gives
+    them an identical experience apart from one redirect.
+  </p>
+  <p>
+    The result: every executive has to mentally filter out 60–70% of what they're looking at to find the
+    20–30% that matters. That's the exact opposite of executive intelligence.
+  </p>
+  <p>
+    The fix is not to build three different products. It's to make <b>one product structurally aware of
+    role</b> across seven concrete dimensions, and let the same data and same screens render through the
+    right lens.
+  </p>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">02</span> The three operating loops</h2>
+  <p>
+    Before designing any UI, I want to be explicit about what each persona is actually trying to accomplish
+    in the firm. Each card below is a thesis — once we agree on the thesis, the UI choices follow.
+  </p>
+
+  <div class="persona-grid">
+    <!-- CEO -->
+    <div class="pcard">
+      <div class="pcard-bar ceo"></div>
+      <div class="pcard-head">
+        <div class="pcard-eyebrow">Persona · Strategic</div>
+        <div class="pcard-name">Arjun Mehta · CEO</div>
+        <div class="pcard-role">"What could take the firm down? Are we shifting the model fast enough?"</div>
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-q">
+          Looks at the business at the scale of <b>portfolios</b> and <b>quarters</b>. Lives in 5-minute
+          dashboard checks between meetings.
+        </div>
+        <h4>Daily questions</h4>
+        <ul>
+          <li>Where's the biggest concentration risk?</li>
+          <li>What renewals are at stake this quarter?</li>
+          <li>Is the model shifting to managed services fast enough?</li>
+          <li>Which signals are <b>cross-pillar</b> — i.e. actually strategic?</li>
+        </ul>
+        <h4>Signature actions</h4>
+        <ul>
+          <li>Escalate / route to function head</li>
+          <li>Approve renewal SOW &gt; ₹5 Cr</li>
+          <li>Approve top-talent retention</li>
+          <li>Strategic re-forecast</li>
+        </ul>
+        <h4>Cares less about</h4>
+        <ul>
+          <li>Individual invoice line items</li>
+          <li>Sprint-level project mechanics</li>
+          <li>Bench-by-skill detail</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CFO -->
+    <div class="pcard">
+      <div class="pcard-bar cfo"></div>
+      <div class="pcard-head">
+        <div class="pcard-eyebrow">Persona · Financial</div>
+        <div class="pcard-name">Devika Rao · CFO</div>
+        <div class="pcard-role">"Cash, margin, leakage. What's stuck and what's compressing?"</div>
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-q">
+          Lives in numbers all day. Needs fast paths to the <b>booked → billed → collected</b> waterfall and
+          its exceptions.
+        </div>
+        <h4>Daily questions</h4>
+        <ul>
+          <li>What collected overnight? What's stuck past 60/90 days?</li>
+          <li>Where's the unbilled revenue (leakage)?</li>
+          <li>Which practice/client is compressing margin?</li>
+          <li>Which approvals are blocking close?</li>
+        </ul>
+        <h4>Signature actions</h4>
+        <ul>
+          <li>Approve invoice / approve payment</li>
+          <li>Initiate collection action (dunning, legal)</li>
+          <li>Re-forecast revenue or margin</li>
+          <li>Approve credit note / write-off</li>
+        </ul>
+        <h4>Cares less about</h4>
+        <ul>
+          <li>Individual career stages</li>
+          <li>AI-augmentation narrative</li>
+          <li>Sprint/SLA mechanics (unless penalty-bearing)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DH -->
+    <div class="pcard">
+      <div class="pcard-bar dh"></div>
+      <div class="pcard-head">
+        <div class="pcard-eyebrow">Persona · Operational</div>
+        <div class="pcard-name">Karthik Menon · Delivery Head</div>
+        <div class="pcard-role">"Are projects healthy? Do I have the right people in the right places?"</div>
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-q">
+          Lives at the seam between <b>projects and people</b>. Optimizes for matching capacity to commitments
+          with no surprises.
+        </div>
+        <h4>Daily questions</h4>
+        <ul>
+          <li>Which projects went red overnight?</li>
+          <li>Who's burning out, who's idle?</li>
+          <li>Where is scope drifting from the SOW?</li>
+          <li>Where is the next attrition risk on critical path?</li>
+        </ul>
+        <h4>Signature actions</h4>
+        <ul>
+          <li>Approve change request</li>
+          <li>Redeploy / approve OT</li>
+          <li>Flag succession plan</li>
+          <li>Re-baseline budget</li>
+        </ul>
+        <h4>Cares less about</h4>
+        <ul>
+          <li>Cash-flow waterfalls</li>
+          <li>Board-level concentration narrative</li>
+          <li>Receivables aging tables</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">03</span> The seven dimensions to make role-aware</h2>
+  <p>
+    These are the seven places where role currently makes no difference but should. Each row in the matrix
+    below is a concrete change we'll ship.
+  </p>
+
+  <div class="matrix">
+    <table>
+      <thead>
+        <tr><th>Dimension</th><th style="border-left:3px solid var(--accent)">CEO · Arjun</th><th style="border-left:3px solid var(--composite)">CFO · Devika</th><th style="border-left:3px solid var(--good)">Delivery Head · Karthik</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Landing screen</td>
+          <td class="ceo-cell"><b>Home — Intelligence Feed</b><br/>Portfolio overview with composite alerts first.</td>
+          <td class="cfo-cell"><b>Financials — Intelligence</b><br/>Cash + waterfall + receivables front.</td>
+          <td class="dh-cell"><b>Projects — Health Dashboard</b><br/>Red/yellow projects + utilization.</td>
+        </tr>
+        <tr>
+          <td>Sidebar order &amp; emphasis</td>
+          <td class="ceo-cell">Home · Ask Akashic · Approvals · <b>Clients</b> (★ primary) · Projects · Employees · Financials · Documents</td>
+          <td class="cfo-cell">Home · Ask Akashic · Approvals · <b>Financials</b> (★ primary) · Clients · Projects · Documents · <span class="faint">Employees (collapsed)</span></td>
+          <td class="dh-cell">Home · Ask Akashic · Approvals · <b>Projects</b> (★ primary) · Employees · Clients · Documents · <span class="faint">Financials (collapsed)</span></td>
+        </tr>
+        <tr>
+          <td>Pulse tiles (Home)</td>
+          <td class="ceo-cell">
+            Revenue Run-Rate · Pipeline Coverage · Rev/Employee · Operating Margin · <b>Concentration Risk (Top-3 ARR %)</b> · <b>Renewals at Risk</b> · Cross-pillar signals · Composite confidence
+          </td>
+          <td class="cfo-cell">
+            <b>Cash Position</b> · <b>DSO</b> · Operating Margin · <b>Unbilled WIP</b> · Booked-Billed Gap · Billed-Collected Gap · Working Capital · Revenue Realisation %
+          </td>
+          <td class="dh-cell">
+            Active Projects · <b>Projects at Risk</b> · Billable Utilization · Avg Project Margin · <b>SPOFs (single-point-of-failure)</b> · SLA Compliance · Bench Aging · Skill-Pipeline Gap
+          </td>
+        </tr>
+        <tr>
+          <td>AI brief tone</td>
+          <td class="ceo-cell">Strategic / portfolio narrative. Names the biggest <b>one</b> exposure.</td>
+          <td class="cfo-cell">Cash + margin + leakage in concrete ₹. Names what unlocks working capital.</td>
+          <td class="dh-cell">Today's red projects + tomorrow's resource risks. Names what's drifting.</td>
+        </tr>
+        <tr>
+          <td>Pressure feed default filter</td>
+          <td class="ceo-cell">All (with composite + critical pinned)</td>
+          <td class="cfo-cell">Financial (receivables, leakage, margin)</td>
+          <td class="dh-cell">Delivery + People</td>
+        </tr>
+        <tr>
+          <td>Right rail</td>
+          <td class="ceo-cell">Top Clients by ARR · Renewals This Quarter · Strategic Decisions Awaiting Me · This Week (board pack)</td>
+          <td class="cfo-cell">Largest Overdue Receivables · Top Unbilled Milestones · Margin Compression Alerts · This Week (cash actions)</td>
+          <td class="dh-cell">Top At-Risk Projects · Top SPOFs / Exit Risks · Bench by Age · This Week (delivery escalations)</td>
+        </tr>
+        <tr>
+          <td>Decisions bar — primary verb</td>
+          <td class="ceo-cell">
+            <div class="verb-row"><span class="verb primary">Escalate</span><span class="verb">Re-forecast</span><span class="verb">Renewal SOW</span><span class="verb">Approve hike</span></div>
+          </td>
+          <td class="cfo-cell">
+            <div class="verb-row"><span class="verb primary">Raise invoice</span><span class="verb">Collection action</span><span class="verb">Approve payment</span><span class="verb">Re-forecast</span></div>
+          </td>
+          <td class="dh-cell">
+            <div class="verb-row"><span class="verb primary">Approve CR</span><span class="verb">Redeploy</span><span class="verb">Succession plan</span><span class="verb">Re-baseline</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td>Notifications</td>
+          <td class="ceo-cell">Composite cross-pillar alerts · &gt;₹5 Cr renewals · top-talent risks · board items</td>
+          <td class="cfo-cell">90+ day receivables · invoice exceptions · margin compression · close blockers</td>
+          <td class="dh-cell">Project red flags · exit signals on critical path · SOW drift · SLA approaching breach</td>
+        </tr>
+        <tr>
+          <td>Approvals page default view</td>
+          <td class="ceo-cell">Strategic (&gt;₹2 Cr or cross-pillar)</td>
+          <td class="cfo-cell">Financial (invoices, payments, write-offs, re-forecasts)</td>
+          <td class="dh-cell">Operational (CRs, redeployments, OT, succession)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">04</span> The Cross-Persona Handoff Protocol</h2>
+  <p>
+    The product blueprint calls this out as non-negotiable, and it's what makes role-awareness more than
+    just filtering: <b>any signal can be routed from one executive to another, with context preserved</b>.
+  </p>
+  <p>
+    Concretely, every pressure-point card and every composite alert will get a <span class="ck">↗ Route to…</span>
+    control. Selecting another persona opens a one-line note, then drops the alert into <b>their</b> queue
+    with an "assigned by Arjun" provenance pill. The original card shows a <b>handed off</b> state so the
+    sender knows it's no longer their problem to track.
+  </p>
+  <p>
+    The receiver sees it in their notifications with a distinct icon and a "see what Arjun saw" link that
+    opens the exact card with the same data context the sender had.
+  </p>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">05</span> Scope</h2>
+  <div class="scope-cols">
+    <div class="scope-card in">
+      <h3 style="color:var(--good)">In scope · this round</h3>
+      <ul>
+        <li>Sidebar reorder &amp; primary-pillar emphasis per persona</li>
+        <li>Pulse tile set swapped per persona on Home</li>
+        <li>AI brief rewritten per persona (extended — context-aware, not just name swap)</li>
+        <li>Pressure feed default filter per persona, sort priority per persona</li>
+        <li>Right rail content swapped per persona (3 rails + This Week)</li>
+        <li>Decisions bar primary action set per persona</li>
+        <li>Notifications filtered &amp; re-sorted per persona</li>
+        <li>Approvals page default tab per persona</li>
+        <li>Cross-Persona Handoff control on every pressure card</li>
+        <li>Subtle <b>persona color accent</b> on the active sidebar item to make role visible at a glance</li>
+      </ul>
+    </div>
+    <div class="scope-card out">
+      <h3>Out of scope · noted for later</h3>
+      <ul>
+        <li>Dedicated <b>CFO Collections workspace</b> screen</li>
+        <li>Dedicated <b>DH Resource Planning</b> screen (bench → pipeline match)</li>
+        <li>Dedicated <b>CEO Board Pack</b> auto-generator</li>
+        <li>Persona-scoped data ("my accounts" filter — only one user per persona today)</li>
+        <li>Mobile / phone-sized layout</li>
+        <li>Real notifications backend (currently mocked)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">06</span> Implementation plan</h2>
+  <p>
+    Below is the file-by-file change set. Each row is a discrete change I'd ship; I'll work top to bottom and
+    show you the result at the end (or mid-flight if you want to check in).
+  </p>
+
+  <div class="impl-list">
+    <div class="impl-row">
+      <div class="impl-step">01</div>
+      <div class="impl-what"><b>Persona registry &amp; helpers.</b> Add <code>AK.persona</code> object exposing role-specific pulse sets, brief text, feed defaults, rail blocks, notification filters, primary decisions, sidebar order. Centralizes all role logic in one place.</div>
+      <div class="impl-files"><span>shell.js</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">02</div>
+      <div class="impl-what"><b>Sidebar reorder + primary-pillar star.</b> Reorder <code>NAV_PILLARS</code> per persona; mark the primary pillar with a small star and persona color stripe; stop hiding pillars (collapse instead).</div>
+      <div class="impl-files"><span>shell.js</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">03</div>
+      <div class="impl-what"><b>Home pulse set per persona.</b> Replace the single hardcoded <code>pulse</code> array with three sets; pick by active persona. New CFO metrics: Cash Position, Unbilled WIP, Working Capital. New DH metrics: SPOFs, SLA Compliance, Skill-Pipeline Gap.</div>
+      <div class="impl-files"><span>Home.html</span><span>index.html</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">04</div>
+      <div class="impl-what"><b>AI brief — context-rich, persona-shaped.</b> Multi-sentence brief that names the top exposure for that role. Adds a "what changed since yesterday" line.</div>
+      <div class="impl-files"><span>Home.html</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">05</div>
+      <div class="impl-what"><b>Pressure feed: default filter + persona priority sort.</b> Sort uses persona relevance score; default chip preselected; persona-specific empty states.</div>
+      <div class="impl-files"><span>Home.html</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">06</div>
+      <div class="impl-what"><b>Right rail — three new rail blocks per persona.</b> CEO sees ARR top-clients + renewals queue; CFO sees overdue receivables + unbilled WIP; DH sees at-risk projects + SPOF list.</div>
+      <div class="impl-files"><span>Home.html</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">07</div>
+      <div class="impl-what"><b>Decisions bar — promote persona-primary verb.</b> Same action verbs, but the persona's primary one is shown as the leftmost primary button on every page where decisions bar appears.</div>
+      <div class="impl-files"><span>shell.js</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">08</div>
+      <div class="impl-what"><b>Notifications — persona filter + persona-specific feed.</b> Filter the mock notification list per persona; add 4 net-new notifications per role so each persona has 5–6 real items.</div>
+      <div class="impl-files"><span>shell.js</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">09</div>
+      <div class="impl-what"><b>Approvals — default tab per persona.</b> The active filter pill on the Approvals page is preselected to the persona's bucket (Strategic / Financial / Operational).</div>
+      <div class="impl-files"><span>Approvals.html</span></div>
+    </div>
+    <div class="impl-row">
+      <div class="impl-step">10</div>
+      <div class="impl-what"><b>Cross-Persona Handoff control.</b> Adds a <span class="ck">Route to…</span> dropdown on pressure cards (Home + Client/Project/Employee profiles). Logs handoff to in-memory queue; shows handed-off state on sender card; toast confirms.</div>
+      <div class="impl-files"><span>Home.html</span><span>shell.js</span><span>actions.js</span></div>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <h2><span class="h-num">07</span> What I want you to confirm</h2>
+
+  <div class="callout">
+    <h3>Three decisions before I implement</h3>
+    <div class="callout-q"><div class="qnum">1</div><div>
+      <b>Hide pillars vs collapse them.</b> Today CFO hides Employees and DH hides Financials. I'd rather <b>keep all pillars visible but de-emphasized</b> — moved below a "More" divider — so the system-of-execution philosophy ("everything is connected") stays visible. <b>OK to switch from hide → collapse-below-fold?</b>
+    </div></div>
+    <div class="callout-q"><div class="qnum">2</div><div>
+      <b>CFO's home.</b> Today CFO lands on <code>Financials.html</code>. I can either keep that and make Financials persona-shaped, or send CFO to <code>Home.html</code> with a CFO-shaped Intelligence Feed (pulse, brief, feed, rails all swapped). The second option means one "Home" surface for all roles which is conceptually cleaner. <b>Prefer single Home for all, or persona-specific landing screens?</b>
+    </div></div>
+    <div class="callout-q"><div class="qnum">3</div><div>
+      <b>Cross-persona handoff fidelity.</b> Minimum-viable is a <span class="ck">Route to…</span> control that toasts + marks the sender card as handed off. A richer version actually shows the handoff in the receiver's notification panel with a "view as Arjun" affordance. <b>MVP or richer?</b> Richer is ~30% more work and a clearer demo.
+    </div></div>
+  </div>
+
+  <p style="margin-top: 28px; color: var(--ink-3); font-size: 13px; font-style: italic;">
+    Once you confirm the three decisions above (or just say "go with your recommendation"), I'll implement
+    top-to-bottom and show you the result.
+  </p>
+
+</div>
+</body>
+</html>
