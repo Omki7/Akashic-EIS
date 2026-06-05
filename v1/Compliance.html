@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Compliance & Governance</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+.compliance-matrix {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.cm-header {
+  background: var(--surface-2);
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+.cm-cell {
+  background: var(--surface);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cm-label {
+  font-weight: 600;
+  font-size: 13px;
+}
+</style>
+</head>
+<body data-screen="settings" data-persona="ceo" data-crumb="Governance / Compliance" data-decisions="false"
+      data-entitytype="portfolio" data-entityid="" data-entityname="Compliance">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Compliance & Governance">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Risk & Trust</div>
+            <h1 class="page-title">Compliance & Governance</h1>
+            <div class="page-sub">Global regulatory posture, data residency, and audit readiness</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">Download Audit Pack</button>
+            <button class="btn sm primary">Run Evidence Sync</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compliance Framework Matrix -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div class="panel-title">Compliance Posture Matrix</div><div class="panel-sub">Framework status per client geography</div></div>
+          <span class="panel-tag good-text">Automated evidence sync: 94% coverage</span>
+        </div>
+        <div class="panel-body" style="padding: 0; border-top: 1px solid var(--line);">
+          <div class="compliance-matrix">
+            <div class="cm-header">Client Region</div>
+            <div class="cm-header">DPDP (India)</div>
+            <div class="cm-header">GDPR (EU)</div>
+            <div class="cm-header">SOC 2 Type II</div>
+            
+            <div class="cm-cell"><span class="cm-label">India Domestic</span></div>
+            <div class="cm-cell"><span class="conf md">Phased Rollout</span></div>
+            <div class="cm-cell"><span class="faint">—</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+            
+            <div class="cm-cell"><span class="cm-label">Hanseatic Bank (Germany)</span></div>
+            <div class="cm-cell"><span class="faint">—</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+
+            <div class="cm-cell"><span class="cm-label">Northwind (UK)</span></div>
+            <div class="cm-cell"><span class="faint">—</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+            
+            <div class="cm-cell"><span class="cm-label">Meridian Retail (USA)</span></div>
+            <div class="cm-cell"><span class="faint">—</span></div>
+            <div class="cm-cell"><span class="faint">—</span></div>
+            <div class="cm-cell"><span class="conf hi">Compliant</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row: Data Residency & Regulatory Calendar -->
+      <div class="fin-two mb-20">
+        
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+            <div><div class="panel-title">Data Residency Map</div><div class="panel-sub">Physical hosting locations for client data</div></div>
+          </div>
+          <div class="panel-body">
+             <table class="tbl tbl-sm">
+                <thead><tr><th>Client</th><th>Primary Region</th><th>Backup Region</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="strong">Hanseatic Bank</td><td>eu-central-1 (Frankfurt)</td><td>eu-west-1 (Ireland)</td><td><span class="hdot good"></span> Isolated</td></tr>
+                  <tr><td class="strong">Meridian Retail</td><td>us-east-1 (N. Virginia)</td><td>us-west-2 (Oregon)</td><td><span class="hdot good"></span> Shared</td></tr>
+                  <tr><td class="strong">Domestic Clients</td><td>ap-south-1 (Mumbai)</td><td>ap-south-2 (Hyderabad)</td><td><span class="hdot good"></span> Localized</td></tr>
+                </tbody>
+             </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+            <div><div class="panel-title">Regulatory Calendar</div><div class="panel-sub">Upcoming audits and filings</div></div>
+          </div>
+          <div class="panel-body col gap-10">
+             <div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+                <div style="background:var(--warn-soft);color:var(--warn);padding:8px;border-radius:6px;text-align:center;min-width:48px">
+                   <div style="font-size:10px;font-weight:700;text-transform:uppercase">Jul</div>
+                   <div style="font-size:16px;font-weight:800">15</div>
+                </div>
+                <div>
+                   <div style="font-weight:600;font-size:13px">DPDP Act Readiness Filing</div>
+                   <div style="font-size:11.5px;color:var(--ink-3)">Phase 2 compliance documentation due to regulator.</div>
+                </div>
+             </div>
+             <div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+                <div style="background:var(--surface-2);color:var(--ink-2);padding:8px;border-radius:6px;text-align:center;min-width:48px">
+                   <div style="font-size:10px;font-weight:700;text-transform:uppercase">Oct</div>
+                   <div style="font-size:16px;font-weight:800">01</div>
+                </div>
+                <div>
+                   <div style="font-weight:600;font-size:13px">SOC 2 Type II Annual Audit</div>
+                   <div style="font-size:11.5px;color:var(--ink-3)">Observation period ends Sep 30.</div>
+                </div>
+             </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- Consent Management -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></div>
+          <div><div class="panel-title">Consent Management Dashboard</div><div class="panel-sub">Employee and client data processing consents</div></div>
+        </div>
+        <div class="panel-body">
+           <div class="flex gap-20">
+              <div style="flex:1">
+                 <div class="section-label">Employee Consent (Darwinbox)</div>
+                 <div class="flex items-center gap-10 mt-8">
+                    <div style="flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden">
+                       <div style="width:98%;height:100%;background:var(--good)"></div>
+                    </div>
+                    <span class="mono fs-12 strong">98%</span>
+                 </div>
+                 <div class="fs-11 muted mt-4">1,803 of 1,840 employees have signed updated data processing addendums.</div>
+              </div>
+              <div style="flex:1">
+                 <div class="section-label">Client Marketing Consent (Salesforce)</div>
+                 <div class="flex items-center gap-10 mt-8">
+                    <div style="flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden">
+                       <div style="width:64%;height:100%;background:var(--composite)"></div>
+                    </div>
+                    <span class="mono fs-12 strong">64%</span>
+                 </div>
+                 <div class="fs-11 muted mt-4">Opt-in rate for EU contacts remains below target.</div>
+              </div>
+           </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

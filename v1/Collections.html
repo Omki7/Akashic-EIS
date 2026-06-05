@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Collections Workspace</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="collections" data-persona="cfo" data-crumb="Financials / Collections Workspace" data-decisions="true"
+      data-entitytype="portfolio" data-entityid="" data-entityname="Collections">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="CFO Collections Workspace">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">CFO Workspace · Collections</div>
+            <h1 class="page-title">Collections War-Room</h1>
+            <div class="page-sub">Track every rupee from invoice to bank — drag cards to advance, click to act</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm" onclick="AK.toast('Export sent to inbox')">Export aging report</button>
+            <button class="btn sm primary" onclick="AK.toast('Batch dunning notices drafted for 90+ invoices')">Batch dunning (90+)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO METRICS -->
+      <div class="coll-hero mb-24">
+        <div class="ch-tile ch-main">
+          <div class="ch-eyebrow">Total Outstanding</div>
+          <div class="ch-big-val">₹5.2<small> Cr</small></div>
+          <div class="ch-sub">Across 14 invoices · 7 clients</div>
+        </div>
+        <div class="ch-tile ch-danger">
+          <div class="ch-eyebrow">Critical (90+ days)</div>
+          <div class="ch-big-val crit-text">₹2.4<small> Cr</small></div>
+          <div class="ch-sub">3 invoices · Northwind Insurance</div>
+        </div>
+        <div class="ch-tile">
+          <div class="ch-eyebrow">DSO Impact</div>
+          <div class="ch-big-val warn-text">58<small> days</small></div>
+          <div class="ch-sub">Target ≤52 · resolving top-2 saves 4 days</div>
+        </div>
+        <div class="ch-tile ch-good">
+          <div class="ch-eyebrow">₹ Unlocked This Week</div>
+          <div class="ch-big-val good-text">₹1.03<small> Cr</small></div>
+          <div class="ch-prog"><div class="ch-prog-bar"><div class="ch-prog-fill" style="width:34%"></div></div><span class="ch-prog-label">34% of ₹3 Cr weekly target</span></div>
+        </div>
+      </div>
+
+      <!-- AI PLAYBOOK SUGGESTION -->
+      <div class="coll-playbook mb-20" id="playbook">
+        <div class="cp-icon">⚡</div>
+        <div class="cp-body">
+          <div class="cp-title">Akashic recommends</div>
+          <div class="cp-text"><b>Northwind Insurance</b> hasn't responded in 21 days across 3 invoices totalling ₹2.4 Cr. Cohort data shows accounts at this stage have a <b>72% collection rate with legal notice</b> vs 34% with reminders alone. <b>Recommend: escalate to legal dunning.</b></div>
+        </div>
+        <button class="btn sm primary" onclick="AK.toast('Legal dunning initiated for Northwind')">Escalate to legal</button>
+        <button class="btn sm ghost" onclick="this.closest('.coll-playbook').style.display='none'">Dismiss</button>
+      </div>
+
+      <!-- KANBAN BOARD -->
+      <div class="section-label mb-12" style="display:flex;align-items:center;gap:8px">Aging Buckets
+        <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— invoices by days outstanding</span>
+      </div>
+      <div class="kanban" id="kanban">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="two-col mt-24">
+        <!-- DISPUTE RESOLUTION WORKFLOW -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">🛡️</div>
+            <div><div class="panel-title">Dispute Resolution Workflow</div><div class="panel-sub">Taxonomy and escalation path for disputed invoices</div></div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="tbl" style="font-size:12.5px;margin:0">
+              <thead><tr><th>Invoice</th><th>Dispute Reason</th><th>Status &amp; Escalation</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="strong">INV-2026-0355<div class="muted mt-2" style="font-weight:400">Aether Mobility · ₹31 L</div></td>
+                  <td>Scope disagreement<div class="muted mt-2">Client claims M4 incomplete</div></td>
+                  <td><span class="badge b-risk"><span class="bd"></span>Escalated to CDO</span><div class="muted mt-4">Karthik Menon reviewing</div></td>
+                </tr>
+                <tr>
+                  <td class="strong">INV-2026-0339<div class="muted mt-2" style="font-weight:400">Meridian Retail · ₹1.2 Cr</div></td>
+                  <td>Quality of deliverables<div class="muted mt-2">UAT defect threshold breached</div></td>
+                  <td><span class="badge b-renewal"><span class="bd"></span>Under Negotiation</span><div class="muted mt-4">Proposing credit note</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- COLLECTION ACTIVITY LOG -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⟳</div>
+            <div><div class="panel-title">Collection Activity Log</div><div class="panel-sub">Recent actions taken on outstanding invoices</div></div>
+          </div>
+          <div class="panel-body col gap-0" id="activity-log"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Action drawer overlay -->
+<div id="action-drawer-overlay" style="display:none"></div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+/* ============================================================
+   Collections Workspace — CFO-specific
+   ============================================================ */
+
+/* Check persona — redirect non-CFO */
+const persona = (window.AK && AK.getPersona()) || 'cfo';
+if (persona !== 'cfo') {
+  document.querySelector('.content').innerHTML = `
+    <div style="padding:100px 20px;text-align:center">
+      <div style="font-size:48px;margin-bottom:20px">🔒</div>
+      <h1 class="page-title">CFO Workspace</h1>
+      <p style="color:var(--ink-3);margin-top:10px;font-size:16px;">Collections is a CFO-specific workspace. Switch to the CFO persona to access.</p>
+      <button class="btn sm mt-20" onclick="location.href='Home.html'">Return to Home</button>
+    </div>`;
+}
+
+/* Invoice data */
+const INVOICES = [
+  {id:'INV-2026-0309', client:'Northwind Insurance', logo:'NW', lc:'#9e5a2f', amount:'₹1.2 Cr', days:96, bucket:'90+', risk:'high',   lastTouch:'15 May · reminder email', contact:'R. Menon', project:'Phoenix Platform'},
+  {id:'INV-2026-0311', client:'Northwind Insurance', logo:'NW', lc:'#9e5a2f', amount:'₹0.8 Cr', days:93, bucket:'90+', risk:'high',   lastTouch:'15 May · reminder email', contact:'R. Menon', project:'Phoenix Platform'},
+  {id:'INV-2026-0315', client:'Northwind Insurance', logo:'NW', lc:'#9e5a2f', amount:'₹0.4 Cr', days:91, bucket:'90+', risk:'high',   lastTouch:'No response in 21 days',  contact:'R. Menon', project:'Claims Module'},
+  {id:'INV-2026-0388', client:'Meridian Retail',     logo:'MR', lc:'#2563a8', amount:'₹48 L',   days:0,  bucket:'unbilled', risk:'med',lastTouch:'Milestone signed off',   contact:'Priya Nair', project:'Orion Rollout M8'},
+  {id:'INV-2026-0342', client:'Sundara Logistics',   logo:'SL', lc:'#3a7a55', amount:'₹64 L',   days:35, bucket:'31-60',risk:'med',   lastTouch:'28 May · call scheduled',  contact:'A. Krishnan', project:'Atlas Migration'},
+  {id:'INV-2026-0356', client:'Brightwater Utilities',logo:'BW',lc:'#2f7a8e', amount:'₹38 L',   days:22, bucket:'0-30', risk:'low',   lastTouch:'1 Jun · paid partially',   contact:'Lead PM',   project:'SCADA M5'},
+  {id:'INV-2026-0361', client:'Vermillion Health',   logo:'VH', lc:'#a23f6a', amount:'₹22 L',   days:18, bucket:'0-30', risk:'low',   lastTouch:'Retainer — auto-invoice',  contact:'S. Pillai', project:'Helix Q2'},
+  {id:'INV-2026-0370', client:'Cobalt Energy',       logo:'CE', lc:'#2a7a4a', amount:'₹18 L',   days:12, bucket:'0-30', risk:'low',   lastTouch:'3 Jun · payment confirmed', contact:'I. Qureshi', project:'Data Lake'},
+  {id:'INV-2026-0348', client:'Hanseatic Bank',      logo:'HB', lc:'#2f6f9e', amount:'₹0.7 Cr', days:28, bucket:'0-30', risk:'low',   lastTouch:'Within terms',             contact:'L. Fischer', project:'Core Banking Q2'},
+  {id:'INV-2026-0355', client:'Aether Mobility',     logo:'AM', lc:'#666',    amount:'₹31 L',   days:42, bucket:'31-60',risk:'med',   lastTouch:'25 May · dispute on scope', contact:'R. Sethi', project:'Nova CRM'},
+  {id:'INV-2026-0338', client:'Indus Pharma',        logo:'IP', lc:'#5a4f9e', amount:'₹44 L',   days:62, bucket:'61-90',risk:'med',   lastTouch:'20 May · escalated to CFO', contact:'M. Nair', project:'Pharma Cloud'},
+  {id:'INV-2026-0339', client:'Meridian Retail',     logo:'MR', lc:'#2563a8', amount:'₹1.2 Cr', days:45, bucket:'31-60',risk:'med',   lastTouch:'SOW M7 · partial dispute',  contact:'Priya Nair', project:'Orion Rollout M7'},
+];
+
+const BUCKETS = [
+  {id:'0-30',    label:'0 – 30 days',  color:'var(--good)',     bg:'var(--good-soft)'},
+  {id:'31-60',   label:'31 – 60 days', color:'var(--warn)',     bg:'oklch(0.96 0.04 80)'},
+  {id:'61-90',   label:'61 – 90 days', color:'#d98a3a',        bg:'oklch(0.96 0.04 60)'},
+  {id:'90+',     label:'90+ days',     color:'var(--critical)', bg:'var(--critical-soft)'},
+];
+
+function bucketTotal(bid) {
+  return INVOICES.filter(i=>i.bucket===bid).reduce((s,i)=>{
+    const n=parseFloat(i.amount.replace(/[₹ CrL]/g,''));
+    const mult=i.amount.includes('Cr')?100:1;
+    return s+n*mult;
+  },0);
+}
+
+function renderKanban() {
+  const kanban = document.getElementById('kanban');
+  kanban.innerHTML = BUCKETS.map(b => {
+    const cards = INVOICES.filter(i => i.bucket === b.id);
+    const totalL = bucketTotal(b.id);
+    const totalStr = totalL >= 100 ? `₹${(totalL/100).toFixed(1)} Cr` : `₹${totalL.toFixed(0)} L`;
+    return `<div class="kb-col">
+      <div class="kb-col-head" style="border-top:3px solid ${b.color}">
+        <span class="kb-col-label">${b.label}</span>
+        <span class="kb-col-count">${cards.length} invoices</span>
+        <span class="kb-col-total" style="color:${b.color}">${totalStr}</span>
+      </div>
+      <div class="kb-cards">
+        ${cards.map(inv => renderInvCard(inv, b)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderInvCard(inv, bucket) {
+  const riskCls = inv.risk==='high'?'crit':inv.risk==='med'?'warn':'good';
+  const riskLabel = inv.risk==='high'?'High risk':inv.risk==='med'?'Medium':'Low';
+  /* Check for handoff provenance */
+  let handoffPill = '';
+  try {
+    const handoffs = JSON.parse(sessionStorage.getItem('ak_handoffs') || '[]');
+    const related = handoffs.find(h => h.to === 'cfo' && h.title && h.title.toLowerCase().includes(inv.client.split(' ')[0].toLowerCase()));
+    if (related) {
+      const fromName = related.fromName || related.from;
+      handoffPill = `<div class="inv-handoff">↗ Routed by ${fromName}</div>`;
+    }
+  } catch {}
+
+  return `<div class="inv-card" onclick="openActionDrawer('${inv.id}')">
+    ${handoffPill}
+    <div class="inv-top">
+      <div class="logo" style="background:${inv.lc};width:22px;height:22px;font-size:9px">${inv.logo}</div>
+      <div style="flex:1;min-width:0">
+        <div class="inv-client">${inv.client}</div>
+        <div class="inv-id">${inv.id}</div>
+      </div>
+      <div class="inv-amount ${riskCls}-text">${inv.amount}</div>
+    </div>
+    <div class="inv-meta">
+      <span>${inv.project}</span>
+      <span>${inv.days}d</span>
+    </div>
+    <div class="inv-bottom">
+      <span class="inv-touch">${inv.lastTouch}</span>
+      <span class="badge ${riskCls==='crit'?'b-risk':riskCls==='warn'?'b-renewal':'b-active'}" style="font-size:9px;padding:0 5px"><span class="bd"></span>${riskLabel}</span>
+    </div>
+  </div>`;
+}
+
+/* Action drawer */
+function openActionDrawer(invId) {
+  const inv = INVOICES.find(i => i.id === invId);
+  if (!inv) return;
+  const overlay = document.getElementById('action-drawer-overlay');
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `
+    <div class="ad-panel">
+      <div class="ad-head">
+        <div>
+          <div class="ad-eyebrow">${inv.id} · ${inv.days} days outstanding</div>
+          <div class="ad-title">${inv.client} — ${inv.amount}</div>
+          <div class="ad-sub">${inv.project} · Contact: ${inv.contact}</div>
+        </div>
+        <button onclick="closeActionDrawer()" style="background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:18px;padding:4px">✕</button>
+      </div>
+
+      <div class="ad-timeline">
+        <div class="adt-title">Timeline</div>
+        <div class="adt-item"><span class="adt-dot good"></span><div><b>Invoice raised</b> · ${inv.days + 15} days ago<div class="adt-sub">Auto-generated from PSA milestone</div></div></div>
+        <div class="adt-item"><span class="adt-dot warn"></span><div><b>Reminder sent</b> · ${Math.max(inv.days - 10, 5)} days ago<div class="adt-sub">Email to ${inv.contact}</div></div></div>
+        ${inv.days > 60 ? `<div class="adt-item"><span class="adt-dot crit"></span><div><b>Escalated to CFO</b> · 14 days ago<div class="adt-sub">Auto-escalation at 60-day threshold</div></div></div>` : ''}
+        <div class="adt-item adt-now"><span class="adt-dot" style="background:var(--ink)"></span><div><b>Now</b> · ${inv.lastTouch}</div></div>
+      </div>
+
+      <div class="ad-actions">
+        <div class="ad-actions-title">Actions</div>
+        <div class="ad-action-grid">
+          <button class="ad-btn" onclick="AK.toast('Reminder email sent to ${inv.contact}');closeActionDrawer()">
+            <span class="ad-btn-icon">✉</span><div><b>Send reminder</b><div class="ad-btn-sub">Email to ${inv.contact}</div></div>
+          </button>
+          <button class="ad-btn" onclick="AK.toast('Collection call logged');closeActionDrawer()">
+            <span class="ad-btn-icon">📞</span><div><b>Log call</b><div class="ad-btn-sub">Record call outcome</div></div>
+          </button>
+          <button class="ad-btn ad-btn-danger" onclick="AK.toast('Legal dunning notice drafted');closeActionDrawer()">
+            <span class="ad-btn-icon">⚖</span><div><b>Escalate to legal</b><div class="ad-btn-sub">Draft dunning notice</div></div>
+          </button>
+          <button class="ad-btn" onclick="AK.toast('Payment terms adjustment started');closeActionDrawer()">
+            <span class="ad-btn-icon">⚙</span><div><b>Adjust terms</b><div class="ad-btn-sub">Extend or restructure</div></div>
+          </button>
+          <button class="ad-btn" onclick="AK.toast('Write-off approval requested');closeActionDrawer()">
+            <span class="ad-btn-icon">✕</span><div><b>Write-off</b><div class="ad-btn-sub">Requires board approval &gt; ₹10 L</div></div>
+          </button>
+          <button class="ad-btn" onclick="AK.openHandoffPanel('${inv.client} · ${inv.amount} overdue','${inv.id}');closeActionDrawer()">
+            <span class="ad-btn-icon">↗</span><div><b>Route to colleague</b><div class="ad-btn-sub">Handoff with context</div></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="ad-foot">
+        <a href="Financials.html" class="btn sm ghost">View in Financials ›</a>
+        <a href="Assistant.html" class="btn sm">Ask Akashic about this invoice ›</a>
+      </div>
+    </div>`;
+  overlay.onclick = e => { if (e.target === overlay) closeActionDrawer(); };
+}
+
+function closeActionDrawer() {
+  document.getElementById('action-drawer-overlay').style.display = 'none';
+}
+
+/* Activity log */
+function renderActivityLog() {
+  const log = [
+    {time:'Today 9:14 AM', action:'Payment received', detail:'Cobalt Energy · INV-2026-0370 · ₹18 L cleared', type:'good'},
+    {time:'Today 8:30 AM', action:'Batch reminder sent', detail:'3 invoices in 31-60 day bucket · auto-triggered', type:'warn'},
+    {time:'Yesterday', action:'Payment received', detail:'Cobalt Energy · INV-2026-0388 milestone · ₹1.03 Cr', type:'good'},
+    {time:'3 Jun', action:'Call logged', detail:'Northwind Insurance · no commitment · escalation recommended', type:'crit'},
+    {time:'1 Jun', action:'Partial payment', detail:'Brightwater Utilities · ₹12 L of ₹38 L · balance pending', type:'warn'},
+    {time:'28 May', action:'Dispute raised', detail:'Aether Mobility · Nova CRM scope dispute · under review', type:'warn'},
+  ];
+  document.getElementById('activity-log').innerHTML = log.map(l => `
+    <div class="al-row">
+      <span class="al-time">${l.time}</span>
+      <span class="hdot ${l.type}" style="margin-top:3px"></span>
+      <div style="flex:1;min-width:0">
+        <div class="al-action">${l.action}</div>
+        <div class="al-detail">${l.detail}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* Boot */
+if (persona === 'cfo') {
+  renderKanban();
+  renderActivityLog();
+}
+</script>
+
+<style>
+/* Collections hero */
+.coll-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.ch-tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.ch-main{border-left:3px solid var(--composite);}
+.ch-danger{border-left:3px solid var(--critical);}
+.ch-good{border-left:3px solid var(--good);}
+.ch-eyebrow{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);margin-bottom:6px;}
+.ch-big-val{font-size:32px;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;line-height:1;}
+.ch-big-val small{font-size:16px;font-weight:600;color:var(--ink-2);}
+.ch-sub{font-size:11.5px;color:var(--ink-3);margin-top:6px;}
+.ch-prog{margin-top:8px;}
+.ch-prog-bar{height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden;}
+.ch-prog-fill{height:100%;background:var(--good);border-radius:3px;transition:width .3s;}
+.ch-prog-label{font-size:10.5px;color:var(--ink-3);margin-top:4px;display:block;}
+
+/* AI playbook */
+.coll-playbook{display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(135deg,var(--composite-soft),var(--accent-soft));border:1px solid var(--composite-line);border-radius:var(--r-lg);}
+.cp-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--composite),var(--accent));color:#fff;display:grid;place-items:center;font-size:16px;flex:0 0 auto;}
+.cp-body{flex:1;min-width:0;}
+.cp-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--composite-2);margin-bottom:3px;}
+.cp-text{font-size:13px;color:var(--ink-2);line-height:1.5;}
+.cp-text b{color:var(--ink);}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+.kb-col{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;min-height:200px;}
+.kb-col-head{padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;}
+.kb-col-label{font-weight:700;font-size:13px;}
+.kb-col-count{font-size:11px;color:var(--ink-3);}
+.kb-col-total{font-weight:800;font-size:14px;margin-left:auto;font-variant-numeric:tabular-nums;}
+.kb-cards{padding:10px;display:flex;flex-direction:column;gap:8px;}
+
+/* Invoice card */
+.inv-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .12s;}
+.inv-card:hover{box-shadow:var(--shadow);border-color:var(--line-strong);transform:translateY(-1px);}
+.inv-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.inv-client{font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.inv-id{font-family:var(--mono);font-size:10px;color:var(--ink-faint);}
+.inv-amount{font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;flex:0 0 auto;}
+.inv-meta{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3);margin-bottom:6px;}
+.inv-bottom{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+.inv-touch{font-size:10.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.inv-handoff{font-size:10px;font-weight:700;color:var(--composite-2);background:var(--composite-soft);border-radius:5px 5px 0 0;padding:3px 8px;margin:-10px -12px 8px;border-bottom:1px solid var(--composite-line);}
+
+/* Action drawer */
+#action-drawer-overlay{position:fixed;inset:0;background:oklch(0.2 0.01 265 / 0.42);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px;}
+.ad-panel{background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);width:100%;max-width:560px;overflow:hidden;}
+.ad-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface),var(--surface-2));}
+.ad-eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+.ad-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+.ad-sub{font-size:12.5px;color:var(--ink-3);margin-top:4px;}
+.ad-timeline{padding:16px 22px;border-bottom:1px solid var(--line);}
+.adt-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);margin-bottom:10px;}
+.adt-item{display:flex;gap:10px;padding:6px 0;font-size:12.5px;color:var(--ink-2);line-height:1.4;position:relative;}
+.adt-item::before{content:'';position:absolute;left:4px;top:20px;bottom:-6px;width:1px;background:var(--line-2);}
+.adt-item:last-child::before{display:none;}
+.adt-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:4px;}
+.adt-dot.good{background:var(--good);}.adt-dot.warn{background:var(--warn);}.adt-dot.crit{background:var(--critical);}
+.adt-sub{font-size:11px;color:var(--ink-faint);}
+.adt-now{font-weight:600;}
+.ad-actions{padding:16px 22px;border-bottom:1px solid var(--line);}
+.ad-actions-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);margin-bottom:10px;}
+.ad-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ad-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-family:var(--sans);text-align:left;transition:all .1s;}
+.ad-btn:hover{background:var(--hover);border-color:var(--line-strong);}
+.ad-btn-danger{border-color:var(--critical);background:var(--critical-soft);}
+.ad-btn-danger:hover{background:oklch(0.94 0.05 25);}
+.ad-btn-icon{font-size:18px;flex:0 0 auto;}
+.ad-btn b{font-size:12.5px;display:block;}
+.ad-btn-sub{font-size:10.5px;color:var(--ink-3);}
+.ad-foot{padding:14px 22px;background:var(--surface-2);display:flex;gap:8px;justify-content:flex-end;}
+
+/* Activity log */
+.al-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);}
+.al-row:last-child{border-bottom:0;}
+.al-time{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);flex:0 0 90px;text-align:right;padding-top:2px;}
+.al-action{font-weight:700;font-size:13px;}
+.al-detail{font-size:12px;color:var(--ink-3);margin-top:2px;}
+
+@media (max-width:1100px){.coll-hero{grid-template-columns:repeat(2,1fr);}.kanban{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:700px){.kanban{grid-template-columns:1fr;}}
+</style>
+</body>
+</html>

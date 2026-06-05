@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Settings & Admin</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .set-tabs{display:flex;gap:6px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+  .set-tab{border:0;background:none;padding:10px 14px;font-size:13px;font-weight:600;color:var(--ink-3);border-bottom:2px solid transparent;cursor:pointer}
+  .set-tab.active{color:var(--accent-2);border-bottom-color:var(--accent)}
+  .panel-soft{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:18px}
+  .thr{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}
+  .thr:last-child{border-bottom:0}
+  .thr-name{font-size:13.5px;font-weight:600}.thr-desc{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+  .thr-input{display:flex;align-items:center;gap:8px}
+  .thr-input input[type=range]{width:160px;accent-color:var(--accent)}
+  .thr-val{font-family:var(--mono);font-weight:700;font-size:14px;min-width:54px;text-align:right}
+  .rbac-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .rbac-tbl th{text-align:center;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);padding:11px 8px;border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+  .rbac-tbl th:first-child{text-align:left}
+  .rbac-tbl td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:center}
+  .rbac-tbl td:first-child{text-align:left;font-weight:600}
+  .perm{cursor:pointer;font-size:15px;user-select:none}
+  .perm.full{color:var(--good)}.perm.scoped{color:var(--warn)}.perm.none{color:var(--line-strong)}
+  .route-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .route-row:last-child{border-bottom:0}
+  .chan-tog{display:inline-flex;gap:6px;flex-wrap:wrap}
+  .ctog{font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:20px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink-3);cursor:pointer}
+  .ctog.on{background:var(--accent-soft);color:var(--accent-2);border-color:var(--accent-line)}
+  .auth-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .auth-row:last-child{border-bottom:0}
+  .access-log{font-family:var(--mono);font-size:12px}
+  .access-log td{padding:9px 14px;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body data-screen="settings" data-persona="ceo" data-crumb="Governance / Settings &amp; Admin">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content" data-screen-label="Settings & Admin — control plane">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Control plane</div>
+            <h1 class="page-title">Settings &amp; Admin</h1>
+            <div class="page-sub" style="max-width:700px">Policy used to be baked into source — the 30% concentration limit, the ≤52-day DSO target, who approves what. Now it’s configurable. Thresholds feed the signal engine; RBAC replaces the hard 🔒 wall; approval authority is a matrix, not a constant.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="set-tabs">
+        <button class="set-tab active" data-t="thresholds" onclick="setTab('thresholds')">Policy & Thresholds</button>
+        <button class="set-tab" data-t="metrics" onclick="setTab('metrics')">Metric Dictionary</button>
+        <button class="set-tab" data-t="alerts" onclick="setTab('alerts')">Briefing & Routing</button>
+        <button class="set-tab" data-t="esg" onclick="setTab('esg')">ESG Reporting</button>
+        <button class="set-tab" data-t="rbac" onclick="setTab('rbac')">RBAC & Authority</button>
+        <button class="set-tab" data-t="audit" onclick="setTab('audit')">Access Audit</button>
+      </div>
+
+      <div id="set-thresholds">
+        <div class="narrative-block">These thresholds drive every pulse tile and feed signal on the home page. Move a slider and the signal engine re-evaluates — no code change, no redeploy.</div>
+        <div class="panel-soft" id="thr-list"></div>
+        <div class="btn-row"><button class="btn sm primary" onclick="AK.toast('Policy saved — signal engine recalculating')">Save policy</button><button class="btn sm">Reset to industry defaults</button></div>
+      </div>
+
+      <div id="set-metrics" style="display:none">
+        <div class="narrative-block">The <b>Semantic Layer Dictionary</b> guarantees single-source-of-truth calculations across Akashic. Modify the logic here, and it cascades to every dashboard, model, and system sync.</div>
+        <div class="panel-soft">
+          <table class="tbl" style="font-size:12.5px;margin:0">
+             <thead><tr><th>Metric Name</th><th>Standard Formula</th><th>Data Source(s)</th><th>Owner</th></tr></thead>
+             <tbody>
+                <tr><td class="strong">EAC (Estimate at Completion)</td><td class="mono">Actual Cost + ((BAC - EV) / CPI)</td><td>Zoho PSA + NetSuite</td><td>CFO</td></tr>
+                <tr><td class="strong">Attrition Risk Score</td><td class="mono">(Comp Gap % * 0.4) + (Tenure Risk * 0.3) + (Burnout Flag * 0.3)</td><td>Darwinbox HRMS</td><td>CHRO</td></tr>
+                <tr><td class="strong">Project Margin</td><td class="mono">((Billed Rev - Loaded Labor Cost) / Billed Rev) * 100</td><td>SAP ERP</td><td>Delivery Head</td></tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="set-alerts" style="display:none">
+        <div class="narrative-block">Configure per-signal routing and <b>proactive briefing delivery</b>. Set when and how Akashic pushes synthesized intelligence (e.g. Sunday night prep, morning standup context) directly to your channels.</div>
+        
+        <div class="section-label">Proactive Briefing Schedules</div>
+        <div class="panel-soft mb-20" style="padding:0">
+          <div class="route-row">
+            <div style="font-size:12.5px;font-weight:600">CEO Sunday Prep</div>
+            <div class="flex items-center gap-10 wrap">
+               <span class="muted fs-11">Delivered via</span>
+               <div class="chan-tog"><span class="ctog on">Email</span><span class="ctog on">WhatsApp</span></div>
+               <span class="muted fs-11" style="margin-left:8px">Timing</span>
+               <span class="mono fs-12" style="padding:2px 8px;border:1px solid var(--line);border-radius:4px">Sun 18:00</span>
+            </div>
+          </div>
+          <div class="route-row">
+            <div style="font-size:12.5px;font-weight:600">Daily Account Standup</div>
+            <div class="flex items-center gap-10 wrap">
+               <span class="muted fs-11">Delivered via</span>
+               <div class="chan-tog"><span class="ctog on">Slack</span></div>
+               <span class="muted fs-11" style="margin-left:8px">Timing</span>
+               <span class="mono fs-12" style="padding:2px 8px;border:1px solid var(--line);border-radius:4px">Weekdays 08:30</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Alert Escalation & Routing</div>
+        <div class="panel-soft" id="route-list"></div>
+      </div>
+
+      <div id="set-esg" style="display:none">
+        <div class="narrative-block">Automated ESG (Environmental, Social, Governance) data extraction. Akashic pulls scope 1-3 emissions from travel/ERP systems and diversity metrics from HRMS for immediate board reporting.</div>
+        <div class="two-col">
+           <div class="panel-soft" style="padding:16px">
+              <div class="section-label mb-12" style="margin-top:0">Carbon Footprint (YTD)</div>
+              <div class="flex items-center gap-16 mb-12">
+                 <div style="flex:1"><div class="fs-11 muted" style="text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Scope 1 &amp; 2</div><div style="font-size:24px;font-weight:800">420<span class="fs-14 muted"> tCO2e</span></div></div>
+                 <div style="flex:1"><div class="fs-11 muted" style="text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Scope 3 (Travel)</div><div style="font-size:24px;font-weight:800" class="warn-text">850<span class="fs-14 muted"> tCO2e</span></div></div>
+              </div>
+              <div class="meter warn" style="margin-bottom:8px"><i style="width:75%"></i></div>
+              <div class="fs-11 muted">Tracking 12% above target due to Q1 onsite deployments.</div>
+           </div>
+           <div class="panel-soft" style="padding:16px">
+              <div class="section-label mb-12" style="margin-top:0">Diversity &amp; Governance</div>
+              <div class="kv-mini">
+                 <div><span>Leadership Diversity</span><b>38% Female</b></div>
+                 <div><span>Board Independence</span><b>75%</b></div>
+                 <div><span>Data Privacy Incidents</span><b class="good-text">0</b></div>
+              </div>
+              <button class="btn sm mt-12" onclick="AK.toast('ESG Report exporting as PDF')">Export Q1 ESG Report</button>
+           </div>
+        </div>
+      </div>
+
+      <div id="set-rbac" style="display:none">
+        <div class="narrative-block">Granular role × pillar access — <span class="good-text strong">●</span> full, <span class="warn-text strong">◐</span> scoped (“my portfolio”), <span style="color:var(--line-strong)">○</span> none. The Delivery Head gets a <b>scoped Financials slice</b> instead of a hard wall.</div>
+        <div class="panel-soft" style="padding:6px 18px 14px"><table class="rbac-tbl" id="rbac-tbl"></table></div>
+        <div class="section-label" style="margin-top:8px">Approval authority matrix</div>
+        <div class="panel-soft" id="auth-list"></div>
+      </div>
+
+      <div id="set-audit" style="display:none">
+        <div class="narrative-block">The audit log used to record actions only. Now sensitive <b>views</b> are logged too — who looked at comp or financial data, and when.</div>
+        <div class="panel-soft"><table style="width:100%" class="access-log"><tbody id="audit-rows"></tbody></table></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script src="v3.js"></script>
+<script>
+window.setTab=function(t){
+  document.querySelectorAll('.set-tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+  ['thresholds','metrics','alerts','esg','rbac','audit'].forEach(x=>{
+    const el = document.getElementById('set-'+x);
+    if(el) el.style.display=x===t?'':'none';
+  });
+};
+const THR=[
+  {name:'Client concentration limit',desc:'Top-3 ARR share that triggers a board signal',min:20,max:50,val:30,unit:'%'},
+  {name:'DSO target',desc:'Days Sales Outstanding ceiling',min:30,max:75,val:52,unit:'d'},
+  {name:'SLA compliance floor',desc:'Below this triggers penalty-risk signal',min:98,max:100,val:99.5,unit:'%',step:0.1},
+  {name:'Project margin floor',desc:'Margin below this flags the project',min:5,max:30,val:15,unit:'%'},
+  {name:'Attrition risk threshold',desc:'Exit-signal score that raises a people alert',min:50,max:95,val:75,unit:'%'},
+  {name:'Bench aging cliff',desc:'Idle days before cost-compounding alert',min:14,max:60,val:45,unit:'d'},
+];
+document.getElementById('thr-list').innerHTML=THR.map((t,i)=>`<div class="thr">
+  <div><div class="thr-name">${t.name}</div><div class="thr-desc">${t.desc}</div></div>
+  <div class="thr-input"><input type="range" min="${t.min}" max="${t.max}" step="${t.step||1}" value="${t.val}" oninput="document.getElementById('thrv${i}').textContent=this.value+'${t.unit}'"></div>
+  <div class="thr-val" id="thrv${i}">${t.val}${t.unit}</div>
+</div>`).join('');
+
+const ROUTES=[
+  ['Critical · cross-pillar',['Email','Slack','Push']],
+  ['Financial · overdue',['Email','Slack']],
+  ['People · attrition',['Slack']],
+  ['Delivery · SLA breach',['Email','Push']],
+  ['Renewal · at-risk',['Email','Slack','Push']],
+];
+document.getElementById('route-list').innerHTML=ROUTES.map(r=>`<div class="route-row">
+  <div style="font-size:12.5px;font-weight:600">${r[0]}</div>
+  <div class="chan-tog">${['Email','Slack','Push','SMS'].map(c=>`<span class="ctog ${r[1].includes(c)?'on':''}" onclick="this.classList.toggle('on')">${c}</span>`).join('')}<span class="ctog" onclick="AK.toast('Snoozed 24h')">⏸ Snooze</span></div>
+</div>`).join('');
+
+const ROLES=['CEO','CFO','Delivery Head','Account Owner','Project Lead'];
+const PILLARS=['Clients','Pipeline','Projects','Employees','Skills','Financials'];
+const MATRIX={
+  CEO:[2,2,2,2,2,2],CFO:[2,1,1,1,1,2],'Delivery Head':[1,2,2,2,2,1],
+  'Account Owner':[1,1,1,1,0,1],'Project Lead':[0,0,1,1,1,0],
+};
+const sym=['none','scoped','full'],glyph=['○','◐','●'];
+document.getElementById('rbac-tbl').innerHTML=`<thead><tr><th>Role</th>${PILLARS.map(p=>`<th>${p}</th>`).join('')}</tr></thead>
+<tbody>${ROLES.map(r=>`<tr><td>${r}</td>${MATRIX[r].map(v=>`<td><span class="perm ${sym[v]}" onclick="cyclePerm(this)" data-v="${v}">${glyph[v]}</span></td>`).join('')}</tr>`).join('')}</tbody>`;
+window.cyclePerm=function(el){let v=(+el.dataset.v+1)%3;el.dataset.v=v;el.className='perm '+sym[v];el.textContent=glyph[v];AK.toast('Permission updated');};
+
+document.getElementById('auth-list').innerHTML=[
+  ['Project Lead','up to ₹50 L','CRs & invoices'],
+  ['Account Owner','up to ₹2 Cr','renewal SOWs'],
+  ['Delivery Head','up to ₹5 Cr','re-forecasts, CRs'],
+  ['CFO','up to ₹10 Cr','all financial write-backs'],
+  ['CEO','unlimited','all actions'],
+].map(a=>`<div class="auth-row"><b style="min-width:130px">${a[0]}</b><span class="tag mono">${a[1]}</span><span class="muted fs-12">${a[2]}</span><button class="btn xs ghost" style="margin-left:auto" onclick="AK.toast('Authority limit editable')">Edit limit</button></div>`).join('');
+
+document.getElementById('audit-rows').innerHTML=[
+  ['09:42','Arjun Mehta','viewed','Employee comp · Vikram Rao'],
+  ['09:31','Devika Rao','viewed','Financials · Northwind receivables'],
+  ['08:58','Karthik Menon','attempted','Financials (scoped) · granted partial'],
+  ['08:40','Arjun Mehta','exported','Board pack PDF'],
+  ['Yesterday','Priya Nair','viewed','Client 360 · Meridian (own account)'],
+].map(a=>`<tr><td style="color:var(--ink-faint)">${a[0]}</td><td><b>${a[1]}</b></td><td style="color:var(--accent-2)">${a[2]}</td><td>${a[3]}</td></tr>`).join('');
+</script>
+</body>
+</html>

@@ -27,7 +27,7 @@
           </div>
           <div class="btn-row">
             <button class="btn sm">Customise pulse</button>
-            <button class="btn sm primary" onclick="AKV3.openBrief()">Send me the brief</button>
+            <button class="btn sm primary" onclick="AK.toast('Briefing exported to your inbox')">Send me the brief</button>
           </div>
         </div>
       </div>
@@ -164,10 +164,6 @@
                 <button class="btn" onclick="AK.toast('Assigned to Priya Nair — due in 3 days')">Assign to account owner</button>
                 <button class="btn" onclick="AK.toast('Re-forecast started — revenue model updated')">Re-forecast renewal</button>
                 <a href="Assistant.html" class="btn ghost">Simulate "if we lose this client" ›</a>
-                <button class="btn ghost" onclick="AKV3.openThread('Meridian Retail Group',{presence:['Devika Rao','Priya Nair']})">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  Discuss · 2 here
-                </button>
                 <button class="route-btn" onclick="AK.openHandoffPanel('Meridian 3-pillar composite risk · ₹14.2 Cr','meridian-composite')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 9V5h4"/><path d="M5 5l6 6"/><path d="M19 15v4h-4"/><path d="M19 19l-6-6"/></svg>
                   Route to…
@@ -198,7 +194,6 @@
 <script src="docdrawer.js"></script>
 <script src="provenance.js"></script>
 <script src="shell.js"></script>
-<script src="v3.js"></script>
 <script>
 /* ============================================================
    Home.html — persona-aware intelligence feed
@@ -287,19 +282,17 @@ function buildModelPanel(persona) {
       </div>
       <div class="panel-body">
         <div class="stackbar mb-12">
-          <span style="width:40%;background:var(--accent)">T&M 40%</span>
-          <span style="width:30%;background:var(--composite)">Fixed-Price 30%</span>
-          <span style="width:20%;background:var(--good)">Managed Svcs 20%</span>
-          <span style="width:10%;background:var(--warn)">Outcome-Based 10%</span>
+          <span style="width:46%;background:var(--accent)">T&M 46%</span>
+          <span style="width:33%;background:var(--composite)">Fixed-Price 33%</span>
+          <span style="width:21%;background:var(--good)">Managed Svcs 21%</span>
         </div>
         <div class="flex justify-between items-center wrap gap-12">
           <div class="legend">
             <div class="li"><span class="sw" style="background:var(--accent)"></span>Time &amp; Material <span class="trend down" style="margin-left:4px">▾ 3pt</span></div>
             <div class="li"><span class="sw" style="background:var(--composite)"></span>Fixed-Price <span class="trend flat" style="margin-left:4px">▪ flat</span></div>
-            <div class="li"><span class="sw" style="background:var(--good)"></span>Managed Services <span class="trend up" style="margin-left:4px">▴ 1pt</span></div>
-            <div class="li"><span class="sw" style="background:var(--warn)"></span>Outcome-Based <span class="trend up" style="margin-left:4px">▴ 2pt</span></div>
+            <div class="li"><span class="sw" style="background:var(--good)"></span>Managed Services <span class="trend up" style="margin-left:4px">▴ 3pt</span></div>
           </div>
-          <div class="fs-12 muted">Shift toward annuity revenue is <span class="good-text strong">on-strategy</span> — Outcome-based grew 2pt QoQ.</div>
+          <div class="fs-12 muted">Shift toward annuity revenue is <span class="good-text strong">on-strategy</span> — Managed Services up 3pt QoQ.</div>
         </div>
       </div>`;
   }
@@ -349,14 +342,6 @@ function buildModelPanel(persona) {
 function buildRail(persona) {
   if (persona === 'ceo') {
     return `<div class="rail-card mb-16">
-        <div class="rail-head"><span class="rail-title">Market Context</span></div>
-        <div style="padding:13px 15px" class="col gap-10">
-           <div class="wk-item"><span class="hdot good"></span><div><b>22.4%</b> Margin<div class="rail-sub">vs Peer Median: 21.0%</div></div></div>
-           <div class="wk-item"><span class="hdot crit"></span><div><b>₹7.7 L</b> Rev / Emp<div class="rail-sub">vs Top Quartile: ₹8.4 L</div></div></div>
-           <div class="wk-item"><span class="hdot good"></span><div><b>6.2%</b> Growth<div class="rail-sub">vs Peer Median: 4.8%</div></div></div>
-        </div>
-      </div>
-      <div class="rail-card mb-16">
         <div class="rail-head"><span class="rail-title">Top 5 Clients by ARR</span><a class="rail-more" href="Clients.html">All ›</a></div>
         <div id="rail-clients"></div>
       </div>
@@ -506,9 +491,8 @@ function fcard(c, persona) {
     </div>
     <div class="fc-actions">
       <div class="fc-quick">
-        <button class="qbtn" title="Assign" onclick="AKV3.markSignal('${c.id}','assigned');AK.toast('Assigned — remembered for next visit')">${AK.icon('assign')} <span>Assign</span></button>
-        <button class="qbtn" title="Flag" onclick="AKV3.markSignal('${c.id}','flagged');this.classList.add('qbtn-on');AK.toast('Flagged — persists across visits')">${AK.icon('flag')} <span>Flag</span></button>
-        <button class="qbtn" title="Snooze" onclick="AKV3.markSignal('${c.id}','snoozed');this.closest('.feed-card').style.opacity=.5;AK.toast('Snoozed until tomorrow')">${AK.icon('audit')} <span>Snooze</span></button>
+        <button class="qbtn" title="Assign" onclick="AK.toast('Assign — pick a person')">${AK.icon('assign')} <span>Assign</span></button>
+        <button class="qbtn" title="Flag" onclick="AK.toast('Flagged for follow-up')">${AK.icon('flag')} <span>Flag</span></button>
         <button class="route-btn" onclick="AK.openHandoffPanel('${c.sig.replace(/'/g,"\\'")} · ${c.ent.replace(/'/g,"\\'")}','${c.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 9V5h4"/><path d="M5 5l6 6"/><path d="M19 15v4h-4"/><path d="M19 19l-6-6"/></svg>
           Route
@@ -583,12 +567,9 @@ function buildFunnels(persona) {
    ============================================================ */
 function renderPulse(persona) {
   const tiles = PULSE_CONFIG[persona] || PULSE_CONFIG.ceo;
-  const BENCH_BY_LABEL={'Operating Margin':'margin','Cash · DSO':'dso','Rev / Employee':'revPerEmp','Top-3 Client Conc.':'concentration','Billable Utilization':'utilization'};
   document.getElementById('pulse').innerHTML = tiles.map(p => {
     const tcls = p.t==='up' ? 'up' : p.t==='down' ? 'down' : 'flat';
     const tico = p.t==='up' ? arrowUp : p.t==='down' ? arrowDn : arrowFlat;
-    const bkey = BENCH_BY_LABEL[p.l];
-    const bench = bkey && window.AKV3 ? `<div style="margin-top:6px">${AKV3.benchChip(bkey)}</div>` : '';
     return `<div class="pulse-tile">
       <div class="pt-label">${p.l} <span class="pop-info" title="${p.desc}">i</span></div>
       <div class="pt-val">${p.v}</div>
@@ -597,7 +578,6 @@ function renderPulse(persona) {
         ${spark(p.sp, p.c)}
       </div>
       <div style="margin-top:8px"><span class="vs-target ${p.vs}">${p.vst}</span></div>
-      ${bench}
     </div>`;
   }).join('');
 }
@@ -841,7 +821,6 @@ function setupPersona() {
   /* Feed — persona-sorted, default filter */
   const defaultFilter = persona === 'cfo' ? 'Financial' : persona === 'dh' ? 'Delivery' : 'All';
   filterFeed(defaultFilter);
-  injectContinuity(persona);
 
   /* Right rail */
   document.getElementById('home-rail').innerHTML = buildRail(persona);
@@ -856,32 +835,6 @@ function setupPersona() {
 
 /* Run */
 setupPersona();
-
-/* G17/G8 — personalization continuity cue + scope toggle */
-function injectContinuity(persona){
-  const label = document.getElementById('feed-count');
-  const personal = window.AKV3 ? AKV3.getPersonal() : {};
-  const flagged = Object.values(personal).filter(p=>p.state==='flagged').length;
-  const snoozed = Object.values(personal).filter(p=>p.state==='snoozed').length;
-  const host = document.getElementById('feed-narrative');
-  if(!host) return;
-  const cue = document.createElement('div');
-  cue.className='continuity-cue';
-  const owner = ({ceo:'all 48 accounts',cfo:'all ledgers',dh:'all 31 projects'})[persona];
-  cue.innerHTML = `
-    <div class="cue-left">✨ <b>2 signals resolved</b> since your last visit${flagged?` · <b>${flagged} flagged</b> still open`:''}${snoozed?` · ${snoozed} snoozed`:''}.</div>
-    <div class="scope-toggle">
-      <span class="scope-l">Scope</span>
-      <button class="scope-opt ${AKV3.getScope()==='all'?'on':''}" onclick="AKV3.setScope('all')">All (${owner})</button>
-      <button class="scope-opt ${AKV3.getScope()==='mine'?'on':''}" onclick="AKV3.setScope('mine')">My portfolio</button>
-    </div>`;
-  host.parentNode.insertBefore(cue, host.nextSibling);
-  if(AKV3.getScope()==='mine'){
-    const note=document.createElement('div'); note.className='scope-note';
-    note.innerHTML='Showing <b>your portfolio</b> only — scoped by owner fields in the data model (Priya Nair → 6 accounts). Delegation & RACI live on each signal.';
-    cue.after(note);
-  }
-}
 </script>
 
 <style>
@@ -955,14 +908,6 @@ function injectContinuity(persona){
 .wf-gap{font-size:11.5px;font-weight:700;font-family:var(--mono);padding-left:16px;}
 
 @media (max-width:1180px){.composite-legs{grid-template-columns:1fr;}.leg-arrow{display:none;}.home-grid{grid-template-columns:1fr;}}
-.continuity-cue{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:14px;font-size:12.5px;color:var(--ink-2)}
-.continuity-cue b{color:var(--ink)}
-.scope-toggle{display:flex;align-items:center;gap:6px}
-.scope-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
-.scope-opt{font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink-3);cursor:pointer}
-.scope-opt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.scope-note{font-size:12px;color:var(--ink-2);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:var(--r);padding:9px 13px;margin-bottom:14px}
-.qbtn.qbtn-on{background:var(--warn-soft);color:var(--warn);border-color:var(--warn-line)}
 </style>
 </body>
 </html>

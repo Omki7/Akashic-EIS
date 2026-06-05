@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Goal & Target Management</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="goals" data-persona="ceo" data-crumb="Goals & Targets" data-decisions="true"
+      data-entitytype="portfolio" data-entityid="" data-entityname="Portfolio Goals">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Goal & Target Management">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Strategic Alignment</div>
+            <h1 class="page-title">Goal & Target Management</h1>
+            <div class="page-sub">Board-level objectives cascaded to operational targets with full audit trail</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm">FY27 ▾</button>
+            <button class="btn sm primary" onclick="AK.toast('Target updated and propagated to child nodes')">Set New Target</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative-block">
+        <b>Targets are driving operational behavior.</b> Margin targets cascaded to the Delivery group have successfully capped bench drift. However, DSO targets at the CFO level are at risk due to misalignment with account-level collection SLAs. <span class="nar-systems">Akashic Originates</span>
+      </div>
+
+      <!-- KPI Cascading & Target Setting -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <div><div class="panel-title">Target Cascade & Ownership</div><div class="panel-sub">Board goal → Practice goal → Project goal</div></div>
+          <span class="panel-tag crit-text">⚑ DSO target at risk</span>
+        </div>
+        <div class="scroll-x">
+          <table class="tbl" id="cascade-tbl">
+            <thead><tr>
+              <th>KPI Node</th><th>Owner</th><th>Current Target</th><th>Actual</th><th>Status</th><th>Variance</th><th>Actions</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="cell-strong" style="padding-left:15px">Revenue Growth</td><td>Arjun Mehta (CEO)</td><td>₹160 Cr (Q1)</td><td>₹142.6 Cr</td><td><span class="conf md">Lagging</span></td><td class="crit-text">-10.8%</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+              <tr>
+                <td class="cell-strong" style="padding-left:35px">↳ Digital Practice</td><td>Karthik Menon (CDO)</td><td>₹85 Cr (Q1)</td><td>₹78.2 Cr</td><td><span class="conf md">Lagging</span></td><td class="crit-text">-8.0%</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+              <tr>
+                <td class="cell-strong" style="padding-left:35px">↳ Cloud Practice</td><td>Karthik Menon (CDO)</td><td>₹75 Cr (Q1)</td><td>₹64.4 Cr</td><td><span class="conf md">Lagging</span></td><td class="crit-text">-14.1%</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+              <tr>
+                <td class="cell-strong" style="padding-left:15px">Operating Margin</td><td>Devika Rao (CFO)</td><td>24.0%</td><td>22.4%</td><td><span class="conf md">Lagging</span></td><td class="warn-text">-1.6 pts</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+              <tr>
+                <td class="cell-strong" style="padding-left:15px">DSO (Days Sales Outstanding)</td><td>Devika Rao (CFO)</td><td>≤ 52 days</td><td>58 days</td><td><span class="conf lo">At Risk</span></td><td class="crit-text">+6 days</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+              <tr>
+                <td class="cell-strong" style="padding-left:15px">Employee Retention (Top Tier)</td><td>Sneha Pillai (CHRO)</td><td>≥ 95%</td><td>92%</td><td><span class="conf md">Lagging</span></td><td class="warn-text">-3 pts</td>
+                <td><button class="btn xs">Adjust</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Historical Target vs Actual -->
+      <div class="fin-two mb-20">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div><div class="panel-title">Historical Target vs Actual Tracker</div><div class="panel-sub">Select KPI to view historical performance against board targets</div></div>
+            <select class="fpill" style="margin-left:auto"><option>Operating Margin</option><option>Revenue</option><option>DSO</option></select>
+          </div>
+          <div class="panel-body">
+            <div class="fva" id="history-chart"></div>
+            <div class="flex justify-between mono faint fs-11 mt-8"><span>Q1 FY26</span><span>Q2 FY26</span><span>Q3 FY26</span><span>Q4 FY26</span><span>Q1 FY27</span></div>
+            <div class="legend mt-12">
+              <span class="li"><span class="sw" style="background:var(--ink-3)"></span>Actual</span>
+              <span class="li"><span class="sw" style="background:var(--accent);opacity:.4"></span>Target</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Change Audit Trail -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div><div class="panel-title">Target Change Audit Trail</div><div class="panel-sub">Immutable log of target revisions</div></div>
+          </div>
+          <div class="panel-body" style="padding:0">
+             <table class="tbl tbl-sm">
+                <thead><tr><th>Date</th><th>KPI</th><th>Old</th><th>New</th><th>User</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono fs-11 faint">12 May 2026</td><td class="strong">DSO</td><td>55 days</td><td>52 days</td><td>Board Auth</td></tr>
+                  <tr><td class="mono fs-11 faint">01 Apr 2026</td><td class="strong">Revenue</td><td>₹150 Cr</td><td>₹160 Cr</td><td>Arjun Mehta</td></tr>
+                  <tr><td class="mono fs-11 faint">15 Mar 2026</td><td class="strong">Margin</td><td>22.0%</td><td>24.0%</td><td>Devika Rao</td></tr>
+                  <tr><td class="mono fs-11 faint">10 Jan 2026</td><td class="strong">Retention</td><td>90%</td><td>95%</td><td>Sneha Pillai</td></tr>
+                </tbody>
+             </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+/* Historical Target vs Actual Chart */
+const historyData = [
+  { q: 'Q1 26', actual: 21.5, target: 22.0 },
+  { q: 'Q2 26', actual: 22.8, target: 22.0 },
+  { q: 'Q3 26', actual: 23.1, target: 22.0 },
+  { q: 'Q4 26', actual: 24.2, target: 24.0 },
+  { q: 'Q1 27', actual: 22.4, target: 24.0 }
+];
+const maxV = 28;
+$('#history-chart').innerHTML = '<div style="display:flex;align-items:flex-end;gap:18px;height:150px;border-bottom:1px solid var(--line-2)">' + historyData.map(d => {
+  return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+            <div class="mono fs-11 strong" style="margin-bottom:2px">${d.actual}%</div>
+            <div style="position:relative;width:60%;height:${Math.max(d.actual, d.target)/maxV*100}%">
+              <div style="position:absolute;bottom:0;width:100%;background:var(--ink-3);border-radius:4px 4px 0 0;height:${d.actual/Math.max(d.actual, d.target)*100}%;z-index:2"></div>
+              <div style="position:absolute;bottom:0;width:100%;background:var(--accent);opacity:0.4;border-radius:4px 4px 0 0;height:${d.target/Math.max(d.actual, d.target)*100}%;z-index:1"></div>
+            </div>
+          </div>`;
+}).join('') + '</div>';
+</script>
+
+<style>
+.fin-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+@media (max-width:1100px){.fin-two{grid-template-columns:1fr;}}
+</style>
+</body>
+</html>

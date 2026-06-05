@@ -35,60 +35,6 @@
   try { queue = JSON.parse(sessionStorage.getItem('ak_actions') || '[]'); } catch {}
   function save() { try { sessionStorage.setItem('ak_actions', JSON.stringify(queue)); } catch {} }
 
-  /* ============================================================
-     DECISION JOURNAL (G1) — every action carries a lifecycle past
-     "synced": in-effect → awaiting-outcome → resolved (worked/didn't)
-     ============================================================ */
-  const SEED_DECISIONS = [
-    { id:'DEC-2041', type:'COLLECTION_ACTION', label:'Dunning notice — Northwind ₹2.4 Cr', entityName:'Northwind Insurance', entityType:'client',
-      decidedBy:'Devika Rao', decidedAt:'28 May 2026', status:'awaiting-outcome', dueBy:'04 Jun 2026', signal:'renewal', predicted:'Pay within 7 days (62% likely)', model:'collection-propensity', followUp:'Check Northwind payment status', outcome:null },
-    { id:'DEC-2038', type:'APPROVE_HIKE', label:'Retention hike — Vikram Rao (+18%)', entityName:'Vikram Rao', entityType:'employee',
-      decidedBy:'Arjun Mehta', decidedAt:'22 May 2026', status:'in-effect', dueBy:'05 Jun 2026', signal:'attrition', predicted:'Accept & stay 12mo+ (71% likely)', model:'attrition-risk', followUp:'Confirm offer acceptance in Darwinbox', outcome:null },
-    { id:'DEC-2035', type:'REFORECAST', label:'Re-forecast Orion margin to 14%', entityName:'Orion Rollout', entityType:'project',
-      decidedBy:'Karthik Menon', decidedAt:'14 May 2026', status:'resolved', resolvedAs:'worked', dueBy:'30 May 2026', signal:'margin', predicted:'Margin holds at 14–15%', model:'margin-forecast', followUp:null, outcome:'Margin landed 14.3% — forecast accurate.' },
-    { id:'DEC-2030', type:'RAISE_RENEWAL_SOW', label:'Renewal SOW — Brightwater (₹5.2 Cr)', entityName:'Brightwater Utilities', entityType:'client',
-      decidedBy:'Arjun Mehta', decidedAt:'02 May 2026', status:'resolved', resolvedAs:'didnt', dueBy:'20 May 2026', signal:'renewal', predicted:'Renew at ₹5.2 Cr (71% likely)', model:'renewal-cohort', followUp:null, outcome:'Client downscoped to ₹3.8 Cr — model over-predicted by 27%.' },
-  ];
-  let decisions = [];
-  try { decisions = JSON.parse(sessionStorage.getItem('ak_decisions') || 'null') || SEED_DECISIONS.slice(); }
-  catch { decisions = SEED_DECISIONS.slice(); }
-  function saveDecisions() { try { sessionStorage.setItem('ak_decisions', JSON.stringify(decisions)); } catch {} }
-  function getDecisions() { return decisions; }
-  function resolveDecision(id, as, note) {
-    const d = decisions.find(x=>x.id===id); if (!d) return;
-    d.status='resolved'; d.resolvedAs=as; d.outcome=note||(as==='worked'?'Outcome confirmed positive.':'Outcome did not match prediction.');
-    saveDecisions();
-    document.dispatchEvent(new CustomEvent('ak-decision-resolved',{detail:d}));
-  }
-
-  /* ============================================================
-     FRESHNESS / CONFIDENCE GATING (G11)
-     Trust now flows into the action path, not just reading.
-     ============================================================ */
-  const STALE_SYSTEMS = { billing:{ name:'Tally', age:'42 min', sla:'5 min' } };
-  function dataGate(def, opts) {
-    let warns = [];
-    def.systems.forEach(s => {
-      if (STALE_SYSTEMS[s]) {
-        const g = STALE_SYSTEMS[s];
-        warns.push({ kind:'fresh', msg:`<b>${g.name}</b> last synced <b>${g.age} ago</b> (SLA ${g.sla}). This action depends on it — data may be stale.`, cta:'Refresh source' });
-      }
-    });
-    /* Confidence interlock — low-confidence source docs */
-    if (opts && opts.lowConfDoc) {
-      warns.push({ kind:'conf', msg:`Source <b>${opts.lowConfDoc}</b> extracted at <b>0.71 confidence</b> (below 0.85 threshold). Validate before committing a write-back.`, cta:'Validate source' });
-    }
-    if (!warns.length) return '';
-    return `<div class="ac-gate">
-      ${warns.map(w=>`<div class="ac-gate-row ${w.kind}">
-        <span class="ac-gate-ico">⚠</span>
-        <div style="flex:1">${w.msg}</div>
-        <button type="button" class="btn xs" onclick="AK&&AK.toast('${w.cta} — routed')">${w.cta}</button>
-      </div>`).join('')}
-      <label class="ac-gate-ack"><input type="checkbox" id="ac-gate-ack" /> I acknowledge the data vintage and proceed anyway</label>
-    </div>`;
-  }
-
   /* ---- Composer modal ---- */
   function compose(opts) {
     close();
@@ -132,7 +78,6 @@
     <span class="ac-approver">Approver: <b>${def.approver}</b></span>
   </div>
   <form id="ak-action-form" class="ac-body">
-    ${dataGate(def, opts)}
     <div class="ac-fields">${fields}</div>
     <div class="ac-footer">
       <div class="ac-status-preview">
@@ -154,13 +99,6 @@
   }
 
   function submit(type, def, opts, formData) {
-    const gateAck = document.getElementById('ac-gate-ack');
-    if (gateAck && !gateAck.checked) {
-      const g = gateAck.closest('.ac-gate'); if (g) g.classList.add('ac-gate-shake');
-      AK && AK.toast('Acknowledge the data vintage to proceed');
-      setTimeout(()=>{ const gg=document.querySelector('.ac-gate'); gg&&gg.classList.remove('ac-gate-shake'); },500);
-      return;
-    }
     const payload = {};
     def.fields.forEach(f => { payload[f.id] = formData.get(f.id); });
     const action = {
@@ -172,73 +110,17 @@
       status: 'pending',
       createdBy: 'Arjun Mehta',
       createdAt: new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }),
-      dataVintage: def.systems.some(s=>STALE_SYSTEMS[s]) ? 'Tally @ 42m old' : 'live',
       payload,
     };
     queue.unshift(action);
     save();
-    /* G1 — every fired action opens a decision in the journal */
-    decisions.unshift({
-      id: 'DEC-' + Math.floor(1000 + Math.random()*9000),
-      type, label: def.label + (opts.entityName ? ' — ' + opts.entityName : ''),
-      entityName: opts.entityName || '—', entityType: opts.entityType,
-      decidedBy:'Arjun Mehta', decidedAt:'Just now', status:'in-effect',
-      dueBy:'+7 days', signal: opts.signal || 'general',
-      predicted:'Outcome tracking started', model:'—',
-      followUp:'Auto follow-up scheduled in 7 days', outcome:null,
-    });
-    saveDecisions();
     close();
-
+    
     // Trigger sync simulation
     simulateSync(action, () => {
-      AK && AK.toast('Action · ' + action.id + ' → awaiting ' + def.approver + ' · tracked in My Decisions');
+      AK && AK.toast('Action created · ' + action.id + ' → awaiting ' + def.approver);
       document.dispatchEvent(new CustomEvent('ak-action-created', { detail: action }));
     });
-  }
-
-  /* ============================================================
-     PLAYBOOKS (G3) — a recommendation becomes a bundled, ordered
-     action plan. "Accept plan" fans out into composer actions.
-     ============================================================ */
-  const PLAYBOOKS = {
-    'meridian-save': {
-      name:'Meridian Save Plan', subtitle:'Renewal-at-risk · 3-pillar composite',
-      steps:[
-        { type:'RAISE_RENEWAL_SOW', label:'Open renewal SOW', approver:'CEO', owner:'Priya Nair', prefill:{client:'Meridian Retail Group', value:'14.2', duration:'24'} },
-        { type:'FLAG_SUCCESSION',   label:'Assign shadow for Vikram Rao', approver:'Delivery Head', owner:'Karthik Menon', prefill:{employee:'Vikram Rao', shadow:'Imran Qureshi'} },
-        { type:'RAISE_INVOICE',     label:'Recover ₹48 L unbilled (M8)', approver:'CFO', owner:'Devika Rao', prefill:{amount:'0.48', milestone:'M8 Pre-launch'} },
-      ],
-    },
-    'key-person-exit': {
-      name:'Key-Person Exit Playbook', subtitle:'SPOF mitigation',
-      steps:[
-        { type:'APPROVE_HIKE',     label:'Approve retention hike', approver:'CEO', owner:'Arjun Mehta', prefill:{employee:'Vikram Rao'} },
-        { type:'FLAG_SUCCESSION',  label:'Stand up succession plan', approver:'Delivery Head', owner:'Karthik Menon', prefill:{employee:'Vikram Rao'} },
-        { type:'REDEPLOY',         label:'Cross-train shadow', approver:'Delivery Head', owner:'Karthik Menon', prefill:{employee:'Imran Qureshi'} },
-      ],
-    },
-    'margin-recovery': {
-      name:'Margin Recovery Playbook', subtitle:'Project at-risk',
-      steps:[
-        { type:'APPROVE_CR',  label:'Raise scope change request', approver:'Delivery Head', owner:'Ananya Krishnan', prefill:{crTitle:'Atlas scope re-baseline'} },
-        { type:'REFORECAST',  label:'Re-forecast margin', approver:'CFO', owner:'Devika Rao', prefill:{} },
-        { type:'RAISE_INVOICE', label:'Bill completed milestone', approver:'CFO', owner:'Devika Rao', prefill:{} },
-      ],
-    },
-  };
-
-  let playbookRuns = [];
-  try { playbookRuns = JSON.parse(sessionStorage.getItem('ak_playbooks')||'[]'); } catch {}
-  function savePlaybooks(){ try { sessionStorage.setItem('ak_playbooks', JSON.stringify(playbookRuns)); } catch {} }
-  function getPlaybookRuns(){ return playbookRuns; }
-  function runPlaybook(id) {
-    const pb = PLAYBOOKS[id]; if (!pb) { AK&&AK.toast('Unknown playbook'); return; }
-    const run = { id:'PB-'+Math.floor(1000+Math.random()*9000), playbook:id, name:pb.name, total:pb.steps.length, done:0, startedAt:'Just now', steps: pb.steps.map(s=>({...s, state:'queued'})) };
-    playbookRuns.unshift(run); savePlaybooks();
-    AK && AK.toast(`“${pb.name}” accepted · ${pb.steps.length} actions queued as one workstream`);
-    document.dispatchEvent(new CustomEvent('ak-playbook-started',{detail:run}));
-    return run;
   }
 
   function simulateSync(action, onComplete) {
@@ -397,16 +279,7 @@
 .sync-step{font-size:13px;display:flex;align-items:center;gap:8px;padding:4px 0}
 .sync-step.muted{opacity:0.4}
 .sync-step .bullet{font-family:var(--mono);width:16px;display:inline-block;text-align:center;font-weight:bold}
-.sync-step.strong{font-weight:600;color:var(--ink)}
-.ac-gate{background:var(--warn-soft);border:1px solid var(--warn-line);border-radius:var(--r);padding:11px 13px;margin-bottom:16px}
-.ac-gate-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2);line-height:1.45;padding:4px 0}
-.ac-gate-row.conf{border-top:1px dashed var(--warn-line);padding-top:9px;margin-top:3px}
-.ac-gate-ico{color:var(--warn);font-size:14px;flex:0 0 auto}
-.ac-gate-row b{color:var(--ink)}
-.ac-gate-ack{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink-2);margin-top:9px;padding-top:9px;border-top:1px solid var(--warn-line);cursor:pointer}
-.ac-gate-ack input{width:15px;height:15px;accent-color:var(--warn)}
-.ac-gate-shake{animation:gateShake .4s}
-@keyframes gateShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}`;
+.sync-step.strong{font-weight:600;color:var(--ink)}`;
     document.head.appendChild(s);
   }
 
@@ -418,9 +291,6 @@
     getQueue: () => queue,
     getActionDefs: () => ACTION_DEFS,
     getSystems: () => SYSTEMS,
-    getDecisions, saveDecisions, resolveDecision,
-    runPlaybook, getPlaybookRuns,
-    getPlaybooks: () => PLAYBOOKS,
     decisionsFor,
     statusChip,
     syncBadge,

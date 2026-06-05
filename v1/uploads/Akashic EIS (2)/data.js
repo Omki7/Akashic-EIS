@@ -119,54 +119,6 @@
     }
   ];
 
-  /* ---- Pipeline / Pursuit pillar (G13) ---- */
-  const DEFAULT_PURSUITS = [
-    { id:'PU01', name:'Meridian Renewal SOW',     clientId:'C01', type:'Renewal',   stage:'qualify',   value:14.2, prob:54, owner:'Priya Nair',  ownerInit:'PN', close:'20 Jun 2026', practice:'Digital',       source:'Renewal-at-risk', age:9,  nextStep:'Open renewal SOW before MSA expiry' },
-    { id:'PU02', name:'Hanseatic 3-yr Renewal',   clientId:'C02', type:'Renewal',   stage:'propose',   value:8.6,  prob:62, owner:'Rohan Desai', ownerInit:'RD', close:'25 Jun 2026', practice:'Enterprise Apps', source:'Renewal',        age:14, nextStep:'Sponsor changed — re-baseline value case' },
-    { id:'PU03', name:'Cobalt Expansion — Data Platform', clientId:'C03', type:'Expansion', stage:'verbal', value:5.1, prob:85, owner:'Priya Nair', ownerInit:'PN', close:'12 Jul 2026', practice:'Data & AI', source:'Account growth', age:21, nextStep:'Paperwork in flight — needs 6 data engineers' },
-    { id:'PU04', name:'Indus Data Platform',      clientId:'C04', type:'Expansion', stage:'propose',   value:3.8,  prob:48, owner:'Anil Kapoor', ownerInit:'AK', close:'05 Aug 2026', practice:'Data & AI',      source:'Account growth', age:18, nextStep:'Matches 4 bench engineers' },
-    { id:'PU05', name:'Aurora Bank Core Modernisation', clientId:null, name2:'Aurora Bank', stage:'negotiate', type:'New logo', value:12.4, prob:40, owner:'Rohan Desai', ownerInit:'RD', close:'18 Aug 2026', practice:'Enterprise Apps', source:'Inbound RFP', age:34, nextStep:'Commercial round 2 — margin pressure' },
-    { id:'PU06', name:'Tideworks Logistics AI',   clientId:null, name2:'Tideworks', stage:'qualify',   type:'New logo',  value:6.7,  prob:30, owner:'Kavya Iyer',  ownerInit:'KI', close:'30 Sep 2026', practice:'Data & AI',     source:'Partner referral', age:7, nextStep:'Discovery workshop scheduled' },
-    { id:'PU07', name:'Vermillion Managed Svc Extn', clientId:'C07', type:'Expansion', stage:'propose', value:4.4, prob:58, owner:'Kavya Iyer', ownerInit:'KI', close:'07 Aug 2026', practice:'Cloud', source:'Account growth', age:25, nextStep:'Tie to SLA recovery story' },
-    { id:'PU08', name:'Northwind Renewal',        clientId:'C05', type:'Renewal',   stage:'qualify',   value:6.4,  prob:38, owner:'Kavya Iyer',  ownerInit:'KI', close:'14 Nov 2026', practice:'Cloud',          source:'Renewal-at-risk', age:3, nextStep:'Resolve ₹2.4 Cr overdue first' },
-  ];
-
-  /* ---- Skills & Capability pillar (G13) ---- */
-  const DEFAULT_SKILLS = [
-    { id:'SK01', skill:'Data Engineering (Spark)', practice:'Data & AI',  supply:42, billable:34, bench:8, demand90:14, certified:18, trend:'short' },
-    { id:'SK02', skill:'SAP S/4HANA',              practice:'Enterprise Apps', supply:9, billable:8, bench:1, demand90:6, certified:5, trend:'critical' },
-    { id:'SK03', skill:'Cloud Architecture (AWS)', practice:'Cloud',      supply:64, billable:55, bench:9, demand90:11, certified:40, trend:'short' },
-    { id:'SK04', skill:'LLM / GenAI Engineering',  practice:'Data & AI',  supply:16, billable:14, bench:2, demand90:12, certified:6, trend:'critical' },
-    { id:'SK05', skill:'React / Frontend',         practice:'Digital',    supply:58, billable:46, bench:12, demand90:7, certified:30, trend:'surplus' },
-    { id:'SK06', skill:'QA Automation',            practice:'QA & Testing', supply:48, billable:38, bench:10, demand90:5, certified:22, trend:'surplus' },
-    { id:'SK07', skill:'Cybersecurity (IAM)',      practice:'Cybersecurity', supply:22, billable:18, bench:4, demand90:9, certified:14, trend:'short' },
-  ];
-
-  /* Bench → pipeline match (G13) */
-  const DEFAULT_BENCH_MATCH = [
-    { empId:'E09', empName:'Kavya Sharma', skill:'Cloud Architecture (AWS)', idle:34, matchTo:'PU03', matchName:'Cobalt Expansion', fit:88 },
-    { empId:null,  empName:'3 × Data Engineers', skill:'Data Engineering (Spark)', idle:34, matchTo:'PU04', matchName:'Indus Data Platform', fit:82 },
-    { empId:null,  empName:'2 × QA Automation',  skill:'QA Automation', idle:28, matchTo:'PU07', matchName:'Vermillion Extn', fit:64 },
-  ];
-
-  /* ---- Integration health & reconciliation (G12) ---- */
-  const DEFAULT_EXCEPTIONS = [
-    { id:'EX01', kind:'sync-fail', system:'Salesforce CRM', actionId:'ACT-4821', title:'Renewal SOW write-back rejected', detail:'Salesforce returned 400 — Opportunity stage "Renewal" not valid for record type. Field mapping needs review.', severity:'crit', age:'18 min', retry:true },
-    { id:'EX02', kind:'reconcile', system:'SAP ↔ Tally', actionId:null, title:'Revenue figure mismatch — Meridian Orion', detail:'SAP reports ₹7.2 Cr booked; Tally ledger shows ₹6.84 Cr billed. ₹36 L variance on milestone M7 needs reconciliation.', severity:'crit', age:'42 min', retry:false },
-    { id:'EX03', kind:'lag', system:'Tally', actionId:null, title:'Tally sync lagging — 42 min behind', detail:'Last successful pull 42 min ago vs 5 min SLA. Financial actions built on Tally data may be stale.', severity:'warn', age:'42 min', retry:true },
-    { id:'EX04', kind:'reconcile', system:'Darwinbox ↔ PSA', actionId:null, title:'Headcount mismatch — Data & AI', detail:'Darwinbox shows 320 active; PSA allocations sum to 314. 6-person delta (likely bench not synced).', severity:'warn', age:'2 hr', retry:false },
-  ];
-
-  /* ---- Outside-in benchmarks (G16) ---- */
-  const BENCHMARKS = {
-    margin:        { label:'Operating Margin', firm:22.4, median:21.0, top:28.0, unit:'%', better:'high' },
-    dso:           { label:'DSO', firm:58, median:49, top:38, unit:'d', better:'low' },
-    utilization:   { label:'Billable Utilization', firm:78.6, median:80, top:86, unit:'%', better:'high' },
-    revPerEmp:     { label:'Rev / Employee', firm:7.7, median:6.9, top:9.4, unit:'L/mo', better:'high' },
-    concentration: { label:'Top-3 Concentration', firm:31, median:26, top:18, unit:'%', better:'low' },
-    attrition:     { label:'Voluntary Attrition', firm:14.2, median:17.5, top:11.0, unit:'%', better:'low' },
-  };
-
   function loadState() {
     try {
       const data = sessionStorage.getItem('ak_data');
@@ -206,13 +158,6 @@
     get documents() { return state.documents; },
     get practices() { return state.practices; },
     get transactions() { return state.transactions; },
-
-    /* v3 datasets (not persisted in sessionStorage — static reference) */
-    get pursuits()    { return DEFAULT_PURSUITS; },
-    get skills()      { return DEFAULT_SKILLS; },
-    get benchMatch()  { return DEFAULT_BENCH_MATCH; },
-    get exceptions()  { return DEFAULT_EXCEPTIONS; },
-    get benchmarks()  { return BENCHMARKS; },
 
     save() { saveState(); },
 

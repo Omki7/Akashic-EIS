@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Skills & Capability</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .sk-tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:26px}
+  .gapbar{position:relative;height:22px;background:var(--surface-3);border-radius:5px;overflow:hidden;min-width:160px}
+  .gapbar .supply{position:absolute;left:0;top:0;bottom:0;background:var(--good-soft);border-right:2px solid var(--good)}
+  .gapbar .demand{position:absolute;top:0;bottom:0;border-left:2px dashed var(--critical)}
+  .gapbar .lbl{position:absolute;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;font-family:var(--mono)}
+  .trendpill{font-size:10px;font-weight:700;font-family:var(--mono);padding:2px 8px;border-radius:5px;text-transform:uppercase}
+  .trendpill.critical{background:var(--critical-soft);color:var(--critical)}
+  .trendpill.short{background:var(--warn-soft);color:var(--warn)}
+  .trendpill.surplus{background:var(--good-soft);color:var(--good)}
+  .match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .match-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px 18px}
+  .match-flow{display:flex;align-items:center;gap:12px;margin:12px 0}
+  .mf-node{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:10px;text-align:center}
+  .mf-node .t{font-size:12.5px;font-weight:700}.mf-node .s{font-size:11px;color:var(--ink-3)}
+  .mf-arrow{color:var(--accent);font-size:18px;flex:0 0 auto}
+  .fit{font-size:11px;font-weight:700;font-family:var(--mono);padding:2px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2)}
+</style>
+</head>
+<body data-screen="skills" data-persona="dh" data-crumb="Pillars / Skills &amp; Capability">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content" data-screen-label="Skills & Capability">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Spine node · Skill</div>
+            <h1 class="page-title">Skills &amp; Capability</h1>
+            <div class="page-sub" style="max-width:680px">The Skill vertebra, now real. Capability inventory and gaps versus the 90-day pipeline, certifications, and the long-promised bench→pipeline matcher — capacity planning for a services firm, not an afterthought.</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm primary" onclick="AK.toast('Hiring plan drafted from skill gaps')">Draft hiring plan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pl-metrics" id="sk-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px"></div>
+
+      <div class="two-col mb-24" style="grid-template-columns: 2fr 1fr; gap:20px; align-items:start">
+        <div>
+          <div class="section-label">Capability inventory <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— supply (green) vs. 90-day pipeline demand (dashed)</span></div>
+          <div class="sk-tbl-wrap" style="margin-bottom:0">
+            <table class="tbl">
+              <thead><tr><th>Skill</th><th>Practice</th><th class="r">Supply</th><th class="r">Bench</th><th class="r">90d Demand</th><th>Supply vs Demand</th><th class="r">Certified</th><th>Status</th></tr></thead>
+              <tbody id="sk-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">Market Context &amp; Competitors</div>
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px">
+             <div class="fs-11 muted mb-8" style="text-transform:uppercase;letter-spacing:.05em;font-weight:700">Competitor Moves</div>
+             <div class="col gap-10 mb-16">
+                <div style="border-left:2px solid var(--critical);padding-left:10px">
+                   <div class="fs-13 strong">Wipro aggressively hiring AI</div>
+                   <div class="fs-12 muted mt-2">Opened 400+ GenAI roles in Bengaluru over last 30 days.</div>
+                </div>
+                <div style="border-left:2px solid var(--warn);padding-left:10px">
+                   <div class="fs-13 strong">TCS freezing SAP core hiring</div>
+                   <div class="fs-12 muted mt-2">Shift focus to cloud migrations; easing SAP talent constraints.</div>
+                </div>
+             </div>
+
+             <div class="fs-11 muted mb-8" style="text-transform:uppercase;letter-spacing:.05em;font-weight:700">Market Demand Trends</div>
+             <div class="col gap-8">
+                <div class="flex justify-between items-center"><span class="fs-13">GenAI Architecture</span><span class="badge b-active"><span class="bd"></span>High Demand</span></div>
+                <div class="flex justify-between items-center"><span class="fs-13">Cloud FinOps</span><span class="badge b-active"><span class="bd"></span>High Demand</span></div>
+                <div class="flex justify-between items-center"><span class="fs-13">Legacy RPA</span><span class="badge b-risk"><span class="bd"></span>Declining</span></div>
+             </div>
+             
+             <div class="divider" style="margin:16px 0 12px"></div>
+             <div class="fs-12" style="color:var(--ink-2)"><b>Intelligence Insight:</b> Akashic's bench has 14 legacy RPA engineers. Highly recommend cross-skilling them to Cloud FinOps based on our 90d demand curve and market tailwinds.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Bench → Pipeline Matcher <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— idle capacity matched to open pursuits before cost compounds</span></div>
+      <div class="match-grid" id="sk-match"></div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script src="v3.js"></script>
+<script>
+const SK=AKData.skills;
+const totalBench=SK.reduce((s,x)=>s+x.bench,0);
+const critical=SK.filter(s=>s.trend==='critical').length;
+const totalDemand=SK.reduce((s,x)=>s+x.demand90,0);
+
+document.getElementById('sk-metrics').innerHTML=[
+  ['Critical Skill Gaps',critical+'','SAP S/4 & GenAI scarce','var(--critical)'],
+  ['On Bench',totalBench+'','redeployable now','var(--warn)'],
+  ['90-Day Demand',totalDemand+'','roles to fill from pipeline','var(--accent-2)'],
+  ['Bench Match Rate','82%','of bench fits open pursuits','var(--good)'],
+].map(m=>`<div class="pulse-tile"><div class="pt-label">${m[0]}</div><div class="pt-val" style="color:${m[3]}">${m[1]}</div><div style="margin-top:8px"><span class="vs-target near" style="background:var(--surface-2);color:var(--ink-3)">${m[2]}</span></div></div>`).join('');
+
+const maxSD=Math.max(...SK.map(s=>Math.max(s.supply,s.demand90+s.billable)));
+document.getElementById('sk-rows').innerHTML=SK.map(s=>{
+  const supplyPct=s.supply/maxSD*100;
+  const demandPos=(s.billable+s.demand90)/maxSD*100;
+  const gap=s.demand90-s.bench;
+  return `<tr class="row-click" onclick="AK.toast('Opening ${s.skill} capacity plan')">
+    <td class="cell-strong">${s.skill}</td>
+    <td class="cell-sub">${s.practice}</td>
+    <td class="r cell-mono">${s.supply}</td>
+    <td class="r cell-mono ${s.bench>8?'warn-text':''}">${s.bench}</td>
+    <td class="r cell-mono ${s.demand90>s.bench?'crit-text':''}">${s.demand90}</td>
+    <td><div class="gapbar"><div class="supply" style="width:${supplyPct}%"></div><div class="demand" style="left:${Math.min(98,demandPos)}%"></div></div></td>
+    <td class="r cell-mono">${s.certified}</td>
+    <td><span class="trendpill ${s.trend}">${s.trend==='surplus'?'surplus':s.trend==='short'?'tight':'critical'}</span></td>
+  </tr>`;
+}).join('');
+
+document.getElementById('sk-match').innerHTML=AKData.benchMatch.map(m=>`<div class="match-card">
+  <div class="flex items-center justify-between"><b style="font-size:13px">${m.skill}</b><span class="fit">${m.fit}% fit</span></div>
+  <div class="match-flow">
+    <div class="mf-node"><div class="t">${m.empName}</div><div class="s">${m.idle}d idle</div></div>
+    <div class="mf-arrow">→</div>
+    <div class="mf-node"><div class="t">${m.matchName}</div><div class="s">open pursuit</div></div>
+  </div>
+  <button class="btn sm primary" style="width:100%" onclick="AKActions.compose({type:'REDEPLOY',entityType:'employee',entityName:'${m.empName.replace(/'/g,"")}',prefill:{employee:'${m.empName.replace(/'/g,"")}',project:'${m.matchName}'}})">Redeploy to pursuit ›</button>
+</div>`).join('');
+</script>
+</body>
+</html>

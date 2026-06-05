@@ -34,11 +34,6 @@
     close:    '<path d="M18 6 6 18M6 6l12 12"/>',
     route:    '<path d="M5 9V5h4"/><path d="M5 5l6 6"/><path d="M19 15v4h-4"/><path d="M19 19l-6-6"/>',
     handoff:  '<path d="M9 12h6"/><path d="M15 8l4 4-4 4"/><path d="M3 6h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3"/>',
-    horizon:  '<path d="M3 12h18"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><path d="M3 6v12M21 6v12"/>',
-    decisions:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
-    pipeline: '<path d="M3 6h18"/><path d="M6 12h12"/><path d="M9 18h6"/>',
-    skills:   '<path d="M12 2 4 6v6c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V6z"/><path d="M9 12l2 2 4-4"/>',
-    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 3.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 3.6h.09A1.65 1.65 0 0 0 9 2.09V2a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 14 3.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.4 8v.09c.66.1 1.2.55 1.51 1.51"/>',
   };
   function icon(name, cls) {
     return `<svg class="${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${I[name]||''}</svg>`;
@@ -93,27 +88,21 @@
   const NAV_PRIMARY = [
     { id:'home',      label:'Home',        ico:'home',      href:'Home.html' },
     { id:'assistant', label:'Ask Akashic', ico:'ai',        href:'Assistant.html' },
-    { id:'horizon',   label:'Horizon',     ico:'horizon',   href:'Horizon.html' },
-    { id:'goals',     label:'Goals & Targets', ico:'flag',  href:'Goals.html' },
-    { id:'handoffs',  label:'Handoffs',    ico:'route',     href:'Handoffs.html', badge:'1', alert:true },
-    { id:'decisions', label:'My Decisions',ico:'decisions', href:'Decisions.html', badge:'3' },
     { id:'approvals', label:'Approvals',   ico:'approvals', href:'Approvals.html', badge:'5', alert:true },
   ];
 
   const NAV_PILLARS_BASE = [
     { id:'clients',   label:'Clients',    ico:'clients',  href:'Clients.html',    pillar:'P1', badge:'48' },
-    { id:'pipeline',  label:'Pipeline',   ico:'pipeline', href:'Pipeline.html',   pillar:'P2', badge:'18' },
-    { id:'projects',  label:'Projects',   ico:'projects', href:'Projects.html',   pillar:'P3', badge:'31' },
-    { id:'employees', label:'Employees',  ico:'people',   href:'Employees.html',  pillar:'P4', badge:'1,840' },
-    { id:'skills',    label:'Skills',     ico:'skills',   href:'Skills.html',     pillar:'P5', badge:'gap' },
-    { id:'financials',label:'Financials', ico:'finance',  href:'Financials.html', pillar:'P6', badge:'₹142Cr' },
+    { id:'projects',  label:'Projects',   ico:'projects', href:'Projects.html',   pillar:'P2', badge:'31' },
+    { id:'employees', label:'Employees',  ico:'people',   href:'Employees.html',  pillar:'P3', badge:'1,840' },
+    { id:'financials',label:'Financials', ico:'finance',  href:'Financials.html', pillar:'P4', badge:'₹142Cr' },
   ];
 
   /* Per-persona pillar order and designations */
   const PILLAR_CONFIG = {
-    ceo: { order:['clients','pipeline','projects','employees','skills','financials'], primary:'clients',   secondary:['skills'] },
-    cfo: { order:['financials','clients','projects','pipeline','employees','skills'], primary:'financials', secondary:['employees','skills'] },
-    dh:  { order:['projects','employees','skills','pipeline','clients','financials'], primary:'projects',  secondary:['financials'] },
+    ceo: { order:['clients','projects','employees','financials'], primary:'clients',   secondary:[] },
+    cfo: { order:['financials','clients','projects','employees'], primary:'financials', secondary:['employees'] },
+    dh:  { order:['projects','employees','clients','financials'], primary:'projects',  secondary:['financials'] },
   };
 
   function getPersonaPillars(persona) {
@@ -127,24 +116,18 @@
 
   const NAV_TRUST = [
     { id:'documents', label:'Documents', ico:'docs', href:'Documents.html', badge:'14', alert:true },
-    { id:'integrations', label:'Integration Health', ico:'plug', href:'IntegrationHealth.html', badge:'2', alert:true },
-  ];
-
-  const NAV_GOVERN = [
-    { id:'compliance', label:'Compliance & Trust', ico:'audit', href:'Compliance.html' },
-    { id:'settings', label:'Settings & Admin', ico:'settings', href:'Settings.html' },
   ];
 
   /* All personas land on Home — Home renders the right lens */
   const PERSONAS = [
-    { id:'ceo', label:'CEO',                     home:'Home.html', color:'var(--accent)' },
-    { id:'cfo', label:'CFO',                     home:'Home.html', color:'var(--composite)' },
-    { id:'dh',  label:'Chief Delivery Officer',  home:'Home.html', color:'var(--good)' },
+    { id:'ceo', label:'CEO',           home:'Home.html', color:'var(--accent)' },
+    { id:'cfo', label:'CFO',           home:'Home.html', color:'var(--composite)' },
+    { id:'dh',  label:'Delivery Head', home:'Home.html', color:'var(--good)' },
   ];
   const PERSONA_USER = {
-    ceo: { name:'Arjun Mehta',   role:'Chief Executive Officer', init:'AM' },
-    cfo: { name:'Devika Rao',    role:'Chief Financial Officer', init:'DR' },
-    dh:  { name:'Karthik Menon', role:'Chief Delivery Officer',  init:'KM' },
+    ceo: { name:'Arjun Mehta',   role:'Chief Executive',  init:'AM' },
+    cfo: { name:'Devika Rao',    role:'Chief Financial',  init:'DR' },
+    dh:  { name:'Karthik Menon', role:'Head of Delivery', init:'KM' },
   };
 
   /* ---- Per-persona primary decisions ---- */
@@ -263,10 +246,6 @@
       <div class="nav-label">Trust Layer</div>
       ${NAV_TRUST.map(n=>navItem(n,screen)).join('')}
     </div>
-    <div class="nav-group">
-      <div class="nav-label">Governance</div>
-      ${NAV_GOVERN.map(n=>navItem(n,screen)).join('')}
-    </div>
     <div class="nav-group" style="margin-top:auto;padding-top:4px">
       <div class="nav-label">Connected Systems ${syncDot}</div>
       <div class="integ-list">
@@ -275,6 +254,14 @@
           <span class="integ-dot" style="background:${i.status==='live'?'var(--good)':'var(--warn)'}"></span>
           <span class="integ-name">${i.label}</span>
           <span class="integ-time">${i.lastSync}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="sidebar-foot">
+      <div class="user-chip" onclick="AK.toggleUserMenu(event)">
+        <div class="avatar" style="border:2px solid ${PERSONAS.find(pp=>pp.id===persona).color}">${EMPLOYEE_PHOTOS[u.name] ? `<img src="${EMPLOYEE_PHOTOS[u.name]}" alt="${u.name}" onerror="this.parentElement.textContent='${u.init}'">` : u.init}</div>
+        <div style="min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.2">${u.name}</div>
+          <div style="font-size:11px;color:var(--ink-3)">${u.role}</div></div>
+        ${icon('chev','nav-ico')}
       </div>
     </div>`;
   }
@@ -287,37 +274,16 @@
     }).join('');
     const notifs = getEffectiveNotifs(persona);
     const unreadCount = notifs.filter(n=>!n.read).length;
-    const u = PERSONA_USER[persona] || PERSONA_USER.ceo;
     return `
     <div class="crumbs">${crumbHtml}</div>
-    <div class="topbar-spacer"></div>
-    
-    <!-- Snapshot Control -->
-    <div class="snapshot-ctrl" title="View data as of a specific date" style="display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;font-size:12px;margin-right:12px;cursor:pointer;font-family:var(--sans)">
-       <span style="color:var(--ink-3)">As of:</span>
-       <b>Today (Live)</b>
-       ${icon('chev','nav-ico')}
-    </div>
-
-    <!-- Currency Toggle -->
-    <div class="currency-ctrl" title="Toggle portfolio currency" onclick="AK.toast('Currency switched to USD. Forex impact: -₹1.2 Cr')" style="display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;font-size:12px;margin-right:12px;cursor:pointer;font-family:var(--sans)">
-       <b>₹ INR</b>
-       ${icon('chev','nav-ico')}
-    </div>
-
     <button class="topbar-search" onclick="AK.openPalette()" title="⌘K">
       ${icon('search','')} <span class="tsq-text">Search anything…</span><span class="kbd">⌘K</span>
     </button>
+    <div class="topbar-spacer"></div>
     <button class="icon-btn" id="notif-btn" title="Notifications" onclick="AK.toggleNotifs()">
       ${unreadCount > 0 ? '<span class="dot"></span>' : ''}${icon('bell')} <span>Notifications</span>
       ${unreadCount > 0 ? `<span class="notif-count">${unreadCount}</span>` : ''}
-    </button>
-    <div class="user-chip" onclick="AK.toggleUserMenu(event)">
-      <div class="avatar" style="border:2px solid ${PERSONAS.find(pp=>pp.id===persona).color}">${EMPLOYEE_PHOTOS[u.name] ? `<img src="${EMPLOYEE_PHOTOS[u.name]}" alt="${u.name}" onerror="this.parentElement.textContent='${u.init}'">` : u.init}</div>
-      <div style="min-width:0;text-align:left"><div style="font-weight:600;font-size:13px;line-height:1.2">${u.name}</div>
-        <div style="font-size:11px;color:var(--ink-3)">${u.role}</div></div>
-      ${icon('chev','nav-ico')}
-    </div>`;
+    </button>`;
   }
 
   /* ---- Decisions bar — context-aware + persona-primary verb ---- */
@@ -395,21 +361,8 @@
   }
   function buildPaletteHTML() {
     return `<div id="ak-palette">
-      <div class="pal-input-row">${icon('search','')} <input id="ak-palette-input" placeholder="Natural language query or exact search…" oninput="AK.filterPalette(this.value)" onkeydown="AK.paletteKey(event)" /></div>
-      <div style="display:flex; padding: 8px 16px; gap: 8px; border-bottom: 1px solid var(--line); background: var(--surface-2);">
-        <span style="font-size:11px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;margin-top:2px;margin-right:4px">Facets</span>
-        <span class="pal-facet active">All</span>
-        <span class="pal-facet">Clients</span>
-        <span class="pal-facet">Projects</span>
-        <span class="pal-facet">People</span>
-        <span class="pal-facet">Documents</span>
-      </div>
-      <div class="pal-layout" style="display:flex; max-height:420px;">
-         <div class="pal-list" id="ak-palette-list" style="flex: 1; border-right: 1px solid var(--line); overflow-y:auto;">${renderPaletteItems(PALETTE_ITEMS)}</div>
-         <div class="pal-preview" id="ak-palette-preview" style="width: 260px; background: var(--surface-2); padding: 16px; font-size:12px;">
-            <div style="color:var(--ink-faint); text-align:center; padding-top: 40px;">Select an item to preview</div>
-         </div>
-      </div>
+      <div class="pal-input-row">${icon('search','')} <input id="ak-palette-input" placeholder="Search clients, projects, people, actions…" oninput="AK.filterPalette(this.value)" onkeydown="AK.paletteKey(event)" /></div>
+      <div class="pal-list" id="ak-palette-list">${renderPaletteItems(PALETTE_ITEMS)}</div>
       <div class="pal-foot">↑↓ navigate · Enter to open · Esc close · <kbd>⌘K</kbd> toggle</div>
     </div>`;
   }
@@ -429,33 +382,10 @@
     _palFiltered = q ? PALETTE_ITEMS.filter(it=>it.label.toLowerCase().includes(q.toLowerCase())||it.hint.toLowerCase().includes(q.toLowerCase())) : [...PALETTE_ITEMS];
     const list = document.getElementById('ak-palette-list');
     if (list) list.innerHTML = renderPaletteItems(_palFiltered);
-    updatePalettePreview();
   }
   function selectPaletteItem(i) {
     _palSel = i;
     document.querySelectorAll('.pal-item').forEach((el,j)=>el.classList.toggle('sel',j===i));
-    updatePalettePreview();
-  }
-  function updatePalettePreview() {
-     const p = document.getElementById('ak-palette-preview');
-     if (!p) return;
-     const it = _palFiltered[_palSel];
-     if (!it) { p.innerHTML = '<div style="color:var(--ink-faint);text-align:center;padding-top:40px">No results</div>'; return; }
-     
-     // Quick mock preview based on type
-     if (it.type === 'client') {
-        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div>
-        <div style="color:var(--ink-2);margin-bottom:12px">${it.hint}</div>
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:8px"><b>Status:</b> Active<br><b>Renewal:</b> Oct 2026<br><b>ARR:</b> ₹14.2 Cr</div>
-        <button class="btn sm" onclick="location.href='${it.href}'" style="width:100%">Open Profile ›</button>`;
-     } else if (it.type === 'employee') {
-        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div>
-        <div style="color:var(--warn);margin-bottom:12px;font-weight:600">${it.hint}</div>
-        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:8px"><b>Role:</b> Architect<br><b>Location:</b> Pune</div>
-        <button class="btn sm" onclick="location.href='${it.href}'" style="width:100%">Open Profile ›</button>`;
-     } else {
-        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div><div style="color:var(--ink-2)">${it.hint}</div>`;
-     }
   }
   function paletteKey(e) {
     if (e.key==='Escape') { closePalette(); return; }
@@ -644,7 +574,7 @@
 
     const panel = document.createElement('div');
     panel.id = 'ak-user-menu';
-    panel.style.cssText = 'position:fixed;top:66px;right:28px;width:224px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:450;overflow:hidden;padding:6px 0;display:flex;flex-direction:column;gap:2px';
+    panel.style.cssText = 'position:fixed;bottom:70px;left:14px;width:224px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:450;overflow:hidden;padding:6px 0;display:flex;flex-direction:column;gap:2px';
 
     const title = document.createElement('div');
     title.style.cssText = 'padding:6px 12px;font-size:10px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.05em';

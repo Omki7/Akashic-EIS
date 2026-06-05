@@ -57,11 +57,15 @@
         <!-- RIGHT: scenario simulation -->
         <aside class="ai-side">
           <div class="panel" style="position:sticky;top:76px">
-            <div class="panel-head"><div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⚯</div><div><div class="panel-title">Scenario Sandbox</div><div class="panel-sub">Parametric what-if · live off your data</div></div></div>
+            <div class="panel-head"><div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⚯</div><div><div class="panel-title">Scenario Simulation</div><div class="panel-sub">Model financial impact</div></div></div>
             <div class="panel-body">
-              <div class="sc-sliders" id="sc-sliders"></div>
-              <div class="sc-out" id="scenario"></div>
-              <button class="btn composite" style="width:100%;margin-top:14px" onclick="AKV3.exportBoardPack()">Save to board pack ›</button>
+              <div class="scenario-tabs">
+                <button class="sc-tab active" onclick="runScenario(0)">Lose this client</button>
+                <button class="sc-tab" onclick="runScenario(1)">Utilization −10%</button>
+                <button class="sc-tab" onclick="runScenario(2)">Renewal at +5%</button>
+              </div>
+              <div id="scenario"></div>
+              <button class="btn composite" style="width:100%;margin-top:14px" onclick="AK.toast('Scenario saved to board pack')">Save to board pack</button>
             </div>
           </div>
         </aside>
@@ -76,7 +80,6 @@
 <script src="docdrawer.js"></script>
 <script src="provenance.js"></script>
 <script src="shell.js"></script>
-<script src="v3.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 
@@ -103,7 +106,6 @@ const convo=[
      ['Clause','MSA §11 auto-renewal','“not enabled”','lo','MSA_2019.pdf · 0.71 conf'],
    ],
    recommend:'Recommended: assign Priya Nair to open a renewal SOW this week, deploy a shadow for Vikram Rao, and recover the ₹48 L unbilled before the renewal conversation to protect leverage.',
-   playbook:'meridian-save',
    follow:['Simulate losing Meridian','Draft the renewal action plan','Who can shadow Vikram Rao?']},
 ];
 
@@ -128,11 +130,6 @@ function render(){
         ${m.evidence.map(evRow).join('')}
       </div>
       ${m.recommend?`<div class="ai-recommend">${AK.icon('bolt')}<span>${m.recommend}</span></div>`:''}
-      ${m.playbook?`<div class="ai-playbook">
-        <div class="pb-head">${AK.icon('workflow')}<b>${AKActions.getPlaybooks()[m.playbook].name}</b><span class="pb-sub">${AKActions.getPlaybooks()[m.playbook].subtitle} · ${AKActions.getPlaybooks()[m.playbook].steps.length} actions</span></div>
-        <div class="pb-steps">${AKActions.getPlaybooks()[m.playbook].steps.map((s,i)=>`<div class="pb-step"><span class="pb-n">${i+1}</span><div style="flex:1"><div class="pb-st">${s.label}</div><div class="pb-so">${s.owner} · approver: ${s.approver}</div></div></div>`).join('')}</div>
-        <button class="btn primary sm" style="width:100%" onclick="AKActions.runPlaybook('${m.playbook}');this.textContent='✓ Plan accepted · 3 actions queued';this.disabled=true">Accept plan — fan out all actions ›</button>
-      </div>`:''}
       <div class="suggest-row mt-12">${m.follow.map(f=>`<button class="chip-suggest" onclick="addUser('${f.replace(/'/g,"\\'")}')">${f}</button>`).join('')}</div>
     </div></div>`;
   }).join('');
@@ -142,92 +139,9 @@ render();
 const presug=['What needs my attention today?','Show portfolio concentration risk','Which projects will breach margin?','Where is revenue leaking?'];
 $('#presuggest').innerHTML=presug.map(s=>`<button class="chip-suggest" onclick="addUser('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
 
-function addUser(t){ ask(t); }
-function sendQ(){ const v=$('#ai-q').value.trim(); if(!v)return; $('#ai-q').value=''; ask(v); }
+function addUser(t){ AK.toast('Akashic is thinking…'); $('#ai-q').value=t; }
+function sendQ(){ const v=$('#ai-q').value.trim(); if(!v)return; AK.toast('Query sent — grounding in live data'); $('#ai-q').value=''; }
 $('#ai-q')&&$('#ai-q').addEventListener('keydown',e=>{if(e.key==='Enter')sendQ();});
-
-/* ============ Grounded NL→answer engine (G4) ============
-   Deterministic templated layer over the live AKData model.
-   Answers the top executive questions with cited evidence. */
-function num(n){return n.toLocaleString('en-IN');}
-function kb(query){
-  const q=query.toLowerCase();
-  const D=AKData;
-  const has=(...ks)=>ks.some(k=>q.includes(k));
-
-  if(has('concentration','top-3','top 3','diversif')){
-    const top=[...D.clients].sort((a,b)=>b.arr-a.arr).slice(0,3);
-    const share=(top.reduce((s,c)=>s+c.arr,0)/142*100);
-    return {answer:`Top-3 concentration is <b class="crit-text">31%</b> of ARR — above the 30% board policy. The exposure is ${top.map(c=>`<b>${c.name.split(' ')[0]} ${(c.arr/142*100).toFixed(0)}%</b>`).join(', ')}. Peer median is 26%, so you're carrying more single-client risk than the cohort.`,
-      evidence:[['Metric','Top-3 ARR share','31%','hi','CRM · Salesforce'],['Metric','Board policy limit','30%','hi','Governance · Settings'],['Metric','Peer median','26%','md','Industry cohort · G16']],
-      follow:['Simulate losing Meridian','Show pipeline to diversify','Draft board concentration brief']};
-  }
-  if(has('renewal','meridian','at risk','at-risk') && !has('lose','losing')){
-    const m=D.clientById('C01');
-    return {answer:`Renewal probability for <b>Meridian</b> is <b class="crit-text">54%</b> cohort-adjusted vs 78% portfolio average. Three signals compound: MSA expires in <b>18 days</b> with no renewal SOW, Orion is 11 days behind at 86% budget, and Vikram Rao shows an <b>88% exit signal</b>. This is the firm's single largest exposure at ₹14.2 Cr.`,
-      evidence:[['Metric','Renewal probability','54% cohort-adj.','md','Model v3 · 0.84 conf'],['Metric','Days to expiry','18 days','hi','MSA · 22 Jun 2026'],['Metric','Vikram exit signal','88%','hi','Darwinbox · attrition v3'],['Clause','MSA §11 auto-renewal','“not enabled”','lo','MSA_2019.pdf · 0.71 conf']],
-      recommend:'Recommended: open a renewal SOW, shadow Vikram, and recover the ₹48 L unbilled before the renewal conversation.',
-      playbook:'meridian-save',
-      follow:['Simulate losing Meridian','Who can shadow Vikram Rao?']};
-  }
-  if(has('leak','unbilled','booked','collected','wip')){
-    return {answer:`You have <b>₹3.4 Cr</b> stuck between booked and collected revenue. The biggest single item is <b class="crit-text">₹48 L unbilled</b> on Meridian M8 — work delivered, never invoiced. A further <b>₹2.4 Cr</b> is overdue 90+ days at Northwind. Realisation is at 91.2% vs a 96% target.`,
-      evidence:[['Metric','Booked→Collected gap','₹3.4 Cr','hi','Financial ledger · live'],['Metric','Unbilled — Meridian M8','₹48 L','hi','Project: Orion'],['Metric','Overdue 90+ — Northwind','₹2.4 Cr','hi','INV-2026-0309']],
-      follow:['Raise the Meridian M8 invoice','Draft Northwind collections script']};
-  }
-  if(has('margin','breach','overrun')){
-    const risky=D.projects.filter(p=>p.margin<15);
-    return {answer:`<b>${risky.length} projects</b> are below the 15% margin floor: ${risky.map(p=>`<b>${p.name}</b> (${p.margin}%)`).join(', ')}. Atlas Migration is heading for a <b class="crit-text">₹62 L overrun</b> — budget 84% used at milestone 9 of 12. Avg portfolio margin is 23.1% vs 26% target.`,
-      evidence:[['Metric','Projects below floor',risky.length+' / 31','hi','PSA · Zoho'],['Metric','Atlas overrun forecast','₹62 L','hi','SAP cost center 4410'],['Metric','Avg project margin','23.1%','md','target 26%']],
-      recommend:'Recommended: run the Margin Recovery playbook — raise a scope CR, re-forecast, and bill the completed milestone.',
-      playbook:'margin-recovery',
-      follow:['Re-forecast Atlas margin','Show all at-risk projects']};
-  }
-  if(has('attrition','exit','vikram','key person','key-person','spof','shadow')){
-    const e=D.employeeById('E01');
-    return {answer:`<b>Vikram Rao</b> (Lead Architect) shows an <b class="crit-text">88% exit signal</b> and is a single-point-of-failure on 64% of Orion delivery, with no shadow. Drivers: ${e.riskDrivers.join('; ')}. Best shadow candidate is <b>Imran Qureshi</b> (Sr Data Engineer, overlapping skills, 90% on Cobalt).`,
-      evidence:[['Metric','Exit signal','88%','hi','Darwinbox · attrition v3'],['Metric','Delivery coverage','64% of Orion','hi','PSA allocations'],['Metric','Shadow fit — Imran','high','md','Skills matcher · G13']],
-      recommend:'Recommended: approve the retention hike and stand up a succession plan today.',
-      playbook:'key-person-exit',
-      follow:['Approve Vikram hike','Show bench-to-pipeline matches']};
-  }
-  if(has('dso','cash','collect','working capital','overdue')){
-    return {answer:`DSO is <b class="crit-text">58 days</b> vs a 52-day target — 6 days of trapped working capital, and the peer median is 49 days. <b>₹3.4 Cr</b> is recoverable: ₹2.4 Cr overdue at Northwind (90+ days) and ₹48 L unbilled at Meridian. Resolving both improves DSO by ~4 days.`,
-      evidence:[['Metric','DSO','58 days','hi','Tally + SAP'],['Metric','Peer median DSO','49 days','md','Industry cohort · G16'],['Metric','Recoverable','₹3.4 Cr','hi','AR ledger']],
-      follow:['Open Collections workspace','Re-forecast Q1 cash']};
-  }
-  if(has('pipeline','coverage','pursuit')){
-    const pv=D.pursuits.reduce((s,p)=>s+p.value,0);
-    return {answer:`Pipeline coverage is <b>2.4×</b> (target 2.0×) — healthy. Total open pursuit value is <b>₹${pv.toFixed(1)} Cr</b> across ${D.pursuits.length} pursuits, but ${D.pursuits.filter(p=>p.type==='Renewal').length} of them are renewals-at-risk that protect existing ARR rather than grow it. The two highest-probability expansions (Cobalt, Vermillion) need bench engineers you already have idle.`,
-      evidence:[['Metric','Pipeline coverage','2.4×','hi','CRM · Salesforce'],['Metric','Total pursuit value','₹'+pv.toFixed(1)+' Cr','hi','Pipeline pillar'],['Metric','Bench match rate','82%','md','Skills matcher']],
-      follow:['Show bench-to-pipeline matches','Open the pursuit board']};
-  }
-  if(has('benchmark','peer','industry','median','compare')){
-    const b=D.benchmarks;
-    return {answer:`Against the IT-services cohort: margin <b>22.4%</b> (median 21.0%, you're <span class="good-text">above</span>), DSO <b class="crit-text">58d</b> (median 49d, you're below), utilization <b>78.6%</b> (median 80%), and rev/employee <b class="good-text">₹7.7 L</b> (median ₹6.9 L). Your profitability and AI-leverage beat the market; your cash conversion lags it.`,
-      evidence:[['Metric','Margin vs median','22.4% / 21.0%','hi','Cohort · G16'],['Metric','DSO vs median','58d / 49d','hi','Cohort · G16'],['Metric','Rev/emp vs median','₹7.7 / ₹6.9 L','md','Cohort · G16']],
-      follow:['Why is our DSO above peers?','Show margin by practice']};
-  }
-  /* fallback — still grounded: surface today's top signal */
-  return {answer:`Here's what's most material right now. The firm's single largest exposure is the <b>Meridian renewal</b> (₹14.2 Cr, 18 days, 3-pillar composite). Cash is the second theme — ₹3.4 Cr trapped in DSO. And concentration just breached the 30% board limit. I can go deep on any of these — or ask about a specific client, project, person or scenario.`,
-    evidence:[['Metric','Top exposure','Meridian ₹14.2 Cr','hi','Composite · 0.91 conf'],['Metric','Trapped cash','₹3.4 Cr','hi','AR ledger'],['Metric','Concentration','31% top-3','hi','CRM']],
-    follow:['What is the Meridian renewal risk?','Where is revenue leaking?','How do we compare to peers?']};
-}
-function ask(query){
-  convo.push({role:'user',text:query});
-  render();
-  /* thinking shimmer */
-  const c=$('#convo');
-  const t=document.createElement('div'); t.className='ai-msg'; t.id='thinking';
-  t.innerHTML=`<div class="ai-ava">A</div><div class="ai-thinking">Grounding in live data<span>.</span><span>.</span><span>.</span></div>`;
-  c.appendChild(t); t.scrollIntoView&&window.scrollTo(0,document.body.scrollHeight);
-  setTimeout(()=>{
-    const ans=kb(query);
-    convo.push({role:'ai',...ans});
-    render();
-    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-  },650);
-}
 
 /* ============ Handoff receipt ============ */
 (function initHandoff() {
@@ -316,48 +230,29 @@ function ask(query){
   render();
 })();
 
-/* ============ Parametric scenario sandbox (G5) ============ */
-const BASE={arr:142, margin:22.4, util:78.6, benchCostPerPt:0.28};
-const SLIDERS=[
-  {id:'churn',label:'Client churn',min:0,max:30,val:0,unit:'%',step:1},
-  {id:'util', label:'Utilization Δ',min:-15,max:10,val:0,unit:'pt',step:1},
-  {id:'price',label:'Renewal price Δ',min:-10,max:15,val:0,unit:'%',step:1},
-  {id:'head', label:'Headcount Δ',min:-100,max:150,val:0,unit:'',step:10},
+/* ============ scenarios ============ */
+const scenarios=[
+  {title:'If we lose Meridian Retail',rows:[
+    ['ARR impact','−₹14.2 Cr','crit'],['% of portfolio','−10.0%','crit'],['Margin impact','−₹2.4 Cr','crit'],
+    ['Bench created','38 people','warn'],['Recoverable in 2 quarters','₹8.1 Cr','good']],
+   note:'Concentration breaches board threshold. 38 people roll to bench (₹62 L/mo idle cost) unless redeployed to the Cobalt + Indus pipeline.'},
+  {title:'If utilization drops 10%',rows:[
+    ['Revenue run-rate','−₹14.2 Cr/yr','crit'],['Margin impact','−4.6pt','crit'],['Bench cost','+₹2.8 Cr/yr','warn'],
+    ['Break-even util','71.4%','warn'],['Buffer to break-even','7.2pt','good']],
+   note:'A 10% utilization fall pushes 3 practices below their break-even threshold. Data & AI is most exposed.'},
+  {title:'If Meridian renews at +5%',rows:[
+    ['New ARR','₹14.9 Cr','good'],['Incremental margin','+₹38 L','good'],['Renewal probability','54% → model','warn'],
+    ['Required investment','₹0 (price only)','good'],['Expected value','₹8.0 Cr','good']],
+   note:'A modest uplift is achievable only if delivery recovers first. Akashic suggests stabilising Orion before raising price.'},
 ];
-function renderSliders(){
-  document.getElementById('sc-sliders').innerHTML=SLIDERS.map(s=>`<div class="sc-slider">
-    <div class="sc-sl-top"><span>${s.label}</span><b id="slv-${s.id}" class="mono">${s.val>0?'+':''}${s.val}${s.unit}</b></div>
-    <input type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}" id="sl-${s.id}" oninput="document.getElementById('slv-${s.id}').textContent=(this.value>0?'+':'')+this.value+'${s.unit}';recompute()">
-  </div>`).join('');
+function runScenario(i){
+  document.querySelectorAll('.sc-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  const s=scenarios[i];
+  $('#scenario').innerHTML=`<div class="sc-title">${s.title}</div>
+    <div class="sc-rows">${s.rows.map(r=>`<div class="sc-row"><span>${r[0]}</span><b class="mono ${r[2]==='crit'?'crit-text':r[2]==='warn'?'warn-text':'good-text'}">${r[1]}</b></div>`).join('')}</div>
+    <div class="sc-note">${AK.icon('bolt')}<span>${s.note}</span></div>`;
 }
-function recompute(){
-  const v=id=>+document.getElementById('sl-'+id).value;
-  const churn=v('churn'),util=v('util'),price=v('price'),head=v('head');
-  const arrLost = BASE.arr*churn/100;
-  const utilRev = util*1.42;                 // ~₹1.42 Cr/yr per util pt
-  const priceUplift = (BASE.arr*0.34)*price/100; // ~34% of ARR is in renewal window
-  const netArr = -arrLost + utilRev + priceUplift;
-  const marginPt = util*0.46 - churn*0.12;
-  const benchPpl = churn>0?Math.round(BASE.arr*churn/100*2.7):0; // people freed by churn
-  const benchCost = (benchPpl*0.062) + (head<0?Math.abs(head)*0.062:0); // ₹L/mo idle
-  const rows=[
-    ['Net ARR impact',(netArr>=0?'+':'')+'₹'+netArr.toFixed(1)+' Cr', netArr>=0?'good':'crit'],
-    ['Operating margin',(marginPt>=0?'+':'')+marginPt.toFixed(1)+'pt', marginPt>=0?'good':'crit'],
-    ['New run-rate','₹'+(BASE.arr+netArr).toFixed(1)+' Cr','accent'],
-    ['Bench created',benchPpl+head*-1*(head<0?1:0)+' people', benchPpl>20?'warn':'good'],
-    ['Idle bench cost','₹'+benchCost.toFixed(1)+' L/mo', benchCost>2?'crit':'good'],
-  ];
-  let note;
-  if(churn>=10) note='Concentration breaches the board threshold and '+benchPpl+' people roll to bench unless redeployed to the Cobalt + Indus pipeline.';
-  else if(util<=-10) note='A '+Math.abs(util)+'pt utilization fall pushes 3 practices below break-even. Data & AI is most exposed.';
-  else if(price>=5) note='Uplift is achievable only if Orion delivery stabilises first — protect leverage before raising price.';
-  else if(netArr>0) note='Net positive scenario — utilization and pricing gains outweigh churn. Lock it into the board pack.';
-  else note='Drag the levers to model churn, utilization, pricing and headcount live off your ARR, margin and bench cost.';
-  document.getElementById('scenario').innerHTML=`<div class="sc-rows">${rows.map(r=>`<div class="sc-row"><span>${r[0]}</span><b class="mono ${r[2]==='crit'?'crit-text':r[2]==='warn'?'warn-text':r[2]==='accent'?'accent-text':'good-text'}">${r[1]}</b></div>`).join('')}</div>
-    <div class="sc-note">${AK.icon('bolt')}<span>${note}</span></div>`;
-}
-renderSliders();
-recompute();
+runScenario(0);
 </script>
 
 <style>
@@ -393,28 +288,6 @@ recompute();
 .ho-receipt-sub{font-size:12px;color:var(--ink-3);margin-top:2px;}
 .ho-receipt-note{padding:12px 18px;font-size:13.5px;color:var(--composite-2);font-style:italic;border-bottom:1px solid var(--composite-line);background:oklch(0.97 0.02 290);}
 .ho-receipt-actions{padding:10px 18px;display:flex;gap:8px;}
-/* playbook (G3) */
-.ai-playbook{background:var(--surface);border:1px solid var(--accent-line);border-radius:12px;padding:14px 16px;margin-top:12px;box-shadow:var(--shadow-sm)}
-.pb-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.pb-head b{font-size:13.5px}.pb-head svg{color:var(--accent-2);width:16px;height:16px}
-.pb-sub{font-size:11px;color:var(--ink-3);margin-left:auto;font-family:var(--mono)}
-.pb-steps{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
-.pb-step{display:flex;gap:10px;align-items:center;padding:8px 10px;background:var(--surface-2);border-radius:8px}
-.pb-n{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
-.pb-st{font-size:12.5px;font-weight:600}.pb-so{font-size:11px;color:var(--ink-3)}
-/* thinking */
-.ai-thinking{font-size:13px;color:var(--ink-3);background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:12px 16px;box-shadow:var(--shadow-sm)}
-.ai-thinking span{animation:blink 1.2s infinite}.ai-thinking span:nth-child(2){animation-delay:.2s}.ai-thinking span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
-/* parametric sliders */
-.sc-sliders{display:flex;flex-direction:column;gap:13px;margin-bottom:14px}
-.sc-slider .sc-sl-top{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
-.sc-slider input[type=range]{width:100%;accent-color:var(--composite)}
-.sc-out .sc-rows{display:flex;flex-direction:column;gap:2px}
-.sc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--ink-2);}
-.sc-row:last-child{border-bottom:0;}
-.sc-note{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:11px 12px;background:var(--surface-2);border-radius:9px;font-size:11.5px;color:var(--ink-2);line-height:1.5;}
-.sc-note svg{flex:0 0 auto;color:var(--composite);margin-top:1px;}
 </style>
 </body>
 </html>
