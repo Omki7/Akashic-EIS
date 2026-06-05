@@ -287,17 +287,19 @@ function buildModelPanel(persona) {
       </div>
       <div class="panel-body">
         <div class="stackbar mb-12">
-          <span style="width:46%;background:var(--accent)">T&M 46%</span>
-          <span style="width:33%;background:var(--composite)">Fixed-Price 33%</span>
-          <span style="width:21%;background:var(--good)">Managed Svcs 21%</span>
+          <span style="width:40%;background:var(--accent)">T&M 40%</span>
+          <span style="width:30%;background:var(--composite)">Fixed-Price 30%</span>
+          <span style="width:20%;background:var(--good)">Managed Svcs 20%</span>
+          <span style="width:10%;background:var(--warn)">Outcome-Based 10%</span>
         </div>
         <div class="flex justify-between items-center wrap gap-12">
           <div class="legend">
             <div class="li"><span class="sw" style="background:var(--accent)"></span>Time &amp; Material <span class="trend down" style="margin-left:4px">▾ 3pt</span></div>
             <div class="li"><span class="sw" style="background:var(--composite)"></span>Fixed-Price <span class="trend flat" style="margin-left:4px">▪ flat</span></div>
-            <div class="li"><span class="sw" style="background:var(--good)"></span>Managed Services <span class="trend up" style="margin-left:4px">▴ 3pt</span></div>
+            <div class="li"><span class="sw" style="background:var(--good)"></span>Managed Services <span class="trend up" style="margin-left:4px">▴ 1pt</span></div>
+            <div class="li"><span class="sw" style="background:var(--warn)"></span>Outcome-Based <span class="trend up" style="margin-left:4px">▴ 2pt</span></div>
           </div>
-          <div class="fs-12 muted">Shift toward annuity revenue is <span class="good-text strong">on-strategy</span> — Managed Services up 3pt QoQ.</div>
+          <div class="fs-12 muted">Shift toward annuity revenue is <span class="good-text strong">on-strategy</span> — Outcome-based grew 2pt QoQ.</div>
         </div>
       </div>`;
   }
@@ -347,6 +349,14 @@ function buildModelPanel(persona) {
 function buildRail(persona) {
   if (persona === 'ceo') {
     return `<div class="rail-card mb-16">
+        <div class="rail-head"><span class="rail-title">Market Context</span></div>
+        <div style="padding:13px 15px" class="col gap-10">
+           <div class="wk-item"><span class="hdot good"></span><div><b>22.4%</b> Margin<div class="rail-sub">vs Peer Median: 21.0%</div></div></div>
+           <div class="wk-item"><span class="hdot crit"></span><div><b>₹7.7 L</b> Rev / Emp<div class="rail-sub">vs Top Quartile: ₹8.4 L</div></div></div>
+           <div class="wk-item"><span class="hdot good"></span><div><b>6.2%</b> Growth<div class="rail-sub">vs Peer Median: 4.8%</div></div></div>
+        </div>
+      </div>
+      <div class="rail-card mb-16">
         <div class="rail-head"><span class="rail-title">Top 5 Clients by ARR</span><a class="rail-more" href="Clients.html">All ›</a></div>
         <div id="rail-clients"></div>
       </div>

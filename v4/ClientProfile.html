@@ -73,6 +73,90 @@
         Meridian is your <b>single largest concentration risk</b> — 10% of portfolio ARR. The contract, project delivery, and key employee risks are not independent — they feed each other. A failed renewal here doesn't just lose ₹14.2 Cr; it destabilises 38 deployed staff and opens a bench cost cascade. <span class="nar-systems">Salesforce + SAP + Zoho PSA + Darwinbox</span>
       </div>
 
+      <!-- RELATIONSHIP INTELLIGENCE -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div><div class="panel-title">Relationship Intelligence</div><div class="panel-sub">Stakeholder sentiment, communication frequency & sponsor health</div></div>
+          <span class="panel-tag crit-text">⚑ Sentiment trending down</span>
+        </div>
+        <div class="panel-body">
+           <div class="two-col">
+              <div>
+                 <div class="section-label">Stakeholder Map</div>
+                 <div class="col gap-10">
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2)">
+                       <div class="avatar sm" style="background:var(--ink-2)">JT</div>
+                       <div style="flex:1"><div class="fs-13 strong">John Taylor</div><div class="fs-11 muted">EVP Supply Chain · <b>Sponsor</b></div></div>
+                       <div class="badge b-renewal" style="font-size:10px">Changed in Apr</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:6px">
+                       <div class="avatar sm" style="background:var(--ink-3)">MW</div>
+                       <div style="flex:1"><div class="fs-13 strong">Maria Woods</div><div class="fs-11 muted">VP Engineering</div></div>
+                       <div class="badge b-risk" style="font-size:10px">Detractor</div>
+                    </div>
+                 </div>
+              </div>
+              <div>
+                 <div class="section-label">Communication & Sentiment Trend</div>
+                 <div class="col gap-10">
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px">
+                       <div><div class="fs-13 strong">QBR Q4 FY26</div><div class="fs-11 muted">12 May · MoM extracted</div></div>
+                       <div class="conf md">Sentiment: Neutral</div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px">
+                       <div><div class="fs-13 strong">Delivery Escalation Call</div><div class="fs-11 muted">28 Apr · Zoom Transcript</div></div>
+                       <div class="conf lo">Sentiment: Negative</div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                       <div><div class="fs-13 strong">NPS Score</div><div class="fs-11 muted">Last surveyed 14 Mar</div></div>
+                       <div class="mono strong fs-14 crit-text">6.2 <span class="trend down" style="font-size:10px;margin-left:4px">↓ 1.4</span></div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- QBR MANAGEMENT & PREP -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon">📅</div>
+          <div><div class="panel-title">QBR Management &amp; Prep</div><div class="panel-sub">Upcoming reviews, auto-generated prep packs, and action item logs</div></div>
+          <button class="btn sm primary" style="margin-left:auto" onclick="AK.toast('QBR Prep Pack generating... check Assistant in 2 mins')">Generate Prep Pack</button>
+        </div>
+        <div class="two-col">
+          <div class="panel-body" style="border-right:1px solid var(--line)">
+             <div class="section-label">Upcoming &amp; Past QBRs</div>
+             <div class="col gap-10">
+                <div style="border-left:2px solid var(--warn);padding-left:12px">
+                   <div class="flex justify-between items-start mb-4"><span class="fs-13 strong">Q1 FY27 Review</span><span class="badge b-renewal"><span class="bd"></span>Upcoming in 12 days</span></div>
+                   <div class="fs-12 muted">Focus: SOW-05 Renewal &amp; Orion Delivery Reset</div>
+                   <div class="mono fs-11 faint mt-4">18 Jun 2026 · Location: Dallas Onsite</div>
+                </div>
+                <div style="border-left:2px solid var(--good);padding-left:12px">
+                   <div class="flex justify-between items-start mb-4"><span class="fs-13 strong">Q4 FY26 Review</span><span class="badge b-active"><span class="bd"></span>Completed</span></div>
+                   <div class="fs-12 muted">Focus: Year-in-review &amp; innovation agenda</div>
+                   <div class="mono fs-11 faint mt-4">12 Mar 2026 · Location: Virtual</div>
+                </div>
+             </div>
+          </div>
+          <div class="panel-body">
+             <div class="section-label">Action Items (from last QBR)</div>
+             <div class="col gap-10">
+                <div class="flex items-start gap-8">
+                   <input type="checkbox" checked disabled style="margin-top:2px">
+                   <div><div class="fs-13" style="text-decoration:line-through;color:var(--ink-3)">Provide cost-benefit analysis for AI integration</div><div class="fs-11 muted mt-2">Delivered 24 Mar</div></div>
+                </div>
+                <div class="flex items-start gap-8">
+                   <input type="checkbox" disabled style="margin-top:2px">
+                   <div><div class="fs-13">Resolve UAT defect backlog on Orion</div><div class="fs-11 crit-text mt-2">Overdue (Blocked by scope dispute)</div></div>
+                </div>
+             </div>
+          </div>
+        </div>
+      </div>
+
       <!-- PANEL A: CLIENT LIFECYCLE TRACKER -->
       <div class="panel mb-20">
         <div class="panel-head">

@@ -108,7 +108,7 @@
       <!-- ROW: revenue model mix trend + forecast vs actual -->
       <div class="fin-two mb-20">
         <div class="panel">
-          <div class="panel-head"><div class="ph-icon">%</div><div><div class="panel-title">Revenue Model Mix</div><div class="panel-sub">T&amp;M · Fixed-Price · Managed · 6-month trend</div></div></div>
+          <div class="panel-head"><div class="ph-icon">%</div><div><div class="panel-title">Revenue Model Mix</div><div class="panel-sub">T&amp;M · Fixed-Price · Managed · Outcome-Based · 6-month trend</div></div></div>
           <div class="panel-body">
             <div class="mix-trend" id="mixtrend"></div>
             <div class="flex justify-between mono faint fs-11 mt-8"><span>Jan</span><span>Mar</span><span>Jun</span></div>
@@ -116,6 +116,7 @@
               <span class="li"><span class="sw" style="background:var(--accent)"></span>T&amp;M</span>
               <span class="li"><span class="sw" style="background:var(--composite)"></span>Fixed-Price</span>
               <span class="li"><span class="sw" style="background:var(--good)"></span>Managed Svcs</span>
+              <span class="li"><span class="sw" style="background:var(--warn)"></span>Outcome-Based</span>
             </div>
           </div>
         </div>
@@ -133,6 +134,30 @@
               <span class="li"><span class="sw" style="background:var(--warn)"></span>Re-forecast</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- REVENUE PREDICTABILITY -->
+      <div class="panel mb-20">
+        <div class="panel-head">
+          <div class="ph-icon">📊</div>
+          <div><div class="panel-title">Revenue Predictability by Model</div><div class="panel-sub">Guaranteed vs Variable outcome-based components and forecast confidence</div></div>
+        </div>
+        <div class="panel-body">
+           <div style="display:flex;gap:20px;flex-wrap:wrap">
+              <div style="flex:1">
+                 <div class="section-label">Guaranteed Revenue</div>
+                 <div style="font-size:24px;font-weight:700">₹128.4 Cr</div>
+                 <div class="fs-12 muted">T&M, Fixed-Price, Retainers (90.4% of total)</div>
+                 <div class="conf hi mt-8" style="display:inline-block">Confidence: High (Contracted)</div>
+              </div>
+              <div style="flex:1">
+                 <div class="section-label">Variable / Outcome-Based</div>
+                 <div style="font-size:24px;font-weight:700">₹13.6 Cr</div>
+                 <div class="fs-12 muted">Success fees, savings-share (9.6% of total)</div>
+                 <div class="conf md mt-8" style="display:inline-block">Confidence: Medium (Contingent on KPIs)</div>
+              </div>
+           </div>
         </div>
       </div>
 
@@ -361,10 +386,10 @@ $('#leak tbody').innerHTML=leak.map(l=>`<tr>
 renderFTE();
 initFteFilters();
 
-/* mix trend (stacked area-ish via 3 lines) */
+/* mix trend (stacked area-ish via 4 lines) */
 function poly(arr,color,fill){const W=100,H=120;const pts=arr.map((v,i)=>`${(i/(arr.length-1)*W).toFixed(1)},${(H-v/100*H).toFixed(1)}`).join(' ');return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;}
-const tm=[52,51,50,48,47,46],fp=[31,32,32,33,33,33],ms=[17,17,18,19,20,21];
-$('#mixtrend').innerHTML=`<svg viewBox="0 0 100 120" preserveAspectRatio="none" style="width:100%;height:140px;border-bottom:1px solid var(--line-2);border-left:1px solid var(--line-2)">${poly(tm,'var(--accent)')}${poly(fp,'var(--composite)')}${poly(ms,'var(--good)')}</svg>`;
+const tm=[48,46,45,43,41,40],fp=[31,32,32,31,31,30],ms=[17,17,18,19,20,20],ob=[4,5,5,7,8,10];
+$('#mixtrend').innerHTML=`<svg viewBox="0 0 100 120" preserveAspectRatio="none" style="width:100%;height:140px;border-bottom:1px solid var(--line-2);border-left:1px solid var(--line-2)">${poly(tm,'var(--accent)')}${poly(fp,'var(--composite)')}${poly(ms,'var(--good)')}${poly(ob,'var(--warn)')}</svg>`;
 
 /* forecast vs actual */
 const fva=[['Q1',34,'a'],['Q2',36,'a'],['Q3',35,'f'],['Q4',39,'r']];

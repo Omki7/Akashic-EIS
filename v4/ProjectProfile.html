@@ -110,11 +110,26 @@
             <table class="tbl" style="font-size:12.5px" id="milestones"></table>
           </div>
           <div class="panel-body">
+            <div class="section-label">Scope vs Baseline Delta</div>
+            <div class="mb-16">
+              <div class="flex justify-between fs-12 mb-4"><span>Baseline Scope (SOW-04)</span><b class="mono">100%</b></div>
+              <div class="stackbar" style="height:12px;margin-bottom:8px">
+                 <span style="width:72%;background:var(--accent)" title="Delivered 72%"></span>
+                 <span style="width:28%;background:var(--surface-3)" title="Pending 28%"></span>
+              </div>
+              <div class="flex justify-between fs-12 mb-4"><span>Actual Scope Execution</span><b class="mono warn-text">+18% Delta</b></div>
+              <div class="stackbar" style="height:12px">
+                 <span style="width:61%;background:var(--accent)" title="SOW Delivered"></span>
+                 <span style="width:15%;background:var(--warn)" title="CR Scope Added"></span>
+                 <span style="width:24%;background:var(--surface-3)" title="Pending SOW"></span>
+              </div>
+              <div class="fs-11 muted mt-4">Execution is tracking 18% above original baseline due to approved CRs.</div>
+            </div>
+
             <div class="section-label">Change request log</div>
             <div class="col gap-8" id="crs"></div>
             <div class="divider"></div>
             <div class="kv-mini">
-              <div><span>Scope delivered</span><b>72%</b></div>
               <div><span>Unbilled milestones</span><b class="crit-text">3 · ₹48 L</b></div>
               <div><span>Approved CRs</span><b>2 · ₹38 L added</b></div>
             </div>

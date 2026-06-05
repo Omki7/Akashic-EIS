@@ -53,7 +53,9 @@
 
       <div class="set-tabs">
         <button class="set-tab active" data-t="thresholds" onclick="setTab('thresholds')">Policy & Thresholds</button>
-        <button class="set-tab" data-t="alerts" onclick="setTab('alerts')">Alert Routing</button>
+        <button class="set-tab" data-t="metrics" onclick="setTab('metrics')">Metric Dictionary</button>
+        <button class="set-tab" data-t="alerts" onclick="setTab('alerts')">Briefing & Routing</button>
+        <button class="set-tab" data-t="esg" onclick="setTab('esg')">ESG Reporting</button>
         <button class="set-tab" data-t="rbac" onclick="setTab('rbac')">RBAC & Authority</button>
         <button class="set-tab" data-t="audit" onclick="setTab('audit')">Access Audit</button>
       </div>
@@ -64,9 +66,71 @@
         <div class="btn-row"><button class="btn sm primary" onclick="AK.toast('Policy saved — signal engine recalculating')">Save policy</button><button class="btn sm">Reset to industry defaults</button></div>
       </div>
 
+      <div id="set-metrics" style="display:none">
+        <div class="narrative-block">The <b>Semantic Layer Dictionary</b> guarantees single-source-of-truth calculations across Akashic. Modify the logic here, and it cascades to every dashboard, model, and system sync.</div>
+        <div class="panel-soft">
+          <table class="tbl" style="font-size:12.5px;margin:0">
+             <thead><tr><th>Metric Name</th><th>Standard Formula</th><th>Data Source(s)</th><th>Owner</th></tr></thead>
+             <tbody>
+                <tr><td class="strong">EAC (Estimate at Completion)</td><td class="mono">Actual Cost + ((BAC - EV) / CPI)</td><td>Zoho PSA + NetSuite</td><td>CFO</td></tr>
+                <tr><td class="strong">Attrition Risk Score</td><td class="mono">(Comp Gap % * 0.4) + (Tenure Risk * 0.3) + (Burnout Flag * 0.3)</td><td>Darwinbox HRMS</td><td>CHRO</td></tr>
+                <tr><td class="strong">Project Margin</td><td class="mono">((Billed Rev - Loaded Labor Cost) / Billed Rev) * 100</td><td>SAP ERP</td><td>Delivery Head</td></tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="set-alerts" style="display:none">
-        <div class="narrative-block">Per-signal routing & escalation — replaces the static notification array. Add snooze/mute and escalation chains.</div>
+        <div class="narrative-block">Configure per-signal routing and <b>proactive briefing delivery</b>. Set when and how Akashic pushes synthesized intelligence (e.g. Sunday night prep, morning standup context) directly to your channels.</div>
+        
+        <div class="section-label">Proactive Briefing Schedules</div>
+        <div class="panel-soft mb-20" style="padding:0">
+          <div class="route-row">
+            <div style="font-size:12.5px;font-weight:600">CEO Sunday Prep</div>
+            <div class="flex items-center gap-10 wrap">
+               <span class="muted fs-11">Delivered via</span>
+               <div class="chan-tog"><span class="ctog on">Email</span><span class="ctog on">WhatsApp</span></div>
+               <span class="muted fs-11" style="margin-left:8px">Timing</span>
+               <span class="mono fs-12" style="padding:2px 8px;border:1px solid var(--line);border-radius:4px">Sun 18:00</span>
+            </div>
+          </div>
+          <div class="route-row">
+            <div style="font-size:12.5px;font-weight:600">Daily Account Standup</div>
+            <div class="flex items-center gap-10 wrap">
+               <span class="muted fs-11">Delivered via</span>
+               <div class="chan-tog"><span class="ctog on">Slack</span></div>
+               <span class="muted fs-11" style="margin-left:8px">Timing</span>
+               <span class="mono fs-12" style="padding:2px 8px;border:1px solid var(--line);border-radius:4px">Weekdays 08:30</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Alert Escalation & Routing</div>
         <div class="panel-soft" id="route-list"></div>
+      </div>
+
+      <div id="set-esg" style="display:none">
+        <div class="narrative-block">Automated ESG (Environmental, Social, Governance) data extraction. Akashic pulls scope 1-3 emissions from travel/ERP systems and diversity metrics from HRMS for immediate board reporting.</div>
+        <div class="two-col">
+           <div class="panel-soft" style="padding:16px">
+              <div class="section-label mb-12" style="margin-top:0">Carbon Footprint (YTD)</div>
+              <div class="flex items-center gap-16 mb-12">
+                 <div style="flex:1"><div class="fs-11 muted" style="text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Scope 1 &amp; 2</div><div style="font-size:24px;font-weight:800">420<span class="fs-14 muted"> tCO2e</span></div></div>
+                 <div style="flex:1"><div class="fs-11 muted" style="text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Scope 3 (Travel)</div><div style="font-size:24px;font-weight:800" class="warn-text">850<span class="fs-14 muted"> tCO2e</span></div></div>
+              </div>
+              <div class="meter warn" style="margin-bottom:8px"><i style="width:75%"></i></div>
+              <div class="fs-11 muted">Tracking 12% above target due to Q1 onsite deployments.</div>
+           </div>
+           <div class="panel-soft" style="padding:16px">
+              <div class="section-label mb-12" style="margin-top:0">Diversity &amp; Governance</div>
+              <div class="kv-mini">
+                 <div><span>Leadership Diversity</span><b>38% Female</b></div>
+                 <div><span>Board Independence</span><b>75%</b></div>
+                 <div><span>Data Privacy Incidents</span><b class="good-text">0</b></div>
+              </div>
+              <button class="btn sm mt-12" onclick="AK.toast('ESG Report exporting as PDF')">Export Q1 ESG Report</button>
+           </div>
+        </div>
       </div>
 
       <div id="set-rbac" style="display:none">
@@ -94,7 +158,10 @@
 <script>
 window.setTab=function(t){
   document.querySelectorAll('.set-tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
-  ['thresholds','alerts','rbac','audit'].forEach(x=>document.getElementById('set-'+x).style.display=x===t?'':'none');
+  ['thresholds','metrics','alerts','esg','rbac','audit'].forEach(x=>{
+    const el = document.getElementById('set-'+x);
+    if(el) el.style.display=x===t?'':'none';
+  });
 };
 const THR=[
   {name:'Client concentration limit',desc:'Top-3 ARR share that triggers a board signal',min:20,max:50,val:30,unit:'%'},

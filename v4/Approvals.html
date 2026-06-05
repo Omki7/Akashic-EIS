@@ -129,6 +129,18 @@ function filterApprovals(cat) {
 }
 
 function renderPending(a) {
+  const intelligenceText = a.type === 'RETENTION_ACTION' ? 'Flight risk spike detected (88%) due to compensation gap' :
+                           a.type === 'APPROVE_CR' ? 'Scope expansion validated against SOW-04 deliverables' :
+                           a.type === 'COLLECTION_ACTION' ? 'DSO breached threshold; legal notice yields 72% success rate here' :
+                           a.type === 'RAISE_RENEWAL_SOW' ? 'Renewal propensity 54%; early engagement recommended' :
+                           'Milestone M7 completion flagged in PSA';
+                           
+  const writebackText = a.type === 'RETENTION_ACTION' ? 'Update compensation record in Darwinbox' :
+                        a.type === 'APPROVE_CR' ? 'Create CR record in Zoho PSA & update Tally ledger' :
+                        a.type === 'COLLECTION_ACTION' ? 'Log legal dunning event in Salesforce CRM' :
+                        a.type === 'RAISE_RENEWAL_SOW' ? 'Create renewal opportunity in Salesforce CRM' :
+                        'Generate invoice record in NetSuite';
+
   return `<div class="action-card u-${a.urgency}">
   <div class="flex items-center gap-10 mb-8 wrap">
     <span class="signal ${a.urgency}">${a.label}</span>
@@ -136,6 +148,19 @@ function renderPending(a) {
     <span class="badge ${a.category==='strategic'?'b-composite':a.category==='financial'?'b-accent':'b-active'}" style="font-size:10px;padding:1px 7px"><span class="bd"></span>${a.category}</span>
     <span class="muted fs-12" style="margin-left:auto">Requested by <b>${a.by}</b> · ${a.since}</span>
   </div>
+  
+  <div class="boundary-box mb-12">
+     <div class="bb-col intelligence">
+        <div class="bb-label">🧠 Triggering Intelligence</div>
+        <div class="bb-text">${intelligenceText}</div>
+     </div>
+     <div class="bb-divider"></div>
+     <div class="bb-col writeback">
+        <div class="bb-label">⚡ System Write-back</div>
+        <div class="bb-text">${writebackText}</div>
+     </div>
+  </div>
+
   <div class="flex items-center gap-14 wrap mb-10">
     <div><div class="phs-l">Entity</div><div class="fs-13 strong">${a.entity}</div></div>
     <div><div class="phs-l">At stake</div><div class="fs-14 strong ${a.urgency==='crit'?'crit-text':'warn-text'}">${a.amount}</div></div>
@@ -156,24 +181,6 @@ function renderPending(a) {
 
 const defaultTab = PERSONA_APPROVAL_TAB[AK.getPersona()] || 'All';
 filterApprovals(defaultTab);
-$('#pending').innerHTML=PENDING.map(a=>`<div class="action-card u-${a.urgency}">
-  <div class="flex items-center gap-10 mb-8 wrap">
-    <span class="signal ${a.urgency}">${a.label}</span>
-    <span class="mono fs-11 faint">${a.id}</span>
-    <span class="muted fs-12" style="margin-left:auto">Requested by <b>${a.by}</b> · ${a.since}</span>
-  </div>
-  <div class="flex items-center gap-14 wrap mb-10">
-    <div><div class="phs-l">Entity</div><div class="fs-13 strong">${a.entity}</div></div>
-    <div><div class="phs-l">At stake</div><div class="fs-14 strong ${a.urgency==='crit'?'crit-text':'warn-text'}">${a.amount}</div></div>
-    <div><div class="phs-l">Writes to</div><div class="flex gap-6 flex-wrap">${a.systems.map(s=>`<span class="ac-sys-sm" style="border-color:var(--accent);color:var(--accent-2)">${s}</span>`).join('')}</div></div>
-  </div>
-  <div class="flex gap-8">
-    <button class="btn sm primary" onclick="approveAction('${a.id}')">Approve &amp; sync</button>
-    <button class="btn sm" onclick="AK.toast('Editing action ${a.id}')">Edit</button>
-    <button class="btn sm danger" onclick="AK.toast('Action ${a.id} rejected · noted in audit log')">Reject</button>
-    <a class="btn sm ghost" href="${a.type==='RETENTION_ACTION'?'EmployeeProfile.html':a.type==='RAISE_INVOICE'||a.type==='RAISE_RENEWAL_SOW'||a.type==='APPROVE_CR'?'ProjectProfile.html':'ClientProfile.html'}">Open entity ↗</a>
-  </div>
-</div>`).join('');
 /* approveAction retained for backwards compat */
 function approveAction(id){ AK.toast('Approved · writing to systems · audit logged'); }
 
@@ -221,6 +228,13 @@ $('#audit-log tbody').innerHTML=AUDIT.map(r=>`<tr>
 .action-card.u-crit{border-left-color:var(--critical);}
 .action-card.u-warn{border-left-color:var(--warn);}
 .phs-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;}
+.boundary-box{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bb-col{flex:1;padding:10px 12px}
+.bb-col.intelligence{background:linear-gradient(to right, var(--composite-soft), transparent)}
+.bb-col.writeback{background:linear-gradient(to right, transparent, var(--accent-soft))}
+.bb-divider{width:1px;background:var(--line)}
+.bb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.bb-text{font-size:12px;color:var(--ink-2);line-height:1.4}
 @media(max-width:1100px){.integ-status-grid{grid-template-columns:repeat(3,1fr);}.tiles-4{grid-template-columns:repeat(2,1fr);}}
 </style>
 </body>

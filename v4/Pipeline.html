@@ -51,7 +51,61 @@
       <div class="pl-metrics" id="pl-metrics"></div>
 
       <div class="section-label">Pursuit board <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— click a card to act · bench match shown on Skills</span></div>
-      <div class="kanban" id="kanban"></div>
+      <div class="kanban mb-20" id="kanban"></div>
+
+      <div class="two-col mb-20">
+        <!-- FUNNEL -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">🔻</div>
+            <div><div class="panel-title">Conversion Funnel</div><div class="panel-sub">Stage-to-stage progression rates (LTM)</div></div>
+          </div>
+          <div class="panel-body">
+             <div class="col gap-10">
+                <div class="flex items-center gap-12">
+                   <div class="mono fs-12 faint text-right" style="width:70px">Qualify</div>
+                   <div style="flex:1;height:24px;background:var(--accent-soft);border-radius:4px;display:flex;align-items:center;padding:0"><div style="width:100%;background:var(--accent);height:100%;border-radius:4px;opacity:0.6"></div></div>
+                   <div class="mono fs-12" style="width:40px">100%</div>
+                </div>
+                <div class="flex items-center gap-12">
+                   <div class="mono fs-12 faint text-right" style="width:70px">Propose</div>
+                   <div style="flex:1;height:24px;background:var(--surface-2);border-radius:4px;display:flex;align-items:center"><div style="width:68%;background:var(--accent);height:100%;border-radius:4px;opacity:0.7"></div></div>
+                   <div class="mono fs-12" style="width:40px">68%</div>
+                </div>
+                <div class="flex items-center gap-12">
+                   <div class="mono fs-12 faint text-right" style="width:70px">Negotiate</div>
+                   <div style="flex:1;height:24px;background:var(--surface-2);border-radius:4px;display:flex;align-items:center"><div style="width:42%;background:var(--accent);height:100%;border-radius:4px;opacity:0.85"></div></div>
+                   <div class="mono fs-12" style="width:40px">42%</div>
+                </div>
+                <div class="flex items-center gap-12">
+                   <div class="mono fs-12 faint text-right" style="width:70px">Won</div>
+                   <div style="flex:1;height:24px;background:var(--surface-2);border-radius:4px;display:flex;align-items:center"><div style="width:29%;background:var(--good);height:100%;border-radius:4px"></div></div>
+                   <div class="mono fs-12" style="width:40px;color:var(--good)">29%</div>
+                </div>
+             </div>
+             <div class="fs-12 muted mt-16 text-center">Industry average win rate for Digital Enterprise: 24%</div>
+          </div>
+        </div>
+
+        <!-- WIN/LOSS -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">⚖️</div>
+            <div><div class="panel-title">Win/Loss Analysis Ledger</div><div class="panel-sub">Recent closed outcomes and attribution codes</div></div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="tbl" style="font-size:12.5px;margin:0">
+              <thead><tr><th>Pursuit</th><th>Outcome</th><th>Amount</th><th>Primary Reason Code</th></tr></thead>
+              <tbody>
+                <tr><td class="strong">NEX-992 Retail Core</td><td><span class="badge b-active"><span class="bd"></span>Won</span></td><td class="mono">₹1.2 Cr</td><td class="muted">Domain Expertise (Pricing)</td></tr>
+                <tr><td class="strong">Altius Cloud Migration</td><td><span class="badge b-risk"><span class="bd"></span>Lost</span></td><td class="mono">₹2.4 Cr</td><td class="muted">Competitor Under-bid (Wipro)</td></tr>
+                <tr><td class="strong">Crimson CRM Global</td><td><span class="badge b-active"><span class="bd"></span>Won</span></td><td class="mono">₹3.8 Cr</td><td class="muted">Incumbent Renewal (SOW-06)</td></tr>
+                <tr><td class="strong">Vanguard Data Lake</td><td><span class="badge b-risk"><span class="bd"></span>Lost</span></td><td class="mono">₹1.8 Cr</td><td class="muted">No-Decision / Budget Freeze</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
     </main>
   </div>

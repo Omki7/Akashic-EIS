@@ -46,12 +46,43 @@
 
       <div class="pl-metrics" id="sk-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px"></div>
 
-      <div class="section-label">Capability inventory <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— supply (green) vs. 90-day pipeline demand (dashed)</span></div>
-      <div class="sk-tbl-wrap">
-        <table class="tbl">
-          <thead><tr><th>Skill</th><th>Practice</th><th class="r">Supply</th><th class="r">Bench</th><th class="r">90d Demand</th><th>Supply vs Demand</th><th class="r">Certified</th><th>Status</th></tr></thead>
-          <tbody id="sk-rows"></tbody>
-        </table>
+      <div class="two-col mb-24" style="grid-template-columns: 2fr 1fr; gap:20px; align-items:start">
+        <div>
+          <div class="section-label">Capability inventory <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— supply (green) vs. 90-day pipeline demand (dashed)</span></div>
+          <div class="sk-tbl-wrap" style="margin-bottom:0">
+            <table class="tbl">
+              <thead><tr><th>Skill</th><th>Practice</th><th class="r">Supply</th><th class="r">Bench</th><th class="r">90d Demand</th><th>Supply vs Demand</th><th class="r">Certified</th><th>Status</th></tr></thead>
+              <tbody id="sk-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">Market Context &amp; Competitors</div>
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px">
+             <div class="fs-11 muted mb-8" style="text-transform:uppercase;letter-spacing:.05em;font-weight:700">Competitor Moves</div>
+             <div class="col gap-10 mb-16">
+                <div style="border-left:2px solid var(--critical);padding-left:10px">
+                   <div class="fs-13 strong">Wipro aggressively hiring AI</div>
+                   <div class="fs-12 muted mt-2">Opened 400+ GenAI roles in Bengaluru over last 30 days.</div>
+                </div>
+                <div style="border-left:2px solid var(--warn);padding-left:10px">
+                   <div class="fs-13 strong">TCS freezing SAP core hiring</div>
+                   <div class="fs-12 muted mt-2">Shift focus to cloud migrations; easing SAP talent constraints.</div>
+                </div>
+             </div>
+
+             <div class="fs-11 muted mb-8" style="text-transform:uppercase;letter-spacing:.05em;font-weight:700">Market Demand Trends</div>
+             <div class="col gap-8">
+                <div class="flex justify-between items-center"><span class="fs-13">GenAI Architecture</span><span class="badge b-active"><span class="bd"></span>High Demand</span></div>
+                <div class="flex justify-between items-center"><span class="fs-13">Cloud FinOps</span><span class="badge b-active"><span class="bd"></span>High Demand</span></div>
+                <div class="flex justify-between items-center"><span class="fs-13">Legacy RPA</span><span class="badge b-risk"><span class="bd"></span>Declining</span></div>
+             </div>
+             
+             <div class="divider" style="margin:16px 0 12px"></div>
+             <div class="fs-12" style="color:var(--ink-2)"><b>Intelligence Insight:</b> Akashic's bench has 14 legacy RPA engineers. Highly recommend cross-skilling them to Cloud FinOps based on our 90d demand curve and market tailwinds.</div>
+          </div>
+        </div>
       </div>
 
       <div class="section-label">Bench → Pipeline Matcher <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— idle capacity matched to open pursuits before cost compounds</span></div>

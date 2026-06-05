@@ -94,6 +94,8 @@
     { id:'home',      label:'Home',        ico:'home',      href:'Home.html' },
     { id:'assistant', label:'Ask Akashic', ico:'ai',        href:'Assistant.html' },
     { id:'horizon',   label:'Horizon',     ico:'horizon',   href:'Horizon.html' },
+    { id:'goals',     label:'Goals & Targets', ico:'flag',  href:'Goals.html' },
+    { id:'handoffs',  label:'Handoffs',    ico:'route',     href:'Handoffs.html', badge:'1', alert:true },
     { id:'decisions', label:'My Decisions',ico:'decisions', href:'Decisions.html', badge:'3' },
     { id:'approvals', label:'Approvals',   ico:'approvals', href:'Approvals.html', badge:'5', alert:true },
   ];
@@ -129,19 +131,20 @@
   ];
 
   const NAV_GOVERN = [
+    { id:'compliance', label:'Compliance & Trust', ico:'audit', href:'Compliance.html' },
     { id:'settings', label:'Settings & Admin', ico:'settings', href:'Settings.html' },
   ];
 
   /* All personas land on Home — Home renders the right lens */
   const PERSONAS = [
-    { id:'ceo', label:'CEO',           home:'Home.html', color:'var(--accent)' },
-    { id:'cfo', label:'CFO',           home:'Home.html', color:'var(--composite)' },
-    { id:'dh',  label:'Delivery Head', home:'Home.html', color:'var(--good)' },
+    { id:'ceo', label:'CEO',                     home:'Home.html', color:'var(--accent)' },
+    { id:'cfo', label:'CFO',                     home:'Home.html', color:'var(--composite)' },
+    { id:'dh',  label:'Chief Delivery Officer',  home:'Home.html', color:'var(--good)' },
   ];
   const PERSONA_USER = {
-    ceo: { name:'Arjun Mehta',   role:'Chief Executive',  init:'AM' },
-    cfo: { name:'Devika Rao',    role:'Chief Financial',  init:'DR' },
-    dh:  { name:'Karthik Menon', role:'Head of Delivery', init:'KM' },
+    ceo: { name:'Arjun Mehta',   role:'Chief Executive Officer', init:'AM' },
+    cfo: { name:'Devika Rao',    role:'Chief Financial Officer', init:'DR' },
+    dh:  { name:'Karthik Menon', role:'Chief Delivery Officer',  init:'KM' },
   };
 
   /* ---- Per-persona primary decisions ---- */
@@ -273,14 +276,6 @@
           <span class="integ-name">${i.label}</span>
           <span class="integ-time">${i.lastSync}</span></div>`).join('')}
       </div>
-    </div>
-    <div class="sidebar-foot">
-      <div class="user-chip" onclick="AK.toggleUserMenu(event)">
-        <div class="avatar" style="border:2px solid ${PERSONAS.find(pp=>pp.id===persona).color}">${EMPLOYEE_PHOTOS[u.name] ? `<img src="${EMPLOYEE_PHOTOS[u.name]}" alt="${u.name}" onerror="this.parentElement.textContent='${u.init}'">` : u.init}</div>
-        <div style="min-width:0"><div style="font-weight:600;font-size:13px;line-height:1.2">${u.name}</div>
-          <div style="font-size:11px;color:var(--ink-3)">${u.role}</div></div>
-        ${icon('chev','nav-ico')}
-      </div>
     </div>`;
   }
 
@@ -292,16 +287,37 @@
     }).join('');
     const notifs = getEffectiveNotifs(persona);
     const unreadCount = notifs.filter(n=>!n.read).length;
+    const u = PERSONA_USER[persona] || PERSONA_USER.ceo;
     return `
     <div class="crumbs">${crumbHtml}</div>
+    <div class="topbar-spacer"></div>
+    
+    <!-- Snapshot Control -->
+    <div class="snapshot-ctrl" title="View data as of a specific date" style="display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;font-size:12px;margin-right:12px;cursor:pointer;font-family:var(--sans)">
+       <span style="color:var(--ink-3)">As of:</span>
+       <b>Today (Live)</b>
+       ${icon('chev','nav-ico')}
+    </div>
+
+    <!-- Currency Toggle -->
+    <div class="currency-ctrl" title="Toggle portfolio currency" onclick="AK.toast('Currency switched to USD. Forex impact: -₹1.2 Cr')" style="display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;font-size:12px;margin-right:12px;cursor:pointer;font-family:var(--sans)">
+       <b>₹ INR</b>
+       ${icon('chev','nav-ico')}
+    </div>
+
     <button class="topbar-search" onclick="AK.openPalette()" title="⌘K">
       ${icon('search','')} <span class="tsq-text">Search anything…</span><span class="kbd">⌘K</span>
     </button>
-    <div class="topbar-spacer"></div>
     <button class="icon-btn" id="notif-btn" title="Notifications" onclick="AK.toggleNotifs()">
       ${unreadCount > 0 ? '<span class="dot"></span>' : ''}${icon('bell')} <span>Notifications</span>
       ${unreadCount > 0 ? `<span class="notif-count">${unreadCount}</span>` : ''}
-    </button>`;
+    </button>
+    <div class="user-chip" onclick="AK.toggleUserMenu(event)">
+      <div class="avatar" style="border:2px solid ${PERSONAS.find(pp=>pp.id===persona).color}">${EMPLOYEE_PHOTOS[u.name] ? `<img src="${EMPLOYEE_PHOTOS[u.name]}" alt="${u.name}" onerror="this.parentElement.textContent='${u.init}'">` : u.init}</div>
+      <div style="min-width:0;text-align:left"><div style="font-weight:600;font-size:13px;line-height:1.2">${u.name}</div>
+        <div style="font-size:11px;color:var(--ink-3)">${u.role}</div></div>
+      ${icon('chev','nav-ico')}
+    </div>`;
   }
 
   /* ---- Decisions bar — context-aware + persona-primary verb ---- */
@@ -379,8 +395,21 @@
   }
   function buildPaletteHTML() {
     return `<div id="ak-palette">
-      <div class="pal-input-row">${icon('search','')} <input id="ak-palette-input" placeholder="Search clients, projects, people, actions…" oninput="AK.filterPalette(this.value)" onkeydown="AK.paletteKey(event)" /></div>
-      <div class="pal-list" id="ak-palette-list">${renderPaletteItems(PALETTE_ITEMS)}</div>
+      <div class="pal-input-row">${icon('search','')} <input id="ak-palette-input" placeholder="Natural language query or exact search…" oninput="AK.filterPalette(this.value)" onkeydown="AK.paletteKey(event)" /></div>
+      <div style="display:flex; padding: 8px 16px; gap: 8px; border-bottom: 1px solid var(--line); background: var(--surface-2);">
+        <span style="font-size:11px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;margin-top:2px;margin-right:4px">Facets</span>
+        <span class="pal-facet active">All</span>
+        <span class="pal-facet">Clients</span>
+        <span class="pal-facet">Projects</span>
+        <span class="pal-facet">People</span>
+        <span class="pal-facet">Documents</span>
+      </div>
+      <div class="pal-layout" style="display:flex; max-height:420px;">
+         <div class="pal-list" id="ak-palette-list" style="flex: 1; border-right: 1px solid var(--line); overflow-y:auto;">${renderPaletteItems(PALETTE_ITEMS)}</div>
+         <div class="pal-preview" id="ak-palette-preview" style="width: 260px; background: var(--surface-2); padding: 16px; font-size:12px;">
+            <div style="color:var(--ink-faint); text-align:center; padding-top: 40px;">Select an item to preview</div>
+         </div>
+      </div>
       <div class="pal-foot">↑↓ navigate · Enter to open · Esc close · <kbd>⌘K</kbd> toggle</div>
     </div>`;
   }
@@ -400,10 +429,33 @@
     _palFiltered = q ? PALETTE_ITEMS.filter(it=>it.label.toLowerCase().includes(q.toLowerCase())||it.hint.toLowerCase().includes(q.toLowerCase())) : [...PALETTE_ITEMS];
     const list = document.getElementById('ak-palette-list');
     if (list) list.innerHTML = renderPaletteItems(_palFiltered);
+    updatePalettePreview();
   }
   function selectPaletteItem(i) {
     _palSel = i;
     document.querySelectorAll('.pal-item').forEach((el,j)=>el.classList.toggle('sel',j===i));
+    updatePalettePreview();
+  }
+  function updatePalettePreview() {
+     const p = document.getElementById('ak-palette-preview');
+     if (!p) return;
+     const it = _palFiltered[_palSel];
+     if (!it) { p.innerHTML = '<div style="color:var(--ink-faint);text-align:center;padding-top:40px">No results</div>'; return; }
+     
+     // Quick mock preview based on type
+     if (it.type === 'client') {
+        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div>
+        <div style="color:var(--ink-2);margin-bottom:12px">${it.hint}</div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:8px"><b>Status:</b> Active<br><b>Renewal:</b> Oct 2026<br><b>ARR:</b> ₹14.2 Cr</div>
+        <button class="btn sm" onclick="location.href='${it.href}'" style="width:100%">Open Profile ›</button>`;
+     } else if (it.type === 'employee') {
+        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div>
+        <div style="color:var(--warn);margin-bottom:12px;font-weight:600">${it.hint}</div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:8px"><b>Role:</b> Architect<br><b>Location:</b> Pune</div>
+        <button class="btn sm" onclick="location.href='${it.href}'" style="width:100%">Open Profile ›</button>`;
+     } else {
+        p.innerHTML = `<div style="font-weight:700;font-size:14px;margin-bottom:8px">${it.label}</div><div style="color:var(--ink-2)">${it.hint}</div>`;
+     }
   }
   function paletteKey(e) {
     if (e.key==='Escape') { closePalette(); return; }
@@ -592,7 +644,7 @@
 
     const panel = document.createElement('div');
     panel.id = 'ak-user-menu';
-    panel.style.cssText = 'position:fixed;bottom:70px;left:14px;width:224px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:450;overflow:hidden;padding:6px 0;display:flex;flex-direction:column;gap:2px';
+    panel.style.cssText = 'position:fixed;top:66px;right:28px;width:224px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow-lg);z-index:450;overflow:hidden;padding:6px 0;display:flex;flex-direction:column;gap:2px';
 
     const title = document.createElement('div');
     title.style.cssText = 'padding:6px 12px;font-size:10px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.05em';

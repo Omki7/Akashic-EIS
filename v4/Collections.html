@@ -71,13 +71,40 @@
         <!-- Rendered by JS -->
       </div>
 
-      <!-- COLLECTION ACTIVITY LOG -->
-      <div class="panel mt-24">
-        <div class="panel-head">
-          <div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⟳</div>
-          <div><div class="panel-title">Collection Activity Log</div><div class="panel-sub">Recent actions taken on outstanding invoices</div></div>
+      <div class="two-col mt-24">
+        <!-- DISPUTE RESOLUTION WORKFLOW -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon">🛡️</div>
+            <div><div class="panel-title">Dispute Resolution Workflow</div><div class="panel-sub">Taxonomy and escalation path for disputed invoices</div></div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="tbl" style="font-size:12.5px;margin:0">
+              <thead><tr><th>Invoice</th><th>Dispute Reason</th><th>Status &amp; Escalation</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="strong">INV-2026-0355<div class="muted mt-2" style="font-weight:400">Aether Mobility · ₹31 L</div></td>
+                  <td>Scope disagreement<div class="muted mt-2">Client claims M4 incomplete</div></td>
+                  <td><span class="badge b-risk"><span class="bd"></span>Escalated to CDO</span><div class="muted mt-4">Karthik Menon reviewing</div></td>
+                </tr>
+                <tr>
+                  <td class="strong">INV-2026-0339<div class="muted mt-2" style="font-weight:400">Meridian Retail · ₹1.2 Cr</div></td>
+                  <td>Quality of deliverables<div class="muted mt-2">UAT defect threshold breached</div></td>
+                  <td><span class="badge b-renewal"><span class="bd"></span>Under Negotiation</span><div class="muted mt-4">Proposing credit note</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="panel-body col gap-0" id="activity-log"></div>
+
+        <!-- COLLECTION ACTIVITY LOG -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⟳</div>
+            <div><div class="panel-title">Collection Activity Log</div><div class="panel-sub">Recent actions taken on outstanding invoices</div></div>
+          </div>
+          <div class="panel-body col gap-0" id="activity-log"></div>
+        </div>
       </div>
 
     </main>
