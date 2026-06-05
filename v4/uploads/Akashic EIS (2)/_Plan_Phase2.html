@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Phase 2 Plan</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  body { background: var(--paper); }
+  .doc { max-width: 1120px; margin: 0 auto; padding: 40px 48px 100px; }
+  .doc-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .doc-h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.035em; margin-top: 6px; line-height: 1.12; }
+  .doc-lede { font-size: 16px; color: var(--ink-2); margin-top: 14px; line-height: 1.6; max-width: 780px; }
+  .doc h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; margin-top: 56px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); display: flex; align-items: center; gap: 12px; }
+  .h-num { font-family: var(--mono); font-size: 11px; font-weight: 700; background: var(--accent-soft); color: var(--accent-2); border: 1px solid var(--accent-line); padding: 4px 9px; border-radius: 6px; }
+  .doc h3 { font-size: 15px; font-weight: 700; margin-top: 24px; margin-bottom: 8px; color: var(--ink); }
+  .doc p, .doc li { font-size: 14px; color: var(--ink-2); line-height: 1.7; }
+  .doc ul { padding-left: 22px; margin: 6px 0; }
+  .doc li { margin-bottom: 4px; }
+  .doc b, .doc strong { color: var(--ink); font-weight: 700; }
+  .doc code { font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+
+  /* Item card */
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 22px 24px 20px;
+    margin-top: 18px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .item-tag {
+    position: absolute; top: 18px; right: 18px;
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 5px;
+    background: var(--accent-soft); color: var(--accent-2); border: 1px solid var(--accent-line);
+  }
+  .item-tag.small { background: var(--good-soft); color: #1f7a52; border-color: var(--good-line); }
+  .item-tag.med   { background: oklch(0.96 0.04 80); color: var(--warn); border-color: oklch(0.85 0.08 80); }
+  .item-tag.big   { background: var(--composite-soft); color: var(--composite-2); border-color: var(--composite-line); }
+  .item-num { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--ink-faint); }
+  .item-h { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; padding-right: 90px; }
+  .item-lede { font-size: 13.5px; color: var(--ink-2); margin-top: 6px; line-height: 1.55; max-width: 720px; }
+
+  .two-col-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+  .detail-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .detail-card h4 { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-faint); margin-bottom: 6px; }
+  .detail-card ul { padding-left: 16px; margin: 0; }
+  .detail-card li { font-size: 12.5px; margin-bottom: 2px; }
+
+  .mini-table { font-size: 12.5px; width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .mini-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); font-weight: 700; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .mini-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .mini-table tr:last-child td { border-bottom: 0; }
+  .mini-table td:first-child { font-weight: 600; color: var(--ink); width: 130px; }
+
+  /* Recommendation pill grid */
+  .reco-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .reco-card { border: 1.5px solid var(--line); border-radius: 10px; padding: 16px 18px; background: var(--surface); position: relative; }
+  .reco-card.pick { border-color: var(--good); background: linear-gradient(180deg, var(--good-soft), var(--surface)); }
+  .reco-card.pick::after { content: "✓ Recommended"; position: absolute; top: 12px; right: 14px; font-size: 10px; font-weight: 700; font-family: var(--mono); color: #1f7a52; background: #fff; border: 1px solid var(--good-line); padding: 2px 7px; border-radius: 4px; }
+  .reco-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 4px; padding-right: 100px; }
+  .reco-card .why { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; margin-top: 6px; }
+
+  /* Callout */
+  .callout {
+    background: linear-gradient(135deg, var(--accent-soft), var(--composite-soft));
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-lg);
+    padding: 22px 24px;
+    margin-top: 40px;
+  }
+  .callout h3 { margin-top: 0; font-size: 16px; font-weight: 800; }
+  .callout-q { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+  .callout-q b { color: var(--ink); }
+  .qnum { flex: 0 0 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--accent-line); display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent-2); margin-top: 1px; }
+
+  .pck { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); }
+  .pck.ceo { background: var(--accent-soft); color: var(--accent-2); border: 1px solid var(--accent-line); }
+  .pck.cfo { background: var(--composite-soft); color: var(--composite-2); border: 1px solid var(--composite-line); }
+  .pck.dh  { background: var(--good-soft); color: #1f7a52; border: 1px solid var(--good-line); }
+
+  .files-row { font-family: var(--mono); font-size: 11px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; align-items: center; }
+  .files-row .lbl { color: var(--ink-faint); }
+  .files-row span.f { background: var(--surface-2); border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px; color: var(--ink-2); }
+
+  .home-comp {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .home-comp .col {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid var(--line);
+  }
+  .home-comp h5 {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: -0.005em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .home-comp h5 .pck { font-size: 9.5px; padding: 1px 6px; }
+  .home-comp ul { padding-left: 16px; margin: 0; }
+  .home-comp li { font-size: 11.5px; line-height: 1.55; margin-bottom: 3px; color: var(--ink-2); }
+  .home-comp li b { color: var(--ink); }
+
+  .seq-list {
+    display: flex; gap: 0; align-items: stretch;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .seq-step {
+    flex: 1; min-width: 160px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .seq-step .n { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--accent-2); }
+  .seq-step .t { font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+  .seq-step .d { font-size: 11px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-eyebrow">Design Proposal · Phase 2 · 05 June 2026</div>
+  <h1 class="doc-h1">Making persona <em>structural</em> — not just a switch on the home page.</h1>
+  <p class="doc-lede">
+    Phase 1 wired persona into the home feed, sidebar, and decisions bar. You've asked for five concrete next
+    steps. Below is what I'd ship, in what order, and the open questions I need your call on first. Nothing
+    is touched until you say go.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2><span class="h-num">A</span> The five asks, in priority order</h2>
+  <p>
+    I've ordered these so the cheap, high-impact fixes (avatars, homepage polish) ship first, and the heavier
+    builds (Collections workspace) ship at the end with the most context. Items 1-3 give the most visible
+    change for least effort; items 4-5 are the deeper builds.
+  </p>
+
+  <!-- ============================================================ -->
+  <!-- ITEM 1 — Avatars in sidebar/role switcher -->
+  <div class="item">
+    <span class="item-tag small">XS · 15 min</span>
+    <div class="item-num">01</div>
+    <div class="item-h">Real photos on the user chip and role switcher</div>
+    <div class="item-lede">
+      The bottom-left user chip and the Switch-Role menu both render initials in a coloured square. We
+      already have headshots in <code>img/</code> and a mapping in <code>shell.js</code> — the chip just
+      isn't using it. One-line fix in two places.
+    </div>
+    <div class="two-col-detail">
+      <div class="detail-card">
+        <h4>What changes</h4>
+        <ul>
+          <li>User chip (bottom-left, sidebar) — render <code>AK.avatar(u.name)</code> instead of <code>${u.init}</code></li>
+          <li>Switch-Role menu — same swap, three rows</li>
+          <li>Role pill colour preserved as a 2-px ring around the photo so the persona accent is still visible</li>
+        </ul>
+      </div>
+      <div class="detail-card">
+        <h4>Photo mapping (already exists)</h4>
+        <ul>
+          <li>Arjun Mehta · <code>imran_qureshi.png</code></li>
+          <li>Devika Rao · <code>meera_nair.png</code></li>
+          <li>Karthik Menon · <code>karthik_menon.png</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="files-row"><span class="lbl">files:</span> <span class="f">shell.js</span></div>
+  </div>
+
+  <!-- ITEM 2 — Persona-bespoke homepages -->
+  <div class="item">
+    <span class="item-tag med">M · 4-5 h</span>
+    <div class="item-num">02</div>
+    <div class="item-h">Make each persona's homepage feel <em>built for them</em></div>
+    <div class="item-lede">
+      Today the home page swaps pulse tiles, AI brief, model panel, and right rail per persona — but the
+      <b>structure</b> is identical across all three. CEO gets a Spine diagram + composite card; CFO and
+      DH get the same Spine diagram + composite card even though those modules are CEO-tuned.
+      Real customisation means each homepage has its <em>own</em> hero module, its own primary action, and
+      its own information density.
+    </div>
+
+    <h3 style="margin-top: 18px">What each homepage becomes</h3>
+    <div class="home-comp">
+      <div class="col">
+        <h5><span class="pck ceo">CEO</span> Strategic Brief</h5>
+        <ul>
+          <li><b>Keep</b> the Cross-Pillar Composite as hero (Meridian 3-pillar)</li>
+          <li><b>Keep</b> Enterprise Spine — it's the strategic narrative</li>
+          <li><b>Add</b> a "Three things on my desk this week" decision pile-up above the feed</li>
+          <li><b>Strategic Bets tracker</b>: where is the AI-augmentation thesis tracking? (Managed-services mix, Rev/FTE, 3-yr outlook)</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h5><span class="pck cfo">CFO</span> Money-in-Motion</h5>
+        <ul>
+          <li><b>Replace</b> hero with a <b>Cash War-Room</b> tile: today's cash position + what's moving + biggest blockers (live ticker style)</li>
+          <li><b>Replace</b> Spine with the <b>Booked→Billed→Collected waterfall</b> as the main module — it IS the CFO's narrative</li>
+          <li><b>Add</b> "₹ unlocked today" counter tied to actions taken</li>
+          <li><b>Remove</b> CEO-flavoured composite card; surface the Northwind ₹2.4 Cr collections case as the hero risk</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h5><span class="pck dh">DH</span> Delivery Floor</h5>
+        <ul>
+          <li><b>Replace</b> hero with a <b>Project Heat-Strip</b>: 31 projects as colored tiles, red ones blinking</li>
+          <li><b>Replace</b> Spine with a <b>People-on-Projects grid</b> — who is where, who's overloaded, who's idle</li>
+          <li><b>Add</b> "Resource calls due today" stack (succession plans, redeployments)</li>
+          <li><b>Hero risk</b>: Orion Rollout slippage with Vikram exit overlay</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="margin-top:14px; font-size:13px;">
+      So the same React-ish components stay, but the <b>order, weight, and hero module</b> are different per role.
+      A CFO landing on home immediately sees money flow; a DH immediately sees a project heat-strip.
+    </p>
+    <div class="files-row"><span class="lbl">files:</span> <span class="f">Home.html</span> <span class="f">index.html</span> <span class="f">styles.css</span></div>
+  </div>
+
+  <!-- ITEM 3 — Handoff receipt into Assistant -->
+  <div class="item">
+    <span class="item-tag med">M · 2 h</span>
+    <div class="item-num">03</div>
+    <div class="item-h">Wire handoff context into Ask Akashic</div>
+    <div class="item-lede">
+      Right now the handoff appears in the receiver's notifications but the receiver still has to mentally
+      reconstruct what the sender was looking at. The receipt should land them inside the Assistant with
+      Arjun's exact framing already loaded — like opening a forwarded email with full context.
+    </div>
+
+    <h3>Mechanism</h3>
+    <div class="seq-list">
+      <div class="seq-step"><div class="n">01</div><div class="t">Arjun routes a signal</div><div class="d">Picks "Route to Devika", optional note.</div></div>
+      <div class="seq-step"><div class="n">02</div><div class="t">Stored with provenance</div><div class="d">Handoff record gains a <code>context</code> object: entity, the data Arjun saw, his framing.</div></div>
+      <div class="seq-step"><div class="n">03</div><div class="t">Devika gets a notif</div><div class="d">Tap → opens Assistant with deep-link <code>?handoff=HO-1234</code>.</div></div>
+      <div class="seq-step"><div class="n">04</div><div class="t">Assistant opens with banner</div><div class="d">"Arjun routed this to you. Here's what he saw and his note."</div></div>
+      <div class="seq-step"><div class="n">05</div><div class="t">First message pre-seeded</div><div class="d">A Claude turn that says: here's the situation, the 3 facts, here's what I'd suggest you do.</div></div>
+    </div>
+
+    <h3>Inside the Assistant — the receipt banner</h3>
+    <div class="detail-card" style="margin-top:8px">
+      <ul>
+        <li><b>Top banner</b>: avatar + "Arjun routed Meridian renewal risk to you · 2 min ago" + dismiss</li>
+        <li><b>Below banner</b>: Arjun's quoted note in a callout (if any)</li>
+        <li><b>First AI message</b>: "Arjun's seeing 3 risks on Meridian converging. From a financial lens, the priority is the unbilled ₹48 L and the ₹2.4 Cr overdue at Northwind. Want me to draft a collections call script or a re-forecast?"</li>
+        <li><b>Three persona-specific suggestion chips</b>: "Draft collections script · Re-forecast Q1 cash · Open Meridian financial 360"</li>
+        <li><b>Reply button</b>: "Reply to Arjun" — opens a one-line message that drops in his notifications</li>
+      </ul>
+    </div>
+    <div class="files-row"><span class="lbl">files:</span> <span class="f">shell.js</span> <span class="f">Assistant.html</span></div>
+  </div>
+
+  <!-- ITEM 4 — Pillar page persona deepening -->
+  <div class="item">
+    <span class="item-tag med">M · 3 h</span>
+    <div class="item-num">04</div>
+    <div class="item-h">Deepen <em>one</em> pillar page with real persona views — Projects</div>
+    <div class="item-lede">
+      All four pillar pages today do at most superficial persona masking (e.g. RLS-restricted columns). The
+      pillar that has the most to gain from full persona-awareness is <b>Projects</b>, because all three
+      roles legitimately care about it but for completely different reasons.
+    </div>
+
+    <h3>Why Projects (and not Clients / Employees / Financials)</h3>
+    <ul>
+      <li><b>Clients</b> — CEO-anchored; CFO's view is "what they owe me" (already on Financials), DH's view is restricted.</li>
+      <li><b>Employees</b> — DH and CEO want similar but different views; CFO is mostly restricted.</li>
+      <li><b>Financials</b> — already CFO-shaped end to end. DH is blocked. CEO view is similar to CFO.</li>
+      <li><b>Projects</b> — <b>all three</b> personas have legitimate, distinct lenses. Strongest persona payoff.</li>
+    </ul>
+
+    <h3>The three Projects views</h3>
+    <table class="mini-table">
+      <thead><tr><th>Lens</th><th>What you see first</th><th>What you can do</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="pck ceo">CEO</span></td>
+          <td><b>Strategic project map</b>: 31 projects by client × revenue × margin bubble. Concentration overlay. Red bubbles = renewal-critical.</td>
+          <td>Escalate · Open client 360 · Add to board pack</td>
+        </tr>
+        <tr>
+          <td><span class="pck cfo">CFO</span></td>
+          <td><b>Project P&amp;L grid</b>: 31 projects sorted by margin compression. Booked / billed / collected / unbilled-WIP per project. Pink rows = leaking cash.</td>
+          <td>Raise invoice · Approve write-off · Re-forecast revenue</td>
+        </tr>
+        <tr>
+          <td><span class="pck dh">DH</span></td>
+          <td><b>Delivery health board</b>: 31 projects as kanban columns (Green / Amber / Red / Recovery). Each card shows lead + days late + utilisation.</td>
+          <td>Approve CR · Redeploy · Re-baseline · Open project</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;margin-top:12px">
+      The data is the same; the <b>layout</b>, <b>sort</b>, and <b>action verbs</b> are different. Same toggle as on Home — flip persona and the page rerenders.
+    </p>
+    <div class="files-row"><span class="lbl">files:</span> <span class="f">Projects.html</span></div>
+  </div>
+
+  <!-- ITEM 5 — Collections OR Resource Planning -->
+  <div class="item">
+    <span class="item-tag big">L · 5-6 h</span>
+    <div class="item-num">05</div>
+    <div class="item-h">Build a new dedicated workspace</div>
+    <div class="item-lede">
+      The Phase 1 plan called out three candidate workspaces: <b>CFO Collections</b>, <b>DH Resource
+      Planning</b>, <b>CEO Board Pack</b>. You've narrowed it to the first two. They're roughly equal effort
+      (~5-6 hours each). Below is what each looks like and which one I'd build first.
+    </div>
+
+    <div class="reco-grid">
+      <div class="reco-card pick">
+        <h4>CFO Collections Workspace</h4>
+        <div class="why">
+          <b>Why this first.</b> The current Financials page surfaces aging buckets but Devika still can't
+          actually <em>do</em> collections from inside the product — she'd jump to CRM or email. A workspace
+          turns ₹2.4 Cr of stuck cash into a tracked workflow. It's also the persona view that most reflects
+          the brand promise — "every figure one click from action."
+        </div>
+        <h3 style="margin-top: 14px; font-size: 12.5px;">Workspace structure</h3>
+        <ul style="font-size: 12px;">
+          <li><b>Aging buckets</b> as switchable columns (kanban-style) — 0-30 / 31-60 / 61-90 / 90+</li>
+          <li>Each invoice card: client + amount + days + last-touch + risk score</li>
+          <li><b>Action drawer</b>: send reminder · escalate to legal · log call · adjust terms · write-off</li>
+          <li><b>Auto-suggest playbook</b>: "Northwind hasn't responded in 21 days — recommend escalation"</li>
+          <li><b>Daily ₹ unlocked counter</b> at top — gamifies progress, ties to Home pulse</li>
+          <li><b>Connected to handoff</b>: routed-from-Arjun items show with provenance pill</li>
+        </ul>
+      </div>
+      <div class="reco-card">
+        <h4>DH Resource Planning</h4>
+        <div class="why">
+          <b>Why second.</b> Equally valuable but conceptually closer to what Projects + Employees already
+          do; Collections has no current analogue in the product. Could ship in Phase 3.
+        </div>
+        <h3 style="margin-top: 14px; font-size: 12.5px;">If we did it instead</h3>
+        <ul style="font-size: 12px;">
+          <li>Bench → Pipeline matcher: 6 idle engineers vs 2 incoming pursuits</li>
+          <li>Heat map: utilisation by pod × week, drag-drop redeploys</li>
+          <li>SPOF list with succession-plan drafting</li>
+          <li>Skill-gap projection vs 90-day pipeline</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; margin-top: 14px;">
+      <b>My recommendation</b>: <span class="pck cfo">CFO</span> Collections workspace this round. If you'd
+      rather do DH Resource Planning first, say so and I'll flip.
+    </p>
+    <div class="files-row"><span class="lbl">new file:</span> <span class="f">Collections.html</span> <span class="lbl">touches:</span> <span class="f">shell.js</span> <span class="f">Financials.html</span></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2><span class="h-num">B</span> Sequence &amp; total time</h2>
+
+  <div class="seq-list">
+    <div class="seq-step"><div class="n">01</div><div class="t">Avatars</div><div class="d">15 min · ship-and-test</div></div>
+    <div class="seq-step"><div class="n">02</div><div class="t">Persona homepages</div><div class="d">4-5 h · hero modules per role</div></div>
+    <div class="seq-step"><div class="n">03</div><div class="t">Handoff → Assistant</div><div class="d">2 h · context-carrying deep link</div></div>
+    <div class="seq-step"><div class="n">04</div><div class="t">Projects persona views</div><div class="d">3 h · three layouts</div></div>
+    <div class="seq-step"><div class="n">05</div><div class="t">Collections workspace</div><div class="d">5-6 h · new page</div></div>
+  </div>
+  <p style="font-size: 13px; margin-top: 12px;">
+    Total ≈ <b>14-16 hours of build</b>. I'll ship in this order and pause after each item so you can review
+    before I move on, unless you'd rather I ship the whole batch in one go.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2><span class="h-num">C</span> What I'd like you to confirm</h2>
+
+  <div class="callout">
+    <h3>Decisions before I implement</h3>
+    <div class="callout-q"><div class="qnum">1</div><div>
+      <b>Pillar deep-dive — Projects or another?</b> I've argued Projects has the strongest 3-persona payoff.
+      If you'd rather I deepen <b>Employees</b> (which is also legitimately 3-persona) or <b>Clients</b>,
+      tell me. I won't do all four — that's later phases.
+    </div></div>
+    <div class="callout-q"><div class="qnum">2</div><div>
+      <b>Collections or Resource Planning?</b> My pick is Collections; you can override.
+    </div></div>
+    <div class="callout-q"><div class="qnum">3</div><div>
+      <b>Homepage hero modules — are the three I sketched (CFO Cash War-Room, DH Project Heat-Strip, CEO
+      Decision Pile-up) directionally right?</b> Or would you like to specify the hero module for any role?
+    </div></div>
+    <div class="callout-q"><div class="qnum">4</div><div>
+      <b>Ship in batches or all at once?</b> Batches let you steer mid-flight; one-shot is faster.
+    </div></div>
+  </div>
+
+  <p style="margin-top: 28px; color: var(--ink-3); font-size: 13px; font-style: italic;">
+    Once you answer (or just say "go with your picks"), I'll start at item 01 and work down.
+  </p>
+
+</div>
+</body>
+</html>

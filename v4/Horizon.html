@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Horizon</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .hz-forecast{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+  .hz-fc{flex:1 1 280px;display:flex;gap:11px;align-items:flex-start;padding:13px 15px;border-radius:var(--r-lg);border:1px solid var(--warn-line);background:var(--warn-soft)}
+  .hz-fc.crit{border-color:var(--critical-line);background:var(--critical-soft)}
+  .hz-fc-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:#fff;flex:0 0 auto;font-size:15px}
+  .hz-fc b{font-size:13px}.hz-fc .s{font-size:11.5px;color:var(--ink-3);line-height:1.45;margin-top:2px}
+
+  .ruler-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:18px 22px 8px;margin-bottom:26px;overflow:hidden}
+  .ruler-axis{position:relative;height:22px;margin-left:130px;border-bottom:1px solid var(--line-2)}
+  .ruler-tick{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line);padding-left:6px;font-size:10.5px;font-family:var(--mono);color:var(--ink-faint)}
+  .ruler-now{position:absolute;top:-2px;bottom:-400px;width:2px;background:var(--accent);z-index:3}
+  .ruler-now::before{content:'TODAY';position:absolute;top:-15px;left:-15px;font-size:8.5px;font-weight:800;font-family:var(--mono);color:var(--accent-2);letter-spacing:.06em}
+  .lane{display:flex;align-items:center;border-bottom:1px solid var(--line);min-height:46px}
+  .lane:last-child{border-bottom:0}
+  .lane-label{width:130px;flex:0 0 130px;font-size:11px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+  .lane-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+  .lane-track{position:relative;flex:1;height:46px}
+  .ev{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:1px solid;background:#fff;transition:all .12s;z-index:2}
+  .ev:hover{transform:translate(-50%,-50%) scale(1.05);box-shadow:var(--shadow);z-index:5}
+  .ev.crit{border-color:var(--critical-line);color:var(--critical);background:var(--critical-soft)}
+  .ev.warn{border-color:var(--warn-line);color:var(--warn);background:var(--warn-soft)}
+  .ev.good{border-color:var(--good-line);color:var(--good);background:var(--good-soft)}
+  .ev.accent{border-color:var(--accent-line);color:var(--accent-2);background:var(--accent-soft)}
+  .ev .ed{width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
+
+  .bucket-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+  .bucket{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+  .bucket-head{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,var(--surface),var(--surface-2))}
+  .bucket-head b{font-size:13px}.bucket-head .bn{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .be{display:flex;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;transition:background .1s}
+  .be:last-child{border-bottom:0}.be:hover{background:var(--surface-2)}
+  .be-bar{width:3px;border-radius:2px;flex:0 0 auto}
+  .be-t{font-size:12.5px;font-weight:600;line-height:1.3}
+  .be-s{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .be-when{font-size:10.5px;font-family:var(--mono);color:var(--ink-faint);margin-left:auto;white-space:nowrap}
+  .lane-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+</style>
+</head>
+<body data-screen="horizon" data-persona="ceo" data-crumb="Home / Horizon">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content" data-screen-label="Horizon — Forward obligations">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow" id="hz-eyebrow">Forward view · next 90 days</div>
+            <h1 class="page-title">Horizon</h1>
+            <div class="page-sub" id="hz-sub" style="max-width:680px">Every dated obligation across the firm, laid out on one time axis. Renewals, milestone billings, SLA reviews, contract expiries and bench cliffs — so you stop assembling the timeline in your head.</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm" onclick="AKV3.openBrief()">Schedule digest</button>
+            <button class="btn sm primary" onclick="AK.toast('Horizon exported to calendar (.ics)')">Add to calendar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hz-forecast" id="hz-forecast"></div>
+
+      <div class="section-label">90-Day Runway <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— click any marker to open the entity</span></div>
+      <div class="lane-filter" id="hz-lanefilter"></div>
+      <div class="ruler-wrap">
+        <div class="ruler-axis" id="ruler-axis"></div>
+        <div id="ruler-lanes"></div>
+      </div>
+
+      <div class="section-label">Grouped by when it hits</div>
+      <div class="bucket-grid" id="hz-buckets"></div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script src="v3.js"></script>
+<script>
+/* Persona-tuned forward-obligation model (days from 04 Jun 2026) */
+const LANES = [
+  { id:'renewal',   label:'Renewals',     color:'var(--composite)', personas:['ceo','cfo','dh'] },
+  { id:'billing',   label:'Milestone bills', color:'var(--accent)', personas:['cfo','ceo'] },
+  { id:'milestone', label:'Delivery',     color:'var(--good)',      personas:['dh','ceo'] },
+  { id:'sla',       label:'SLA reviews',  color:'var(--warn)',      personas:['dh','cfo'] },
+  { id:'expiry',    label:'Contract end', color:'var(--ink-3)',     personas:['ceo','cfo'] },
+  { id:'bench',     label:'Bench cliffs', color:'var(--critical)',  personas:['dh'] },
+];
+const EVENTS = [
+  { day:0,  lane:'bench',     sev:'crit',   t:'Data Eng pod hits 45d idle', s:'6 engineers · ₹38 L sunk · redeploy now', href:'Skills.html' },
+  { day:0,  lane:'billing',   sev:'crit',   t:'Meridian M8 unbilled ₹48 L', s:'Work delivered — invoice not raised', href:'Financials.html' },
+  { day:7,  lane:'milestone', sev:'crit',   t:'Orion recovery checkpoint', s:'11 days late · CR or descope', href:'Projects.html' },
+  { day:11, lane:'sla',       sev:'warn',   t:'Vermillion Helix SLA review', s:'99.2% vs 99.5% — penalty risk', href:'Projects.html' },
+  { day:12, lane:'milestone', sev:'crit',   t:'Atlas M9 due', s:'₹62 L overrun forecast', href:'Projects.html' },
+  { day:18, lane:'renewal',   sev:'crit',   t:'Meridian MSA expires', s:'₹14.2 Cr · no renewal SOW', href:'ClientProfile.html' },
+  { day:18, lane:'expiry',    sev:'crit',   t:'Meridian contract end', s:'Auto-renew not enabled', href:'ClientProfile.html' },
+  { day:21, lane:'renewal',   sev:'warn',   t:'Hanseatic renewal', s:'₹8.6 Cr · sponsor changed', href:'ClientProfile.html' },
+  { day:21, lane:'expiry',    sev:'warn',   t:'Hanseatic MSA end', s:'Cohort renewal 67%', href:'ClientProfile.html' },
+  { day:22, lane:'milestone', sev:'warn',   t:'Nova CRM milestone', s:'Aether · 22d to deadline', href:'Projects.html' },
+  { day:28, lane:'milestone', sev:'warn',   t:'Vermillion Helix closure', s:'12% margin · closure stage', href:'Projects.html' },
+  { day:30, lane:'sla',       sev:'warn',   t:'Brightwater SCADA SLA', s:'99.2% — monitor', href:'Projects.html' },
+  { day:35, lane:'billing',   sev:'warn',   t:'Sundara invoice due', s:'₹64 L outstanding', href:'Financials.html' },
+  { day:40, lane:'milestone', sev:'good',   t:'Brightwater SCADA M8', s:'On track · 21% margin', href:'Projects.html' },
+  { day:61, lane:'milestone', sev:'good',   t:'Cobalt Data Lake M7', s:'34% margin · healthy', href:'Projects.html' },
+  { day:64, lane:'renewal',   sev:'warn',   t:'Vermillion renewal window', s:'₹5.8 Cr · 7 Aug', href:'ClientProfile.html' },
+  { day:90, lane:'milestone', sev:'good',   t:'Indus Pharma Cloud M5', s:'On track', href:'Projects.html' },
+];
+const FORECASTS = {
+  ceo:[
+    {sev:'crit',ico:'📉',t:'Concentration breaches 33% in ~3 weeks',s:'If Meridian renews flat and no new logo closes, top-3 ARR crosses board limit again.'},
+    {sev:'warn',ico:'📅',t:'Board pack due in 4 days',s:'Q1 FY27 review Friday — concentration + renewal narrative needed.'},
+  ],
+  cfo:[
+    {sev:'crit',ico:'⏱',t:'DSO breaches 60d in ~2 weeks',s:'At current collection trajectory, DSO crosses 60 days unless Northwind ₹2.4 Cr clears.'},
+    {sev:'warn',ico:'💧',t:'₹3.4 Cr working capital trapped',s:'Unbilled + overdue resolving in next 30 days unlocks cash.'},
+  ],
+  dh:[
+    {sev:'crit',ico:'🧩',t:'Vikram exit window opens in ~10 days',s:'No shadow assigned — Orion at single-point-of-failure through renewal.'},
+    {sev:'warn',ico:'🪑',t:'Bench cost compounds past ₹45 L in 11 days',s:'6 idle engineers — redeploy to Cobalt + Indus pursuits now.'},
+  ],
+};
+let activeLanes = null;
+
+function visibleLanes(){
+  const p = AK.getPersona();
+  let lanes = LANES.filter(l=>l.personas.includes(p));
+  if(activeLanes) lanes = lanes.filter(l=>activeLanes.includes(l.id));
+  return lanes;
+}
+function renderForecast(){
+  const p=AK.getPersona();
+  document.getElementById('hz-forecast').innerHTML = (FORECASTS[p]||FORECASTS.ceo).map(f=>
+    `<div class="hz-fc ${f.sev}"><div class="hz-fc-ico">${f.ico}</div><div><b>${f.t}</b><div class="s">${f.s}</div></div></div>`).join('');
+}
+function renderRuler(){
+  const axis=document.getElementById('ruler-axis');
+  const months=[['Jun 4',0],['Jun 18',15],['Jul',27],['Aug',58],['Sep',88]];
+  axis.innerHTML = months.map(m=>`<span class="ruler-tick" style="left:${m[1]/90*100}%">${m[0]}</span>`).join('') +
+    `<span class="ruler-now" style="left:0%"></span>`;
+  const lanes=visibleLanes();
+  document.getElementById('ruler-lanes').innerHTML = lanes.map(l=>{
+    const evs=EVENTS.filter(e=>e.lane===l.id);
+    return `<div class="lane">
+      <div class="lane-label"><span class="lane-dot" style="background:${l.color}"></span>${l.label}</div>
+      <div class="lane-track">${evs.map(e=>`<div class="ev ${e.sev}" style="left:${Math.max(2,Math.min(98,e.day/90*100))}%" onclick="location.href='${e.href}'" title="${e.t} — ${e.s}"><span class="ed"></span>${e.t}</div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+function renderBuckets(){
+  const p=AK.getPersona();
+  const lanesVisible = visibleLanes().map(l=>l.id);
+  const evs = EVENTS.filter(e=>lanesVisible.includes(e.lane)).sort((a,b)=>a.day-b.day);
+  const buckets=[
+    {name:'This week',lo:0,hi:7},{name:'Next 2 weeks',lo:7,hi:14},{name:'2–4 weeks',lo:14,hi:30},
+    {name:'1–2 months',lo:30,hi:60},{name:'2–3 months',lo:60,hi:91},
+  ];
+  const colorOf=s=>s==='crit'?'var(--critical)':s==='warn'?'var(--warn)':s==='good'?'var(--good)':'var(--accent)';
+  document.getElementById('hz-buckets').innerHTML = buckets.map(b=>{
+    const items=evs.filter(e=>e.day>=b.lo&&e.day<b.hi);
+    if(!items.length) return '';
+    return `<div class="bucket"><div class="bucket-head"><b>${b.name}</b><span class="bn">${items.length}</span></div>
+      ${items.map(e=>`<a class="be" href="${e.href}"><div class="be-bar" style="background:${colorOf(e.sev)}"></div>
+        <div style="flex:1"><div class="be-t">${e.t}</div><div class="be-s">${e.s}</div></div>
+        <div class="be-when">${e.day===0?'now':'d+'+e.day}</div></a>`).join('')}</div>`;
+  }).join('');
+}
+function renderLaneFilter(){
+  const p=AK.getPersona();
+  const lanes=LANES.filter(l=>l.personas.includes(p));
+  document.getElementById('hz-lanefilter').innerHTML =
+    `<button class="fpill ${!activeLanes?'active':''}" onclick="setLane(null)">All lanes</button>` +
+    lanes.map(l=>`<button class="fpill ${activeLanes&&activeLanes.includes(l.id)?'active':''}" onclick="setLane('${l.id}')"><span class="lane-dot" style="background:${l.color}"></span>${l.label}</button>`).join('');
+}
+window.setLane=function(id){ activeLanes = id?[id]:null; renderAll(); };
+function renderAll(){ renderForecast(); renderLaneFilter(); renderRuler(); renderBuckets(); }
+(function(){
+  const p=AK.getPersona();
+  const eb={ceo:'CEO view · renewals, board dates & concentration',cfo:'CFO view · billing, close dates & collection windows',dh:'Delivery view · milestones, SLA windows & bench cliffs'};
+  document.getElementById('hz-eyebrow').textContent = eb[p]||eb.ceo;
+  renderAll();
+})();
+</script>
+</body>
+</html>

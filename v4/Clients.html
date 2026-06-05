@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Client Registry</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="clients" data-persona="ceo" data-crumb="Clients / Registry" data-decisions="false">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Client Registry">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Pillar 1 · Client — the primary anchor</div>
+            <h1 class="page-title">Client Registry</h1>
+            <div class="page-sub">48 clients across the portfolio · everything connects back to a client</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn sm"><span>Export</span></button>
+            <button class="btn sm">Columns</button>
+            <button class="btn sm primary">+ Add client</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative-block" style="border-left-color:var(--warn)">
+        Growth is decelerating while concentration risk rises. Meridian Retail alone represents 10% of ARR and is entering a highly vulnerable renewal cycle. The top 3 clients now account for 31% of total revenue. Expanding the mid-tier portfolio (Brightwater, Vermillion) is critical. <span class="nar-systems">Salesforce + SAP</span>
+      </div>
+
+      <!-- PERSONA LENS SWITCHER (G14) -->
+      <div class="lens-bar" id="lens-bar"></div>
+      <div id="lens-panel" class="mb-20"></div>
+
+      <!-- SUMMARY BAR -->
+      <div class="summary-bar mb-20">
+        <div class="sm-item">
+          <div class="sm-label">Portfolio ARR</div>
+          <div class="sm-val">₹142.6 Cr</div>
+          <div class="sm-foot"><span class="trend up">▴ 4.2%</span> vs last quarter</div>
+        </div>
+        <div class="vdivider"></div>
+        <div class="sm-item">
+          <div class="sm-label">Active clients</div>
+          <div class="sm-val">48</div>
+          <div class="sm-foot">31 active · 6 renewal · 4 onboarding</div>
+        </div>
+        <div class="vdivider"></div>
+        <div class="sm-item">
+          <div class="sm-label">At-risk share</div>
+          <div class="sm-val crit-text">14.6%</div>
+          <div class="sm-foot">7 clients · ₹20.8 Cr ARR exposed</div>
+        </div>
+        <div class="vdivider"></div>
+        <div class="sm-item">
+          <div class="sm-label">Renewals · next 90 days</div>
+          <div class="sm-val">₹38.4 Cr</div>
+          <div class="sm-foot">9 contracts · 2 flagged at risk</div>
+        </div>
+        <div class="vdivider"></div>
+        <div class="sm-item">
+          <div class="sm-label">Concentration</div>
+          <div class="sm-val warn-text">31%</div>
+          <div class="sm-foot">top-3 share of ARR · above threshold</div>
+        </div>
+      </div>
+
+      <!-- LIFECYCLE STAGE TABS -->
+      <div class="stage-tabs mb-16">
+        <button class="stage-tab active"><span class="st-name">All</span><span class="st-cnt">48</span></button>
+        <button class="stage-tab"><span class="hdot neutral"></span><span class="st-name">Prospect</span><span class="st-cnt">7</span></button>
+        <button class="stage-tab"><span class="hdot" style="background:var(--info);box-shadow:0 0 0 3px oklch(0.96 0.03 235)"></span><span class="st-name">Onboarding</span><span class="st-cnt">4</span></button>
+        <button class="stage-tab"><span class="hdot good"></span><span class="st-name">Active</span><span class="st-cnt">31</span></button>
+        <button class="stage-tab"><span class="hdot crit"></span><span class="st-name">At-Risk</span><span class="st-cnt">7</span></button>
+        <button class="stage-tab"><span class="hdot warn"></span><span class="st-name">Renewal</span><span class="st-cnt">6</span></button>
+        <button class="stage-tab"><span class="hdot neutral"></span><span class="st-name">Churned</span><span class="st-cnt">3</span></button>
+      </div>
+
+      <!-- SEGMENT FILTERS + sort -->
+      <div class="flex items-center justify-between mb-12 wrap gap-12">
+        <div class="filters" id="client-filters">
+          <!-- Populated by JS -->
+        </div>
+        <div class="flex items-center gap-8">
+          <div class="topbar-search" style="margin:0;flex:0 0 220px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input placeholder="Filter clients…"></div>
+          <button class="btn sm">Sort: ARR ▾</button>
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="panel">
+        <div class="scroll-x">
+          <table class="tbl" id="client-tbl">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Lifecycle</th>
+                <th style="text-align:center">Health</th>
+                <th>Revenue trend</th>
+                <th class="r">LTV to date</th>
+                <th class="r">Current ARR</th>
+                <th>Contract expiry</th>
+                <th>Account owner</th>
+                <th>Last touchpoint</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="tbl-foot">
+          <span>Showing <b>9</b> of 48 clients · filtered to At-Risk + Renewal</span>
+          <span class="faint">Updated 2 min ago · <span class="mono">source: live + 14 docs pending validation</span></span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script src="v3.js"></script>
+<script>
+function spark(points,color,w=72,h=22){
+  const max=Math.max(...points),min=Math.min(...points),rng=(max-min)||1,step=w/(points.length-1);
+  const pts=points.map((p,i)=>`${(i*step).toFixed(1)},${(h-2-((p-min)/rng)*(h-4)).toFixed(1)}`).join(' ');
+  const l=pts.split(' ').slice(-1)[0].split(',');
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none"><polyline points="${pts}" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${l[0]}" cy="${l[1]}" r="1.8" fill="${color}"/></svg>`;
+}
+const STAGE={active:['Active','b-active'],risk:['At-Risk','b-risk'],renewal:['Renewal','b-renewal'],onboard:['Onboarding','b-onboard'],churned:['Churned','b-churned'],prospect:['Prospect','b-prospect']};
+const clients=[
+  {n:'Meridian Retail Group',ind:'Retail · USA',logo:'MR',c:'#2563a8',stage:'renewal',h:'crit',ltv:'₹61.4 Cr',arr:'₹14.2 Cr',exp:'22 Jun 2026',conf:'lo',confv:'0.71',owner:'Priya Nair',touch:'2 days ago',sp:[12,12.5,13,13.4,14,14.2],trend:'down',risk:true,cohort:'62% renewed · 38% churned'},
+  {n:'Hanseatic Bank',ind:'BFSI · Germany',logo:'HB',c:'#2f6f9e',stage:'renewal',h:'crit',ltv:'₹48.9 Cr',arr:'₹11.8 Cr',exp:'25 Jun 2026',conf:'verified',confv:'✓',owner:'Rohan Desai',touch:'5 days ago',sp:[11.2,11.4,11.5,11.6,11.7,11.8],trend:'flat',risk:true,cohort:'67% renewed · 33% churned'},
+  {n:'Northwind Insurance',ind:'Insurance · UK',logo:'NW',c:'#9e5a2f',stage:'risk',h:'crit',ltv:'₹33.1 Cr',arr:'₹6.4 Cr',exp:'14 Nov 2026',conf:'md',confv:'0.83',owner:'Kavya Iyer',touch:'Today',sp:[6.6,6.5,6.5,6.4,6.4,6.4],trend:'down',risk:true,cohort:'58% renewed · 42% churned'},
+  {n:'Brightwater Utilities',ind:'Utilities · UK',logo:'BW',c:'#2f7a8e',stage:'risk',h:'warn',ltv:'₹27.8 Cr',arr:'₹5.2 Cr',exp:'09 Mar 2027',conf:'verified',confv:'✓',owner:'Rohan Desai',touch:'1 week ago',sp:[5.4,5.3,5.3,5.2,5.2,5.2],trend:'down',risk:true,cohort:'71% renewed · 29% churned'},
+  {n:'Cobalt Energy',ind:'Energy · India',logo:'CE',c:'#5a7a2f',stage:'active',h:'good',ltv:'₹41.2 Cr',arr:'₹9.3 Cr',exp:'30 Sep 2027',conf:'verified',confv:'✓',owner:'Priya Nair',touch:'Yesterday',sp:[7.8,8.1,8.5,8.8,9.0,9.3],trend:'up',risk:false},
+  {n:'Indus Pharma',ind:'Pharma · India',logo:'IP',c:'#7a2f6a',stage:'active',h:'good',ltv:'₹29.6 Cr',arr:'₹7.1 Cr',exp:'18 Jan 2028',conf:'verified',confv:'✓',owner:'Anil Kapoor',touch:'3 days ago',sp:[6.6,6.7,6.8,6.9,7.0,7.1],trend:'up',risk:false},
+  {n:'Vermillion Health',ind:'Healthcare · USA',logo:'VH',c:'#a23f6a',stage:'active',h:'warn',ltv:'₹22.4 Cr',arr:'₹5.8 Cr',exp:'07 Aug 2026',conf:'md',confv:'0.79',owner:'Kavya Iyer',touch:'4 days ago',sp:[5.5,5.6,5.7,5.7,5.8,5.8],trend:'flat',risk:false},
+  {n:'Sundara Logistics',ind:'Logistics · India',logo:'SL',c:'#3a7a55',stage:'active',h:'warn',ltv:'₹18.9 Cr',arr:'₹4.6 Cr',exp:'12 Dec 2026',conf:'verified',confv:'✓',owner:'Anil Kapoor',touch:'6 days ago',sp:[4.4,4.5,4.6,4.7,4.6,4.6],trend:'flat',risk:false},
+  {n:'Aether Mobility',ind:'Automotive · Germany',logo:'AE',c:'#46508c',stage:'onboard',h:'good',ltv:'₹3.1 Cr',arr:'₹3.1 Cr',exp:'01 May 2028',conf:'lo',confv:'0.68',owner:'Rohan Desai',touch:'Today',sp:[0.4,1.0,1.8,2.4,2.8,3.1],trend:'up',risk:false},
+];
+const tip=(c)=>c.risk?`<span class="pop-info cohort" data-tip="Historical renewal rate for clients with this risk profile: ${c.cohort}">i</span>`:'';
+
+let currentFilters = { geo: 'All', ind: 'All', risk: false };
+
+function initFilters() {
+  const geos = [...new Set(clients.map(c => c.ind.split('·')[1].trim()))].sort();
+  const inds = [...new Set(clients.map(c => c.ind.split('·')[0].trim()))].sort();
+  
+  const filHtml = `
+    <select class="fpill" onchange="currentFilters.geo=this.value; renderTable()">
+      <option value="All">Geography: All</option>
+      ${geos.map(g => `<option value="${g}">${g}</option>`).join('')}
+    </select>
+    <select class="fpill" onchange="currentFilters.ind=this.value; renderTable()">
+      <option value="All">Service Line: All</option>
+      ${inds.map(i => `<option value="${i}">${i}</option>`).join('')}
+    </select>
+    <button class="fpill ${currentFilters.risk?'active':''}" onclick="currentFilters.risk=!currentFilters.risk; this.classList.toggle('active'); renderTable()">At-Risk only</button>
+  `;
+  document.getElementById('client-filters').innerHTML = filHtml;
+}
+
+function renderTable() {
+  const persona = (window.AK && window.AK.getPersona()) || 'ceo';
+  const isDH = persona === 'dh';
+
+  let filtered = clients.filter(c => {
+    const geo = c.ind.split('·')[1].trim();
+    const ind = c.ind.split('·')[0].trim();
+    if (currentFilters.geo !== 'All' && geo !== currentFilters.geo) return false;
+    if (currentFilters.ind !== 'All' && ind !== currentFilters.ind) return false;
+    if (currentFilters.risk && !c.risk) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    document.querySelector('#client-tbl tbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--ink-faint)">No clients found matching selected filters.</td></tr>`;
+    document.querySelector('.tbl-foot b').innerText = '0';
+    return;
+  }
+
+  document.querySelector('#client-tbl tbody').innerHTML = filtered.map(c=>{
+    const [sl,sc]=STAGE[c.stage];
+    const confChip=c.conf==='verified'
+      ? `<span class="conf verified" title="Human-validated">✓ verified</span>`
+      : `<span class="conf ${c.conf}" title="Extracted from contract — confidence">${'<span class="cbar"><i style="width:'+(c.conf==='lo'?71:c.conf==='md'?83:92)+'%"></i></span>'}${c.confv}</span>`;
+    const tr=c.trend==='up'?'<span class="trend up">▴</span>':c.trend==='down'?'<span class="trend down">▾</span>':'<span class="trend flat">▪</span>';
+    
+    // RLS Masking
+    const ltvDisp = isDH ? '<span class="cell-sub" style="opacity:0.6" title="Restricted by RLS">[Restricted]</span>' : c.ltv;
+    const arrDisp = isDH ? '<span class="cell-sub" style="opacity:0.6" title="Restricted by RLS">[Restricted]</span>' : c.arr;
+
+    return `<tr class="row-click" onclick="location.href='ClientProfile.html'">
+      <td><div class="entity"><div class="logo" style="background:${c.c}">${c.logo}</div><div><div class="e-name">${c.n}</div><div class="e-sub">${c.ind}</div></div></div></td>
+      <td><span class="badge ${sc}"><span class="bd"></span>${sl}</span> ${tip(c)}</td>
+      <td style="text-align:center"><span class="hdot ${c.h}"></span></td>
+      <td>${spark(c.sp, c.trend==='up'?'var(--good)':c.trend==='down'?'var(--critical)':'var(--ink-faint)')} ${tr}</td>
+      <td class="r cell-mono">${ltvDisp}</td>
+      <td class="r cell-mono cell-strong">${arrDisp}</td>
+      <td><div class="flex items-center gap-8"><span class="cell-mono">${c.exp}</span>${confChip}</div></td>
+      <td><div class="flex items-center gap-8">${AK.avatar(c.owner, 'sm')}<span class="cell-sub" style="color:var(--ink-2)">${c.owner}</span></div></td>
+      <td class="cell-sub">${c.touch}</td>
+    </tr>`;
+  }).join('');
+
+  document.querySelector('.tbl-foot b').innerText = filtered.length;
+}
+
+initFilters();
+renderTable();
+
+/* ===== Persona lenses (G14) ===== */
+const LENSES={
+  ceo:{label:'CEO · Portfolio & Concentration',render:lensCEO},
+  cfo:{label:'CFO · Receivables',render:lensCFO},
+  owner:{label:'Account Owner · My Accounts',render:lensOwner},
+};
+let curLens=(AK.getPersona()==='cfo')?'cfo':'ceo';
+function renderLensBar(){
+  document.getElementById('lens-bar').innerHTML=Object.entries(LENSES).map(([k,v])=>
+    `<button class="lens-tab ${k===curLens?'active':''}" onclick="setLens('${k}')">${v.label}</button>`).join('');
+  document.getElementById('lens-panel').innerHTML=LENSES[curLens].render();
+}
+window.setLens=function(k){curLens=k;renderLensBar();};
+function lensCEO(){
+  const segs=[['Meridian','#2563a8',10],['Hanseatic','#2f6f9e',8],['Cobalt','#5a7a2f',7],['Indus','#7a2f6a',5],['Rest of book','var(--ink-faint)',70]];
+  return `<div class="lens-card"><div class="lens-grid">
+    <div><div class="lens-h">ARR concentration</div>
+      <div class="stackbar" style="margin:10px 0">${segs.map(s=>`<span style="width:${s[2]}%;background:${s[1]};font-size:9px">${s[2]>6?s[0]:''}</span>`).join('')}</div>
+      <div class="flex items-center gap-10"><span class="badge b-risk"><span class="bd"></span>Top-3 = 31%</span>${window.AKV3?AKV3.benchChip('concentration'):''}</div>
+    </div>
+    <div><div class="lens-h">At-risk ARR</div><div class="lens-big crit-text">₹20.8 Cr</div><div class="lens-sub">7 clients · 14.6% of book</div></div>
+    <div><div class="lens-h">Renewals 90d</div><div class="lens-big">₹38.4 Cr</div><div class="lens-sub">9 contracts · 2 flagged</div></div>
+  </div></div>`;
+}
+function lensCFO(){
+  const rows=[['Northwind Insurance','₹2.4 Cr','90+ days overdue','crit'],['Meridian Retail','₹48 L','M8 unbilled','warn'],['Sundara Logistics','₹64 L','35 days','warn'],['Hanseatic Bank','₹2.95 Cr','paid · reconciled','good']];
+  return `<div class="lens-card"><div class="lens-h" style="margin-bottom:10px">Receivables &amp; unbilled by client · DSO 58d ${window.AKV3?AKV3.benchChip('dso'):''}</div>
+    ${rows.map(r=>`<div class="recv-row"><span class="hdot ${r[3]}"></span><b>${r[0]}</b><span class="recv-amt ${r[3]==='crit'?'crit-text':r[3]==='warn'?'warn-text':''}">${r[1]}</span><span class="lens-sub">${r[2]}</span>
+      ${r[3]!=='good'?`<button class="btn xs" style="margin-left:auto" onclick="AKActions.compose({type:'${r[2].includes('unbilled')?'RAISE_INVOICE':'COLLECTION_ACTION'}',entityType:'client',entityName:'${r[0]}'})">${r[2].includes('unbilled')?'Raise invoice':'Collect'}</button>`:''}</div>`).join('')}</div>`;
+}
+function lensOwner(){
+  const owner='Priya Nair';
+  const mine=clients.filter(c=>c.owner===owner);
+  return `<div class="lens-card"><div class="flex items-center gap-10" style="margin-bottom:12px">${AK.avatar(owner,'md')}<div><b>${owner}</b> · Account Owner<div class="lens-sub">Scoped to my book — ${mine.length} accounts · ₹${mine.reduce((s,c)=>s+parseFloat(c.arr.replace(/[^\d.]/g,'')),0).toFixed(1)} Cr ARR</div></div>
+      <button class="btn sm" style="margin-left:auto" onclick="AK.toast('Delegated to Priya — RACI updated')">Delegate a signal</button></div>
+    <div class="owner-grid">${mine.map(c=>`<div class="owner-card" onclick="location.href='ClientProfile.html'"><div class="flex items-center gap-8"><div class="logo" style="background:${c.c};width:26px;height:26px;font-size:10px;border-radius:7px">${c.logo}</div><b style="font-size:13px">${c.n.split(' ')[0]}</b><span class="hdot ${c.h}" style="margin-left:auto"></span></div><div class="flex items-center justify-between" style="margin-top:8px"><span class="lens-sub">${c.arr}</span><span class="badge ${STAGE[c.stage][1]}" style="font-size:10px">${STAGE[c.stage][0]}</span></div></div>`).join('')}</div></div>`;
+}
+renderLensBar();
+</script>
+
+<style>
+.summary-bar{display:flex;align-items:stretch;gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px 22px;}
+.sm-item{display:flex;flex-direction:column;gap:3px;}
+.sm-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);font-weight:700;}
+.sm-val{font-size:24px;font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+.sm-foot{font-size:11.5px;color:var(--ink-3);}
+.sm-foot .trend{font-size:11px;}
+.stage-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:0;}
+.stage-tab{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:0;background:none;border-bottom:2px solid transparent;color:var(--ink-3);font-weight:600;font-size:13px;margin-bottom:-1px;}
+.stage-tab:hover{color:var(--ink);}
+.stage-tab.active{color:var(--ink);border-bottom-color:var(--accent);}
+.st-cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);background:var(--surface-3);padding:1px 7px;border-radius:20px;}
+.stage-tab.active .st-cnt{color:var(--accent-2);background:var(--accent-soft);}
+.tbl-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);}
+.ak-tip{position:fixed;z-index:200;background:var(--ink);color:#fff;font-size:11.5px;font-weight:500;padding:7px 10px;border-radius:7px;max-width:240px;box-shadow:var(--shadow-lg);pointer-events:none;line-height:1.4;}
+</style>
+</body>
+</html>

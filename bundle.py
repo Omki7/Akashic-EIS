@@ -3,7 +3,7 @@ import re
 import json
 
 workspace_dir = r"c:\DHIRA\2026\EIS 2026"
-v3_dir = os.path.join(workspace_dir, "v3")
+v4_dir = os.path.join(workspace_dir, "v4")
 
 # List of pages to compile
 html_pages = [
@@ -13,18 +13,25 @@ html_pages = [
     "ClientProfile.html",
     "Clients.html",
     "Collections.html",
+    "Decisions.html",
     "Documents.html",
     "EmployeeProfile.html",
     "Employees.html",
     "Financials.html",
+    "Horizon.html",
+    "IntegrationHealth.html",
+    "Mobile.html",
+    "Pipeline.html",
     "PracticePL.html",
     "ProjectProfile.html",
-    "Projects.html"
+    "Projects.html",
+    "Settings.html",
+    "Skills.html"
 ]
 
 # Read stylesheet and script files
 def read_file(filename):
-    filepath = os.path.join(v3_dir, filename)
+    filepath = os.path.join(v4_dir, filename)
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
             return f.read()

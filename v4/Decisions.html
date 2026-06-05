@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — My Decisions</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .dec-tabs{display:flex;gap:8px;margin-bottom:22px}
+  .life{display:flex;align-items:center;gap:0;margin:14px 0 4px}
+  .life-step{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+  .life-step .ls-dot{width:9px;height:9px;border-radius:50%;background:var(--line-strong)}
+  .life-step.done{color:var(--good)}.life-step.done .ls-dot{background:var(--good)}
+  .life-step.cur{color:var(--accent-2)}.life-step.cur .ls-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .life-bar{flex:1;height:2px;background:var(--line-2);margin:0 8px}
+  .life-bar.done{background:var(--good)}
+  .dec-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:18px 20px;margin-bottom:14px;border-left:4px solid var(--line-strong)}
+  .dec-card.s-awaiting-outcome{border-left-color:var(--warn)}
+  .dec-card.s-in-effect{border-left-color:var(--accent)}
+  .dec-card.s-resolved{border-left-color:var(--good)}
+  .dec-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .dec-id{font-family:var(--mono);font-size:11px;color:var(--ink-faint);font-weight:600}
+  .dec-title{font-size:15px;font-weight:700}
+  .dec-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--ink-3)}
+  .dec-meta b{color:var(--ink-2)}
+  .dec-pred{margin-top:12px;padding:10px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:12.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .dec-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .dec-outcome{margin-top:12px;padding:10px 13px;border-radius:var(--r);font-size:12.5px;font-weight:500}
+  .dec-outcome.worked{background:var(--good-soft);border:1px solid var(--good-line);color:var(--ink-2)}
+  .dec-outcome.didnt{background:var(--critical-soft);border:1px solid var(--critical-line);color:var(--ink-2)}
+  .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:14px}
+  .cal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:16px 18px}
+  .cal-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .cal-badge{font-size:10px;font-weight:700;font-family:var(--mono);padding:2px 8px;border-radius:5px;margin-left:auto}
+  .cal-badge.trust{background:var(--good-soft);color:var(--good)}
+  .cal-badge.caution{background:var(--warn-soft);color:var(--warn)}
+  .cal-badge.weak{background:var(--critical-soft);color:var(--critical)}
+  .cal-hit{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:10px 0 2px}
+  .cal-meter{height:6px;border-radius:4px;background:var(--surface-3);overflow:hidden;margin:8px 0}
+  .cal-meter i{display:block;height:100%;border-radius:4px}
+  .cal-sub{font-size:11.5px;color:var(--ink-3)}
+  .followups{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+  .fu{display:flex;align-items:center;gap:11px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .fu:last-child{border-bottom:0}
+  .fu-check{width:18px;height:18px;border:1.5px solid var(--line-strong);border-radius:5px;flex:0 0 auto;cursor:pointer}
+  .fu-when{margin-left:auto;font-size:10.5px;font-family:var(--mono);color:var(--ink-faint);background:var(--surface-2);padding:2px 8px;border-radius:5px}
+</style>
+</head>
+<body data-screen="decisions" data-persona="ceo" data-crumb="Home / My Decisions">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content" data-screen-label="My Decisions — decision journal">
+
+      <div class="page-head">
+        <div class="head-row">
+          <div>
+            <div class="page-eyebrow">Closed-loop intelligence</div>
+            <h1 class="page-title">My Decisions</h1>
+            <div class="page-sub" style="max-width:680px">Every action you fire now carries a lifecycle past “synced”. This is where the loop closes — open commitments, what was predicted, and whether it actually worked. The outcomes feed back into model calibration below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="narrative-block">Akashic used to be fire-and-forget: an action synced to systems and was forgotten. Now each decision is tracked to its <b>realized outcome</b>, auto-schedules a follow-up, and writes its result back into the confidence models — so the system learns from its own track record.</div>
+
+      <div class="section-label">Open commitments <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0" id="dec-open-count"></span></div>
+      <div id="dec-open"></div>
+
+      <div class="section-label" style="margin-top:28px">Auto follow-ups</div>
+      <div class="followups" id="dec-followups"></div>
+
+      <div class="section-label" style="margin-top:28px">Model calibration <span class="faint" style="font-weight:500;text-transform:none;letter-spacing:0">— prediction vs. realized, per signal type · the AI now learns</span></div>
+      <div class="cal-grid" id="dec-calibration"></div>
+
+      <div class="section-label" style="margin-top:24px">Resolved history</div>
+      <div id="dec-resolved"></div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script src="v3.js"></script>
+<script>
+const LIFE=['synced','in-effect','awaiting-outcome','resolved'];
+function lifeHtml(status){
+  const ci=LIFE.indexOf(status==='resolved'?'resolved':status);
+  return `<div class="life">${LIFE.map((s,i)=>{
+    const cls=i<ci?'done':i===ci?'cur':'';
+    return `<div class="life-step ${cls}"><span class="ls-dot"></span>${s.replace('-',' ')}</div>${i<LIFE.length-1?`<div class="life-bar ${i<ci?'done':''}"></div>`:''}`;
+  }).join('')}</div>`;
+}
+function decCard(d){
+  const resolved = d.status==='resolved';
+  const actions = resolved ? '' : `<div class="dec-actions">
+      <span class="muted fs-12">Did it work?</span>
+      <button class="btn xs" style="color:var(--good)" onclick="resolve('${d.id}','worked')">✓ Worked</button>
+      <button class="btn xs" style="color:var(--critical)" onclick="resolve('${d.id}','didnt')">✕ Didn't</button>
+      <button class="btn xs ghost" onclick="AK.toast('Override captured as training feedback')">Override signal</button>
+      <a class="btn xs ghost" style="margin-left:auto" href="Approvals.html">View action ›</a>
+    </div>`;
+  const outcome = resolved ? `<div class="dec-outcome ${d.resolvedAs}">${d.resolvedAs==='worked'?'✓ Worked — ':'✕ Didn\'t — '}${d.outcome||''}</div>` : '';
+  return `<div class="dec-card s-${d.status}">
+    <div class="dec-top"><span class="dec-id">${d.id}</span><span class="dec-title">${d.label}</span>
+      ${d.status==='awaiting-outcome'?'<span class="badge b-renewal" style="margin-left:auto"><span class="bd"></span>awaiting outcome</span>':d.status==='in-effect'?'<span class="badge b-accent" style="margin-left:auto"><span class="bd"></span>in effect</span>':'<span class="badge b-active" style="margin-left:auto"><span class="bd"></span>resolved</span>'}</div>
+    ${lifeHtml(d.status)}
+    <div class="dec-meta"><span>Decided by <b>${d.decidedBy}</b></span><span>${d.decidedAt}</span><span>Due <b>${d.dueBy}</b></span><span>Signal: <b>${d.signal}</b></span></div>
+    <div class="dec-pred">🔮 <b>Predicted:</b> ${d.predicted} ${d.model&&d.model!=='—'?`<span class="tag mono">model: ${d.model}</span>`:''}</div>
+    ${outcome||actions}
+  </div>`;
+}
+function render(){
+  const all=AKActions.getDecisions();
+  const open=all.filter(d=>d.status!=='resolved');
+  const resolved=all.filter(d=>d.status==='resolved');
+  document.getElementById('dec-open').innerHTML=open.map(decCard).join('')||'<div class="muted fs-13" style="padding:8px">No open commitments.</div>';
+  document.getElementById('dec-resolved').innerHTML=resolved.map(decCard).join('');
+  document.getElementById('dec-open-count').textContent=`— ${open.length} tracked to outcome`;
+}
+window.resolve=function(id,as){
+  const note = as==='worked'?'Outcome confirmed — recorded on entity timeline.':'Outcome missed — model recalibrated.';
+  AKActions.resolveDecision(id,as,note);
+  AK.toast(as==='worked'?'Marked as worked — fed into calibration':'Marked as didn\'t — model will recalibrate');
+  render();
+};
+
+/* follow-ups */
+document.getElementById('dec-followups').innerHTML=[
+  ['Check Northwind payment status','7 days after dunning notice','d+3'],
+  ['Confirm Vikram offer acceptance in Darwinbox','Retention hike effective','d+1'],
+  ['Verify Orion re-forecast accuracy','Margin actuals vs forecast','d+12'],
+].map(f=>`<div class="fu"><div class="fu-check" onclick="this.style.background='var(--good)';this.style.borderColor='var(--good)';AK.toast('Follow-up done')"></div>
+  <div><div style="font-size:13px;font-weight:600">${f[0]}</div><div style="font-size:11.5px;color:var(--ink-3)">${f[1]}</div></div>
+  <span class="fu-when">${f[2]}</span></div>`).join('');
+
+/* model calibration (G2) */
+const MODELS=[
+  {name:'Renewal cohort',hit:81,calls:40,badge:'trust',note:'Last 40 calls · well-calibrated',col:'var(--good)'},
+  {name:'Attrition risk',hit:74,calls:62,badge:'trust',note:'Slightly over-predicts exits',col:'var(--good)'},
+  {name:'Margin forecast',hit:88,calls:31,badge:'trust',note:'Strong on fixed-price work',col:'var(--good)'},
+  {name:'Collection propensity',hit:63,calls:28,badge:'caution',note:'Weak on 90+ day overdue',col:'var(--warn)'},
+  {name:'Pipeline conversion',hit:52,calls:24,badge:'weak',note:'Don\'t over-trust new-logo odds',col:'var(--critical)'},
+];
+document.getElementById('dec-calibration').innerHTML=MODELS.map(m=>`<div class="cal-card">
+  <div class="cal-name">${m.name}<span class="cal-badge ${m.badge}">${m.badge}</span></div>
+  <div class="cal-hit" style="color:${m.col}">${m.hit}%</div>
+  <div class="cal-sub">hit rate</div>
+  <div class="cal-meter"><i style="width:${m.hit}%;background:${m.col}"></i></div>
+  <div class="cal-sub">${m.note} · ${m.calls} resolved decisions</div>
+</div>`).join('');
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Ask Akashic</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="assistant" data-persona="ceo" data-crumb="Ask Akashic / Meridian Retail">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Ask Akashic" style="max-width:100%;padding-bottom:120px">
+
+      <div class="ai-layout">
+        <!-- LEFT: conversation -->
+        <div class="ai-main">
+          <div class="page-head" style="margin-bottom:14px">
+            <div class="flex items-center gap-10">
+              <div class="ai-orb">A</div>
+              <div>
+                <h1 class="page-title" style="font-size:22px">Ask Akashic</h1>
+                <div class="page-sub" style="margin-top:1px">Grounded in your live data — every answer is sourced</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HANDOFF RECEIPT BANNER (hidden by default) -->
+          <div id="handoff-banner" style="display:none"></div>
+
+          <!-- CONTEXT STRIP -->
+          <div class="ai-context mb-20" id="ctx-strip">
+            <span class="fs-12 strong" style="color:var(--accent-2)">Context</span>
+            <span class="ctx-chip">Client: Meridian Retail</span>
+            <span class="ctx-chip">Time: Last 24 months</span>
+            <span class="ctx-chip">Filters: All service lines</span>
+            <span class="ctx-chip" id="ctx-persona">Persona: CEO view</span>
+            <span class="fs-11 faint" style="margin-left:auto">Akashic already knows this — no need to re-explain</span>
+          </div>
+
+          <!-- CONVERSATION -->
+          <div id="convo"></div>
+
+          <!-- INPUT -->
+          <div class="ai-input-wrap">
+            <div class="suggest-row mb-10" id="presuggest"></div>
+            <div class="ai-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex:0 0 auto"><path d="M12 3v3"></path><rect x="5" y="6" width="14" height="11" rx="3"></rect><circle cx="9.5" cy="11.5" r="1.2"></circle><circle cx="14.5" cy="11.5" r="1.2"></circle><path d="M9 21h6"></path><path d="M12 17v4"></path></svg>
+              <input placeholder="Ask about revenue, renewal risk, a scenario…" id="ai-q" />
+              <button class="btn primary sm" onclick="sendQ()">Ask ›</button>
+            </div>
+            <div class="fs-11 faint mt-8" style="text-align:center">Akashic cites every figure. Responses are grounded in validated data; low-confidence sources are flagged.</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: scenario simulation -->
+        <aside class="ai-side">
+          <div class="panel" style="position:sticky;top:76px">
+            <div class="panel-head"><div class="ph-icon" style="background:var(--composite-soft);color:var(--composite-2)">⚯</div><div><div class="panel-title">Scenario Simulation</div><div class="panel-sub">Model financial impact</div></div></div>
+            <div class="panel-body">
+              <div class="scenario-tabs">
+                <button class="sc-tab active" onclick="runScenario(0)">Lose this client</button>
+                <button class="sc-tab" onclick="runScenario(1)">Utilization −10%</button>
+                <button class="sc-tab" onclick="runScenario(2)">Renewal at +5%</button>
+              </div>
+              <div id="scenario"></div>
+              <button class="btn composite" style="width:100%;margin-top:14px" onclick="AK.toast('Scenario saved to board pack')">Save to board pack</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+
+/* ============ pre-seeded multi-turn conversation ============ */
+const convo=[
+  {role:'user',text:'Why is there a gap between what we booked and what we collected on Meridian?'},
+  {role:'ai',
+   answer:'You have <b>₹9.6 Cr</b> sitting between booked and collected revenue on Meridian. The largest single driver is <b class="crit-text">₹48 L of unbilled milestones</b> on the Orion Rollout — three milestones were delivered but never invoiced. A further ₹6.8 Cr is billed-but-outstanding, of which ₹2.5 Cr has crossed 90 days.',
+   evidence:[
+     ['Metric','Booked → Collected gap','₹9.6 Cr','hi','Financial ledger · live'],
+     ['Metric','Unbilled milestones','₹48 L · 3 items','hi','Project: Orion · M5–M7'],
+     ['Clause','SOW-04 §4.2 billing trigger','“invoiced on milestone sign-off”','md','SOW-04.pdf · p.7'],
+     ['Metric','Overdue 90+','₹2.5 Cr','hi','INV-2026-0309'],
+   ],
+   follow:['Raise the unbilled invoices','Show the overdue invoices','What is renewal risk here?']},
+
+  {role:'user',text:'What is the renewal risk here?'},
+  {role:'ai',
+   answer:'Renewal probability for Meridian is <b class="crit-text">54%</b> on a cohort-adjusted basis — well below the <b>78%</b> portfolio average. Three signals compound it: the MSA expires in <b>18 days</b> with no renewal SOW in pipeline, Orion is 11 days behind at 86% budget, and lead architect Vikram Rao shows an <b>88% exit signal</b>. Cohort: clients at this stage with this risk profile renewed 62% of the time.',
+   evidence:[
+     ['Metric','Renewal probability','54% (cohort-adj.)','md','Model v3 · 0.84 conf'],
+     ['Metric','Days to expiry','18 days','hi','MSA · 22 Jun 2026'],
+     ['Metric','Cohort benchmark','62% renewed / 38% churned','hi','41 comparable accounts'],
+     ['Clause','MSA §11 auto-renewal','“not enabled”','lo','MSA_2019.pdf · 0.71 conf'],
+   ],
+   recommend:'Recommended: assign Priya Nair to open a renewal SOW this week, deploy a shadow for Vikram Rao, and recover the ₹48 L unbilled before the renewal conversation to protect leverage.',
+   follow:['Simulate losing Meridian','Draft the renewal action plan','Who can shadow Vikram Rao?']},
+];
+
+function evRow(e){
+  const conf=e[3]==='hi'?'hi':e[3]==='md'?'md':'lo';
+  const cv=e[3]==='hi'?'0.92':e[3]==='md'?'0.84':'0.71';
+  const isClause=e[0]==='Clause';
+  return `<div class="evidence-row">
+    <span class="ev-type ${isClause?'clause':'metric'}">${e[0]}</span>
+    <div style="flex:1;min-width:0"><div class="ev-label">${e[1]}</div><div class="ev-src mono">${e[4]}</div></div>
+    <b class="ev-val ${isClause?'':'mono'}">${e[2]}</b>
+    <span class="conf ${conf}"><span class="cbar"><i style="width:${conf==='hi'?92:conf==='md'?84:71}%"></i></span>${cv}</span>
+  </div>`;
+}
+function render(){
+  $('#convo').innerHTML=convo.map(m=>{
+    if(m.role==='user') return `<div class="ai-msg user"><div class="ai-ava">AM</div><div class="bubble">${m.text}</div></div>`;
+    return `<div class="ai-msg"><div class="ai-ava">A</div><div style="flex:1;min-width:0">
+      <div class="ai-answer">${m.answer}</div>
+      <div class="evidence">
+        <div class="evidence-head">${AK.icon('link')} Evidence — ${m.evidence.length} sources cited</div>
+        ${m.evidence.map(evRow).join('')}
+      </div>
+      ${m.recommend?`<div class="ai-recommend">${AK.icon('bolt')}<span>${m.recommend}</span></div>`:''}
+      <div class="suggest-row mt-12">${m.follow.map(f=>`<button class="chip-suggest" onclick="addUser('${f.replace(/'/g,"\\'")}')">${f}</button>`).join('')}</div>
+    </div></div>`;
+  }).join('');
+}
+render();
+
+const presug=['What needs my attention today?','Show portfolio concentration risk','Which projects will breach margin?','Where is revenue leaking?'];
+$('#presuggest').innerHTML=presug.map(s=>`<button class="chip-suggest" onclick="addUser('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+
+function addUser(t){ AK.toast('Akashic is thinking…'); $('#ai-q').value=t; }
+function sendQ(){ const v=$('#ai-q').value.trim(); if(!v)return; AK.toast('Query sent — grounding in live data'); $('#ai-q').value=''; }
+$('#ai-q')&&$('#ai-q').addEventListener('keydown',e=>{if(e.key==='Enter')sendQ();});
+
+/* ============ Handoff receipt ============ */
+(function initHandoff() {
+  const params = new URLSearchParams(window.location.search);
+  const hoId = params.get('handoff');
+  if (!hoId) return;
+
+  /* Look up handoff in session storage */
+  let handoffs = [];
+  try { handoffs = JSON.parse(sessionStorage.getItem('ak_handoffs') || '[]'); } catch {}
+  const ho = handoffs.find(h => h.id === hoId);
+  if (!ho) return;
+
+  const persona = (window.AK && AK.getPersona()) || 'ceo';
+  const NAMES = { ceo:'Arjun Mehta', cfo:'Devika Rao', dh:'Karthik Menon' };
+  const ROLES = { ceo:'CEO', cfo:'CFO', dh:'Delivery Head' };
+  const PHOTOS = (window.AK && AK.PHOTOS) || {};
+  const fromName = ho.fromName || NAMES[ho.from] || ho.from;
+  const fromPhoto = PHOTOS[fromName];
+  const fromAva = fromPhoto
+    ? `<span class="avatar sm" style="border:2px solid var(--composite)"><img src="${fromPhoto}" alt="${fromName}"></span>`
+    : `<span class="avatar sm gray">${fromName.split(' ').map(x=>x[0]).join('')}</span>`;
+
+  /* Update persona context chip */
+  const pChip = document.getElementById('ctx-persona');
+  if (pChip) pChip.textContent = 'Persona: ' + ROLES[persona] + ' view';
+
+  /* Build banner */
+  const banner = document.getElementById('handoff-banner');
+  banner.style.display = '';
+  banner.innerHTML = `
+    <div class="ho-receipt">
+      <div class="ho-receipt-head">
+        ${fromAva}
+        <div style="flex:1;min-width:0">
+          <div class="ho-receipt-title">${fromName} routed this to you</div>
+          <div class="ho-receipt-sub">${ho.title} · ${ho.time || 'Just now'}</div>
+        </div>
+        <button class="btn xs ghost" onclick="this.closest('.ho-receipt').style.display='none'" style="flex:0 0 auto">Dismiss</button>
+      </div>
+      ${ho.note ? `<div class="ho-receipt-note">"${ho.note}"</div>` : ''}
+      <div class="ho-receipt-actions">
+        <button class="btn sm" onclick="AK.toast('Reply sent to ${fromName}')">Reply to ${fromName.split(' ')[0]}</button>
+        <a href="Home.html" class="btn sm ghost">Back to feed</a>
+      </div>
+    </div>`;
+
+  /* Build persona-shaped first AI response */
+  const HANDOFF_RESPONSES = {
+    cfo: {
+      answer: `<b>${fromName} routed a signal to you that has financial implications.</b> Looking at "${ho.title}" from a financial lens: the priority actions are resolving the ₹48 L unbilled on Meridian M8 and the ₹2.4 Cr overdue at Northwind (90+ days). Together these represent ₹3.4 Cr of stuck working capital. <b>Collecting or invoicing both improves DSO by an estimated 4 days.</b>`,
+      evidence: [
+        ['Metric','Unbilled WIP — Meridian M8','₹48 L','hi','Project: Orion · milestone sign-off confirmed'],
+        ['Metric','Overdue receivable — Northwind','₹2.4 Cr · 90+ days','hi','INV-2026-0309, 0311, 0315'],
+        ['Metric','DSO impact (modelled)','−4 days if resolved','md','Cash model v2 · 0.86 conf'],
+      ],
+      follow: ['Draft collections script for Northwind','Re-forecast Q1 cash position','Open Collections workspace'],
+    },
+    dh: {
+      answer: `<b>${fromName} flagged a delivery risk that needs your operational attention.</b> Looking at "${ho.title}": Orion Rollout is 11 days behind at 86% budget with only 64% scope delivered. The compounding factor is Vikram Rao (88% exit signal, sole architect) — <b>if he leaves before this sprint, the integration layer has zero coverage.</b> Immediate action: assign Imran Qureshi as shadow and consider descoping 2 non-critical modules to recover 6 days.`,
+      evidence: [
+        ['Metric','Orion schedule variance','−11 days','hi','PSA · Zoho Projects'],
+        ['Metric','Vikram Rao exit signal','88%','hi','Darwinbox · attrition model v3'],
+        ['Metric','Budget consumption','86% at 64% scope','hi','SAP cost center 4410'],
+      ],
+      follow: ['Assign shadow for Vikram','Draft change request to descope','Show bench-to-pipeline matches'],
+    },
+    ceo: {
+      answer: `<b>A colleague routed "${ho.title}" to your attention.</b> From a strategic perspective, this signal connects to portfolio concentration risk (top-3 at 31% of ARR) and the Meridian renewal timeline (18 days). <b>The recommended CEO action is to personally engage the Meridian sponsor</b> while the operational teams handle delivery recovery and retention.`,
+      evidence: [
+        ['Metric','Portfolio concentration','31% in top-3','hi','CRM · Salesforce'],
+        ['Metric','Meridian renewal probability','54% cohort-adjusted','md','Model v3 · 0.84 conf'],
+        ['Metric','Revenue at stake','₹14.2 Cr','hi','Contract value · MSA-2019'],
+      ],
+      follow: ['Simulate losing Meridian','Draft sponsor engagement plan','Show board concentration brief'],
+    },
+  };
+
+  const resp = HANDOFF_RESPONSES[persona] || HANDOFF_RESPONSES.ceo;
+
+  /* Prepend handoff context to the conversation */
+  convo.unshift(
+    { role:'user', text: `${fromName} routed this to me: "${ho.title}"${ho.note ? ' — Note: "' + ho.note + '"' : ''}. What should I focus on from my perspective?` },
+    { role:'ai', answer: resp.answer, evidence: resp.evidence, follow: resp.follow }
+  );
+  render();
+})();
+
+/* ============ scenarios ============ */
+const scenarios=[
+  {title:'If we lose Meridian Retail',rows:[
+    ['ARR impact','−₹14.2 Cr','crit'],['% of portfolio','−10.0%','crit'],['Margin impact','−₹2.4 Cr','crit'],
+    ['Bench created','38 people','warn'],['Recoverable in 2 quarters','₹8.1 Cr','good']],
+   note:'Concentration breaches board threshold. 38 people roll to bench (₹62 L/mo idle cost) unless redeployed to the Cobalt + Indus pipeline.'},
+  {title:'If utilization drops 10%',rows:[
+    ['Revenue run-rate','−₹14.2 Cr/yr','crit'],['Margin impact','−4.6pt','crit'],['Bench cost','+₹2.8 Cr/yr','warn'],
+    ['Break-even util','71.4%','warn'],['Buffer to break-even','7.2pt','good']],
+   note:'A 10% utilization fall pushes 3 practices below their break-even threshold. Data & AI is most exposed.'},
+  {title:'If Meridian renews at +5%',rows:[
+    ['New ARR','₹14.9 Cr','good'],['Incremental margin','+₹38 L','good'],['Renewal probability','54% → model','warn'],
+    ['Required investment','₹0 (price only)','good'],['Expected value','₹8.0 Cr','good']],
+   note:'A modest uplift is achievable only if delivery recovers first. Akashic suggests stabilising Orion before raising price.'},
+];
+function runScenario(i){
+  document.querySelectorAll('.sc-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  const s=scenarios[i];
+  $('#scenario').innerHTML=`<div class="sc-title">${s.title}</div>
+    <div class="sc-rows">${s.rows.map(r=>`<div class="sc-row"><span>${r[0]}</span><b class="mono ${r[2]==='crit'?'crit-text':r[2]==='warn'?'warn-text':'good-text'}">${r[1]}</b></div>`).join('')}</div>
+    <div class="sc-note">${AK.icon('bolt')}<span>${s.note}</span></div>`;
+}
+runScenario(0);
+</script>
+
+<style>
+.ai-layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;max-width:1180px;margin:0 auto;}
+.ai-main{min-width:0;}
+.ai-orb{width:38px;height:38px;border-radius:11px;background:linear-gradient(145deg,var(--accent),var(--composite));color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:var(--shadow);}
+.ai-answer{font-size:14px;line-height:1.6;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:14px 16px;box-shadow:var(--shadow-sm);}
+.ai-answer b{font-weight:700;}
+.ev-type{flex:0 0 56px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-family:var(--mono);padding:2px 6px;border-radius:5px;text-align:center;}
+.ev-type.metric{background:var(--accent-soft);color:var(--accent-2);}
+.ev-type.clause{background:var(--composite-soft);color:var(--composite-2);}
+.ev-label{font-weight:600;font-size:12.5px;}
+.ev-src{font-size:10.5px;color:var(--ink-faint);}
+.ev-val{flex:0 0 auto;font-size:12.5px;font-weight:700;text-align:right;max-width:200px;}
+.ai-recommend{display:flex;gap:9px;align-items:flex-start;background:var(--composite-soft);border:1px solid var(--composite-line);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--composite-2);font-weight:500;line-height:1.5;}
+.ai-recommend svg{flex:0 0 auto;margin-top:1px;color:var(--composite);}
+.suggest-row{display:flex;gap:8px;flex-wrap:wrap;}
+.ai-input-wrap{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--paper) 30%);padding-top:16px;margin-top:8px;}
+.ai-side .scenario-tabs{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.sc-tab{flex:1;border:1px solid var(--line-2);background:var(--surface);border-radius:7px;padding:7px 6px;font-size:11.5px;font-weight:600;color:var(--ink-3);white-space:nowrap;}
+.sc-tab.active{background:var(--composite-soft);border-color:var(--composite-line);color:var(--composite-2);}
+.sc-title{font-weight:700;font-size:14px;margin-bottom:10px;}
+.sc-rows{display:flex;flex-direction:column;gap:2px;}
+.sc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--ink-2);}
+.sc-row:last-child{border-bottom:0;}
+.sc-note{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:11px 12px;background:var(--surface-2);border-radius:9px;font-size:11.5px;color:var(--ink-2);line-height:1.5;}
+.sc-note svg{flex:0 0 auto;color:var(--composite);margin-top:1px;}
+@media (max-width:1080px){.ai-layout{grid-template-columns:1fr;}}
+/* Handoff receipt */
+.ho-receipt{background:linear-gradient(135deg,var(--composite-soft),var(--accent-soft));border:1px solid var(--composite-line);border-radius:var(--r-lg);padding:0;margin-bottom:20px;overflow:hidden;}
+.ho-receipt-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--composite-line);}
+.ho-receipt-title{font-weight:800;font-size:15px;letter-spacing:-0.01em;}
+.ho-receipt-sub{font-size:12px;color:var(--ink-3);margin-top:2px;}
+.ho-receipt-note{padding:12px 18px;font-size:13.5px;color:var(--composite-2);font-style:italic;border-bottom:1px solid var(--composite-line);background:oklch(0.97 0.02 290);}
+.ho-receipt-actions{padding:10px 18px;display:flex;gap:8px;}
+</style>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akashic EIS — Projects</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-screen="projects" data-persona="dh" data-crumb="Projects / Health Dashboard" data-decisions="true"
+      data-entitytype="project" data-entityid="" data-entityname="Project Portfolio">
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <div class="main-wrap">
+    <header id="topbar"></header>
+    <main class="content wide" data-screen-label="Project Health Dashboard">
+      <div id="proj-root"></div>
+    </main>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="actions.js"></script>
+<script src="docdrawer.js"></script>
+<script src="provenance.js"></script>
+<script src="shell.js"></script>
+<script>
+/* ============================================================
+   Projects.html — persona-aware views
+   CEO: strategic project map
+   CFO: project P&L grid
+   DH:  delivery health board (original)
+   ============================================================ */
+const $=s=>document.querySelector(s);
+
+/* Shared project data */
+const PROJECTS = [
+  {name:'Atlas Migration',       client:'Sundara Logistics',   status:'crit', budgetPct:84, margin:9,   daysLate:12, lead:'Ananya Krishnan', booked:'₹3.8 Cr', billed:'₹3.2 Cr', collected:'₹2.9 Cr', unbilled:'₹18 L', arr:'₹3.8 Cr', type:'Fixed-Price'},
+  {name:'Orion Rollout',         client:'Meridian Retail',     status:'over', budgetPct:86, margin:14,  daysLate:-11,lead:'Vikram Rao',       booked:'₹6.2 Cr', billed:'₹5.4 Cr', collected:'₹4.8 Cr', unbilled:'₹48 L', arr:'₹14.2 Cr',type:'Fixed-Price'},
+  {name:'Helix Platform',        client:'Vermillion Health',   status:'warn', budgetPct:74, margin:12,  daysLate:0,  lead:'Sneha Pillai',    booked:'₹2.1 Cr', billed:'₹1.8 Cr', collected:'₹1.6 Cr', unbilled:'₹22 L', arr:'₹4.3 Cr', type:'Managed Svc'},
+  {name:'Cobalt Data Lake',      client:'Cobalt Energy',       status:'good', budgetPct:52, margin:34,  daysLate:0,  lead:'Imran Qureshi',   booked:'₹4.1 Cr', billed:'₹3.9 Cr', collected:'₹3.9 Cr', unbilled:'₹0',    arr:'₹9.3 Cr', type:'T&M'},
+  {name:'Indus Pharma Cloud',    client:'Indus Pharma',        status:'good', budgetPct:47, margin:31,  daysLate:0,  lead:'Meera Nair',      booked:'₹2.8 Cr', billed:'₹2.6 Cr', collected:'₹2.6 Cr', unbilled:'₹0',    arr:'₹7.1 Cr', type:'T&M'},
+  {name:'Nova CRM',              client:'Aether Mobility',     status:'warn', budgetPct:71, margin:19,  daysLate:0,  lead:'Rahul Sethi',     booked:'₹1.4 Cr', billed:'₹1.2 Cr', collected:'₹1.1 Cr', unbilled:'₹8 L',  arr:'₹2.8 Cr', type:'Fixed-Price'},
+  {name:'Brightwater SCADA',     client:'Brightwater Utilities',status:'warn',budgetPct:68, margin:21,  daysLate:0,  lead:'Rahul Sethi',     booked:'₹2.3 Cr', billed:'₹2.0 Cr', collected:'₹1.8 Cr', unbilled:'₹38 L', arr:'₹5.2 Cr', type:'T&M'},
+  {name:'Core Banking',          client:'Hanseatic Bank',      status:'good', budgetPct:58, margin:29,  daysLate:0,  lead:'Lena Fischer',    booked:'₹5.1 Cr', billed:'₹4.8 Cr', collected:'₹4.8 Cr', unbilled:'₹0',    arr:'₹11.8 Cr',type:'T&M'},
+];
+
+const STc={crit:['b-risk','At-Risk'],warn:['b-renewal','Watch'],good:['b-active','On-track'],over:['b-risk','Overdue']};
+
+/* ============================================================
+   DH VIEW — Delivery Health Board
+   ============================================================ */
+function renderDH() {
+  const root = document.getElementById('proj-root');
+  root.innerHTML = `
+    <div class="page-head"><div class="head-row"><div>
+      <div class="page-eyebrow">Pillar 2 · Projects — Delivery Head view</div>
+      <h1 class="page-title">Delivery Health Board</h1>
+      <div class="page-sub">31 active projects · cost overruns caught before they hit the P&amp;L</div>
+    </div><div class="btn-row">
+      <button class="btn sm">This quarter ▾</button><button class="btn sm">All practices ▾</button><button class="btn sm primary">+ New project</button>
+    </div></div></div>
+
+    <div class="tiles-4 mb-20">
+      <div class="card card-pad"><div class="t4-l">Active projects</div><div class="t4-v">31</div><div class="t4-f"><span class="muted">across 18 clients</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Projects at risk</div><div class="t4-v crit-text">6</div><div class="t4-f"><span class="trend up" style="color:var(--critical)">▴ 2</span> <span class="muted">vs last month</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Avg utilization</div><div class="t4-v">78.6%</div><div class="t4-f"><span class="muted">target 80%</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Avg margin</div><div class="t4-v warn-text">23.1%</div><div class="t4-f"><span class="trend down">▾ 1.4pt</span> <span class="muted">QoQ</span></div></div>
+    </div>
+
+    <div class="proj-layout"><div>
+      <div class="panel mb-20" style="border-color:var(--warn-line)">
+        <div class="panel-head" style="background:var(--warn-soft)"><div class="ph-icon" style="background:#fff;color:var(--warn)">⚠</div><div><div class="panel-title">Early Warning — predicted overruns</div><div class="panel-sub">Projects trending over budget before it shows in the P&amp;L</div></div><span class="panel-tag">predictive</span></div>
+        <div class="scroll-x"><table class="tbl"><thead><tr><th>Project</th><th>Client</th><th class="r">Predicted overrun</th><th>Trajectory</th><th>Confidence</th><th>Trigger</th></tr></thead><tbody id="warn-tbl"></tbody></table></div>
+      </div>
+      <div class="panel mb-20">
+        <div class="panel-head"><div class="ph-icon">P</div><div><div class="panel-title">All Projects</div><div class="panel-sub">Sortable · click any row for delivery 360</div></div></div>
+        <div class="scroll-x"><table class="tbl"><thead><tr><th>Project</th><th>Client</th><th>Status</th><th class="r">Budget used</th><th class="r">Margin</th><th class="r">Deadline</th><th>Lead</th><th style="text-align:center">Health</th></tr></thead><tbody id="dh-tbl"></tbody></table></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="ph-icon">R</div><div><div class="panel-title">Resource Allocation</div><div class="panel-sub">Utilization by person · bench pool</div></div></div>
+        <div class="panel-body"><div class="heatmap-wrap"><div class="heatmap" id="heatmap"></div></div></div>
+      </div>
+    </div>
+    <aside class="col gap-20" style="position:sticky;top:76px">
+      <div class="panel"><div class="panel-head"><div class="ph-icon">B</div><div><div class="panel-title">Bench Aging</div><div class="panel-sub">Idle &gt; 14 days</div></div></div><div class="panel-body col gap-2" id="bench"></div></div>
+      <div class="panel"><div class="panel-head"><div class="ph-icon">S</div><div><div class="panel-title">Skill Gap vs Pipeline</div><div class="panel-sub">Pursuits needing scarce skills</div></div></div><div class="panel-body col gap-12" id="skillgap"></div></div>
+    </aside></div>`;
+
+  /* Early warning */
+  const warn=[['Atlas Migration','Sundara Logistics','₹62 L','crit',84,'Burn rate +18% vs plan'],['Orion Rollout','Meridian Retail','₹41 L','warn',79,'Scope creep · M7 delayed'],['Helix Platform','Vermillion Health','₹28 L','warn',74,'Added 2 unplanned resources'],['Nova CRM','Aether Mobility','₹15 L','good',66,'Onsite travel overspend']];
+  $('#warn-tbl').innerHTML=warn.map(w=>`<tr class="row-click"><td class="cell-strong">${w[0]}</td><td class="cell-sub" style="color:var(--ink-2)">${w[1]}</td><td class="r cell-mono cell-strong ${w[3]==='crit'?'crit-text':'warn-text'}">${w[2]}</td><td><svg width="80" height="22" viewBox="0 0 80 22" fill="none"><polyline points="0,18 20,16 40,12 60,7 80,3" stroke="${w[3]==='crit'?'var(--critical)':'var(--warn)'}" stroke-width="1.8" stroke-linecap="round"/><circle cx="80" cy="3" r="2.2" fill="${w[3]==='crit'?'var(--critical)':'var(--warn)'}"/></svg></td><td><span class="conf ${w[3]==='crit'?'hi':'md'}"><span class="cbar"><i style="width:${w[4]}%"></i></span>0.${w[4]}</span></td><td class="cell-sub">${w[5]}</td></tr>`).join('');
+
+  /* Project table */
+  $('#dh-tbl').innerHTML=PROJECTS.map(p=>{const[st,stl]=STc[p.status];const dl=p.daysLate<0?`${Math.abs(p.daysLate)} over`:(p.daysLate>0?`${p.daysLate} left`:'on time');return `<tr class="row-click" onclick="location.href='ProjectProfile.html'"><td class="cell-strong"><a href="ProjectProfile.html" class="accent-text">${p.name}</a></td><td class="cell-sub" style="color:var(--ink-2)">${p.client}</td><td><span class="badge ${st}"><span class="bd"></span>${stl}</span></td><td class="r" style="min-width:130px"><div class="flex items-center gap-8 justify-between"><span class="cell-mono ${p.budgetPct>80?'crit-text':''}">${p.budgetPct}%</span><div class="meter ${p.budgetPct>80?'crit':p.budgetPct>65?'warn':'good'}" style="width:60px"><i style="width:${p.budgetPct}%"></i></div></div></td><td class="r cell-mono cell-strong ${p.margin<15?'crit-text':p.margin<25?'warn-text':'good-text'}">${p.margin}%</td><td class="r cell-mono ${p.daysLate<0?'crit-text':''}">${dl}</td><td><div class="flex items-center gap-8">${AK.avatar(p.lead,'sm')}<span class="cell-sub" style="color:var(--ink-2)">${p.lead}</span></div></td><td style="text-align:center"><span class="hdot ${p.status==='over'?'crit':p.status}"></span></td></tr>`;}).join('');
+
+  /* Heatmap */
+  const people=['V. Rao','A. Krishnan','S. Pillai','I. Qureshi','M. Nair','R. Sethi','L. Fischer','A. Bhat'];
+  const weeks=['W22','W23','W24','W25','W26','W27','W28','W29'];
+  const hcolor=['var(--surface-3)','var(--warn-soft)','var(--good-soft)'];
+  const htext=['—','60','95'];const htxtc=['var(--ink-faint)','var(--warn)','var(--good)'];
+  const seedData=[[2,2,2,2,2,2,2,2],[2,2,1,2,2,2,2,2],[2,2,2,2,2,1,2,2],[2,2,2,2,2,2,2,2],[1,2,2,2,2,2,2,2],[2,2,1,0,0,1,2,2],[2,2,2,2,2,2,2,1],[0,0,1,2,2,2,2,2]];
+  let hm='<div class="hm-corner"></div>'+weeks.map(w=>`<div class="hm-head">${w}</div>`).join('');
+  people.forEach((p,i)=>{hm+=`<div class="hm-name">${p}</div>`;seedData[i].forEach(v=>{hm+=`<div class="heat-cell" style="background:${hcolor[v]};color:${htxtc[v]}">${htext[v]}</div>`;});});
+  $('#heatmap').innerHTML=hm;
+
+  /* Bench */
+  const bench=[['Data Engineering pod','6 people · 34 days avg','₹38 L','crit'],['R. Menon','UX · 21 days','₹4.2 L','warn'],['T. Iyer','QA Automation · 17 days','₹3.1 L','warn'],['Cloud migration squad','3 people · 15 days','₹12 L','warn']];
+  $('#bench').innerHTML=bench.map(b=>`<div class="bench-row"><div class="flex items-center gap-8 mb-4"><span class="hdot ${b[3]}"></span><b class="fs-13">${b[0]}</b><b class="mono ${b[3]==='crit'?'crit-text':'warn-text'}" style="margin-left:auto">${b[2]}</b></div><div class="exp-role" style="margin-left:17px">${b[1]}</div></div>`).join('');
+
+  /* Skill gap */
+  const skills=[['Snowflake / Data Eng','Cobalt expansion','high',2,4],['SAP S/4 HANA','Indus ERP pursuit','high',1,3],['Cybersecurity (OT)','Brightwater SCADA','med',0,2],['LLM / GenAI','3 active pursuits','high',3,6]];
+  $('#skillgap').innerHTML=skills.map(s=>`<div class="skill-row"><div class="flex items-center justify-between mb-4"><b class="fs-13">${s[0]}</b><span class="badge ${s[2]==='high'?'b-risk':'b-renewal'}" style="padding:0 7px;font-size:10px"><span class="bd"></span>${s[2]==='high'?'Critical':'Watch'}</span></div><div class="exp-role">For: ${s[1]}</div><div class="flex items-center gap-8 mt-4"><span class="fs-11 faint">have ${s[3]} / need ${s[4]}</span><div class="meter ${s[3]<s[4]/2?'crit':'warn'}" style="flex:1"><i style="width:${(s[3]/s[4]*100)}%"></i></div></div></div>`).join('');
+}
+
+/* ============================================================
+   CEO VIEW — Strategic Project Map
+   ============================================================ */
+function renderCEO() {
+  const root = document.getElementById('proj-root');
+  root.innerHTML = `
+    <div class="page-head"><div class="head-row"><div>
+      <div class="page-eyebrow">Pillar 2 · Projects — CEO strategic view</div>
+      <h1 class="page-title">Strategic Project Map</h1>
+      <div class="page-sub">31 projects by client revenue × margin — bubble = concentration risk</div>
+    </div><div class="btn-row">
+      <button class="btn sm">This quarter ▾</button><button class="btn sm primary" onclick="AK.toast('Board pack updated')">Add to board pack</button>
+    </div></div></div>
+
+    <div class="tiles-4 mb-20">
+      <div class="card card-pad"><div class="t4-l">Total project revenue</div><div class="t4-v">₹142<small> Cr</small></div><div class="t4-f"><span class="trend up good-text">▴ 4.2%</span> <span class="muted">YoY</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Renewal-critical projects</div><div class="t4-v crit-text">3</div><div class="t4-f"><span class="muted">₹26 Cr at stake</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Client concentration (top-3)</div><div class="t4-v crit-text">31%</div><div class="t4-f"><span class="trend up" style="color:var(--critical)">▴ 1pt</span> <span class="muted">above 30% threshold</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Avg portfolio margin</div><div class="t4-v warn-text">23.1%</div><div class="t4-f"><span class="trend down">▾ 1.4pt</span> <span class="muted">QoQ</span></div></div>
+    </div>
+
+    <div class="proj-layout"><div>
+      <div class="panel mb-20">
+        <div class="panel-head"><div class="ph-icon" style="background:var(--accent-soft);color:var(--accent-2)">⬡</div><div><div class="panel-title">Project Bubble Map</div><div class="panel-sub">Size = client ARR · color = health · Y-axis = margin</div></div></div>
+        <div class="panel-body" style="padding:20px"><div class="bubble-chart" id="bubble-chart"></div></div>
+      </div>
+      <div class="panel mb-20">
+        <div class="panel-head"><div class="ph-icon">⊙</div><div><div class="panel-title">Projects by Strategic Priority</div><div class="panel-sub">Click any row to drill into project 360</div></div></div>
+        <div class="scroll-x"><table class="tbl"><thead><tr><th>Project</th><th>Client</th><th>Type</th><th class="r">Client ARR</th><th class="r">Margin</th><th>Status</th><th>Strategic note</th></tr></thead><tbody id="ceo-tbl"></tbody></table></div>
+      </div>
+    </div>
+    <aside class="col gap-20" style="position:sticky;top:76px">
+      <div class="panel"><div class="panel-head"><div class="ph-icon" style="background:var(--critical-soft);color:var(--critical)">⚑</div><div><div class="panel-title">Renewal-Critical</div><div class="panel-sub">Projects on accounts up for renewal</div></div></div><div class="panel-body col gap-2" id="ceo-renew"></div></div>
+      <div class="panel"><div class="panel-head"><div class="ph-icon">▦</div><div><div class="panel-title">Revenue Model Mix</div><div class="panel-sub">By project type</div></div></div><div class="panel-body" id="ceo-mix"></div></div>
+    </aside></div>`;
+
+  /* Bubble chart */
+  const bEl = document.getElementById('bubble-chart');
+  const maxArr = 15;
+  const bHTML = PROJECTS.map(p => {
+    const arrNum = parseFloat(p.arr.replace(/[₹ Cr]/g,''));
+    const size = Math.max(40, (arrNum / maxArr) * 120);
+    const col = p.status==='good'?'var(--good)':p.status==='warn'?'var(--warn)':'var(--critical)';
+    const bg = p.status==='good'?'var(--good-soft)':p.status==='warn'?'oklch(0.96 0.04 80)':'var(--critical-soft)';
+    const left = (p.margin / 40 * 90) + 5;
+    return `<div class="bubble" style="width:${size}px;height:${size}px;background:${bg};border:2px solid ${col};left:${left}%;bottom:${(p.budgetPct/100*70)+10}%" title="${p.name} · ${p.client}\nARR: ${p.arr} · Margin: ${p.margin}%"><span>${p.name.split(' ')[0]}</span></div>`;
+  }).join('');
+  bEl.innerHTML = `<div class="bubble-area">${bHTML}</div>
+    <div class="bubble-x"><span>0%</span><span>Margin →</span><span>40%</span></div>
+    <div class="bubble-y"><span>Low budget use</span><span>Budget consumed ↑</span><span>High</span></div>`;
+
+  /* CEO table */
+  const notes = {'Atlas Migration':'Overrun risk — ₹62 L predicted','Orion Rollout':'Renewal-critical · SPOF on lead','Helix Platform':'SLA breach risk this month','Cobalt Data Lake':'Expansion SOW verbal yes','Core Banking':'Anchor account — retain priority'};
+  const sorted = [...PROJECTS].sort((a,b)=>parseFloat(b.arr)-parseFloat(a.arr));
+  $('#ceo-tbl').innerHTML = sorted.map(p => {
+    const [st,stl]=STc[p.status];
+    return `<tr class="row-click" onclick="location.href='ProjectProfile.html'"><td class="cell-strong">${p.name}</td><td class="cell-sub">${p.client}</td><td><span class="tag mono" style="font-size:10px">${p.type}</span></td><td class="r cell-mono strong">${p.arr}</td><td class="r cell-mono ${p.margin<15?'crit-text':p.margin<25?'warn-text':'good-text'}">${p.margin}%</td><td><span class="badge ${st}" style="font-size:10px"><span class="bd"></span>${stl}</span></td><td class="cell-sub" style="font-size:12px;max-width:200px">${notes[p.name]||'—'}</td></tr>`;
+  }).join('');
+
+  /* Renewal-critical sidebar */
+  const renew = PROJECTS.filter(p=>['crit','over'].includes(p.status) || p.client==='Hanseatic Bank');
+  document.getElementById('ceo-renew').innerHTML = renew.map(p=>`<div class="bench-row"><div class="flex items-center gap-8 mb-4"><span class="hdot ${p.status==='good'?'warn':p.status}"></span><b class="fs-13">${p.name}</b></div><div class="exp-role" style="margin-left:17px">${p.client} · ${p.arr}</div></div>`).join('');
+
+  /* Revenue mix */
+  const types={};PROJECTS.forEach(p=>{types[p.type]=(types[p.type]||0)+1;});
+  const tc={'T&M':'var(--accent)','Fixed-Price':'var(--composite)','Managed Svc':'var(--good)'};
+  const total=PROJECTS.length;
+  document.getElementById('ceo-mix').innerHTML=`<div class="stackbar mb-8">${Object.entries(types).map(([t,c])=>`<span style="width:${c/total*100}%;background:${tc[t]||'var(--ink-faint)'}">${t} ${c}</span>`).join('')}</div><div class="legend">${Object.entries(types).map(([t,c])=>`<span class="li"><span class="sw" style="background:${tc[t]||'var(--ink-faint)'}"></span>${t} (${c})</span>`).join('')}</div>`;
+}
+
+/* ============================================================
+   CFO VIEW — Project P&L Grid
+   ============================================================ */
+function renderCFO() {
+  const root = document.getElementById('proj-root');
+  root.innerHTML = `
+    <div class="page-head"><div class="head-row"><div>
+      <div class="page-eyebrow">Pillar 2 · Projects — CFO financial view</div>
+      <h1 class="page-title">Project P&amp;L Grid</h1>
+      <div class="page-sub">Revenue realisation per project — sorted by margin compression · pink = leaking cash</div>
+    </div><div class="btn-row">
+      <button class="btn sm">This quarter ▾</button><button class="btn sm primary" onclick="AK.toast('Invoice batch started')">Raise invoices</button>
+    </div></div></div>
+
+    <div class="tiles-4 mb-20">
+      <div class="card card-pad"><div class="t4-l">Total booked</div><div class="t4-v">₹27.8<small> Cr</small></div><div class="t4-f"><span class="muted">across 8 key projects</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Unbilled WIP</div><div class="t4-v crit-text">₹1.34<small> Cr</small></div><div class="t4-f"><span class="muted">leakage across 5 projects</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Avg realisation</div><div class="t4-v warn-text">91.2%</div><div class="t4-f"><span class="trend down">▾ 2.4pt</span> <span class="muted">target 96%</span></div></div>
+      <div class="card card-pad"><div class="t4-l">Margin compression</div><div class="t4-v warn-text">3</div><div class="t4-f"><span class="muted">projects below 15%</span></div></div>
+    </div>
+
+    <div class="panel mb-20" style="border-color:var(--critical);border-left:3px solid var(--critical)">
+      <div class="panel-head" style="background:var(--critical-soft)"><div class="ph-icon" style="background:#fff;color:var(--critical)">₹</div><div><div class="panel-title">Margin Compression Alert</div><div class="panel-sub">Projects where margin is below 15% — immediate P&amp;L risk</div></div></div>
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>Project</th><th>Client</th><th class="r">Margin</th><th class="r">Booked</th><th class="r">Unbilled</th><th>Action needed</th></tr></thead><tbody id="cfo-alert"></tbody></table></div>
+    </div>
+
+    <div class="panel mb-20">
+      <div class="panel-head"><div class="ph-icon">₹</div><div><div class="panel-title">Full Project P&amp;L</div><div class="panel-sub">Booked → Billed → Collected per project · sorted by margin</div></div></div>
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>Project</th><th>Client</th><th>Type</th><th class="r">Booked</th><th class="r">Billed</th><th class="r">Collected</th><th class="r">Unbilled WIP</th><th class="r">Margin</th><th>Realisation</th></tr></thead><tbody id="cfo-tbl"></tbody></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="ph-icon">⊙</div><div><div class="panel-title">Revenue Realisation Waterfall</div><div class="panel-sub">Where revenue gets stuck between delivery and your bank account</div></div></div>
+      <div class="panel-body">
+        <div class="waterfall-mini">
+          <div class="wf-step"><div class="wf-bar" style="width:100%;background:var(--accent)"></div><div class="wf-label">Booked <b>₹27.8 Cr</b></div></div>
+          <div class="wf-gap crit-text">▾ −₹1.34 Cr unbilled</div>
+          <div class="wf-step"><div class="wf-bar" style="width:87%;background:var(--composite)"></div><div class="wf-label">Billed <b>₹24.9 Cr</b></div></div>
+          <div class="wf-gap warn-text">▾ −₹1.4 Cr overdue</div>
+          <div class="wf-step"><div class="wf-bar" style="width:80%;background:var(--good)"></div><div class="wf-label">Collected <b>₹23.5 Cr</b> <span class="faint fs-12 mono">84.5%</span></div></div>
+        </div>
+      </div>
+    </div>`;
+
+  /* Margin compression alert */
+  const compressed = [...PROJECTS].filter(p=>p.margin<15).sort((a,b)=>a.margin-b.margin);
+  const actions={'Atlas Migration':'Re-baseline budget + approve CR','Orion Rollout':'Raise ₹48 L unbilled invoice','Helix Platform':'Review SLA penalty exposure'};
+  $('#cfo-alert').innerHTML=compressed.map(p=>`<tr class="row-click"><td class="cell-strong crit-text">${p.name}</td><td class="cell-sub">${p.client}</td><td class="r cell-mono crit-text strong">${p.margin}%</td><td class="r cell-mono">${p.booked}</td><td class="r cell-mono ${p.unbilled!=='₹0'?'crit-text':''}">${p.unbilled}</td><td class="cell-sub">${actions[p.name]||'Review'}</td></tr>`).join('');
+
+  /* Full P&L table */
+  const sorted=[...PROJECTS].sort((a,b)=>a.margin-b.margin);
+  $('#cfo-tbl').innerHTML=sorted.map(p=>{
+    const bookedN=parseFloat(p.booked.replace(/[₹ CrL]/g,''));
+    const collN=parseFloat(p.collected.replace(/[₹ CrL]/g,''));
+    const real=bookedN>0?Math.round(collN/bookedN*100):0;
+    const isLeak=p.unbilled!=='₹0';
+    return `<tr class="row-click ${isLeak?'row-leak':''}" onclick="location.href='ProjectProfile.html'"><td class="cell-strong">${p.name}</td><td class="cell-sub">${p.client}</td><td><span class="tag mono" style="font-size:10px">${p.type}</span></td><td class="r cell-mono">${p.booked}</td><td class="r cell-mono">${p.billed}</td><td class="r cell-mono">${p.collected}</td><td class="r cell-mono ${isLeak?'crit-text strong':''}">${p.unbilled}</td><td class="r cell-mono ${p.margin<15?'crit-text':p.margin<25?'warn-text':'good-text'} strong">${p.margin}%</td><td><div class="flex items-center gap-6"><div class="meter ${real<85?'crit':real<95?'warn':'good'}" style="width:50px"><i style="width:${real}%"></i></div><span class="cell-mono fs-11">${real}%</span></div></td></tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   BOOT — select view by persona
+   ============================================================ */
+const persona = (window.AK && AK.getPersona()) || 'ceo';
+if (persona === 'ceo') renderCEO();
+else if (persona === 'cfo') renderCFO();
+else renderDH();
+</script>
+
+<style>
+.tiles-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.t4-l{font-size:11.5px;color:var(--ink-3);font-weight:600;}
+.t4-v{font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-top:5px;font-variant-numeric:tabular-nums;}
+.t4-v small{font-size:16px;font-weight:600;color:var(--ink-2);}
+.t4-f{font-size:11.5px;margin-top:5px;}
+.proj-layout{display:grid;grid-template-columns:1fr 312px;gap:20px;align-items:start;}
+.heatmap-wrap{overflow-x:auto;}
+.heatmap{display:grid;grid-template-columns:96px repeat(8,1fr);gap:4px;min-width:560px;}
+.hm-corner{}.hm-head{font-size:10.5px;font-family:var(--mono);color:var(--ink-faint);text-align:center;font-weight:600;padding-bottom:2px;}
+.hm-name{font-size:12px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;}
+.heat-cell{border-radius:5px;height:30px;display:grid;place-items:center;font-size:10.5px;font-weight:700;font-family:var(--mono);border:1px solid var(--line);}
+.bench-row{padding:10px 2px;border-bottom:1px solid var(--line);}.bench-row:last-child{border-bottom:0;}
+.skill-row{padding-bottom:11px;border-bottom:1px solid var(--line);}.skill-row:last-child{border-bottom:0;padding-bottom:0;}
+/* CEO bubble chart */
+.bubble-chart{position:relative;}
+.bubble-area{position:relative;height:340px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.bubble{position:absolute;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:var(--mono);cursor:default;transition:transform .15s;z-index:1;}
+.bubble:hover{transform:scale(1.15);z-index:5;}
+.bubble span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90%;font-size:9.5px;}
+.bubble-x,.bubble-y{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-faint);font-family:var(--mono);margin-top:4px;}
+.bubble-y{position:absolute;top:20px;right:-38px;flex-direction:column;height:300px;writing-mode:vertical-rl;font-size:9px;display:none;}
+/* CFO leak row */
+.row-leak{background:var(--critical-soft) !important;}
+.row-leak:hover{background:oklch(0.95 0.04 25) !important;}
+@media (max-width:1180px){.proj-layout{grid-template-columns:1fr;}.tiles-4{grid-template-columns:repeat(2,1fr);}}
+</style>
+</body>
+</html>
